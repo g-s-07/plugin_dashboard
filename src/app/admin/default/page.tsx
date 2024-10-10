@@ -43,7 +43,8 @@ import {
   Icon,
   Collapse,
   useQuery,
-  HStack
+  HStack,
+  Spacer
 } from '@chakra-ui/react';
 // Custom components
 // import MiniCalendar from 'components/calendar/MiniCalendar';
@@ -67,8 +68,9 @@ import tableDataComplex from 'views/admin/default/variables/tableDataComplex';
 // Assets
 import Usa from 'img/dashboards/usa.png';
 import { CheckIcon, InfoIcon, SmallCloseIcon, StarIcon } from '@chakra-ui/icons';
-import { IoAdd, IoRemove } from 'react-icons/io5';
-import { Select } from '@chakra-ui/react'
+// import { IoAdd, IoRemove } from 'react-icons/io5';
+import { IoMdDownload } from "react-icons/io";
+import Select from 'react-select';
 import axios from 'axios';
 import { BACKEND_DOMAIN, token } from '../../../../urls';
 
@@ -115,277 +117,6 @@ const StatusPercentage: React.FC<StatusPercentageProps> = ({ count }) => {
       </Flex>
     );
 };
-// export const getOptions = (token: string) => {
-//   return {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   };
-// };
- 
-// export const getPluginStats = async () => {
- 
-//   const { data } = await axios.get(
-//     'http://192.168.1.126:8010/get_plugin_stats/',
-//     getOptions(process.env.NEXT_PUBLIC_JWT_AUTH_TOKEN),  
-//   );
-//   console.log(data);
-//   return data;
-// };
-  
-// const { data: dbMappingColumn } = useQuery({
-//   queryKey: ['getPlugin'],
-//   queryFn: getPluginStats,
-// });
-
-
-// console.log(dbMappingColumn);
-// export default function Default() {
-//   // Chakra Color Mode
-
-//   const brandColor = useColorModeValue('brand.500', 'white');
-//   const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
-
-  
-//   const dividerColor = useColorModeValue("blue.600", "blue.300");
-//   const headingColor = useColorModeValue("blue", "springgreen");
-//   const renderCard = () => (
-//     <Card>
-//         <CardHeader
-//           display="flex"
-//           justifyContent="space-between"
-//           alignItems="center"
-//           position="relative"
-//           width="100%"
-//           p={{ base: 1, md: 2 }}
-//           pb={{ base: "2px", md: "1px" }}
-//           flexWrap="wrap"
-//         >
-//           <Heading
-//             textAlign="start"
-//             flex="1"
-//             fontWeight="normal"
-//             fontSize={{ base: "md", md: "lg" }}
-//             color={headingColor}
-//           >
-//           List
-//           </Heading>
-//           <Text
-//             fontSize={{ base: "sm", md: "md" }}
-//             fontWeight="medium"
-//             mt={{ base: 2, md: 1 }}
-//             flexShrink={0}
-//           >
-//             {/* data.unique_domain.toLocaleString() : data.total_count.toLocaleString() */}
-//           </Text>
-//           <Tooltip  aria-label="Card information" bg={'whitesmoke'}>
-//             <IconButton
-//               variant="ghost"
-//               colorScheme="gray"
-//               aria-label="Information"
-//               icon={<InfoIcon />}
-//               size="xs"
-//               ml={{ base: 0, md: 2 }}
-//               mt={{ base: 2, md: 0 }}
-//             />
-//           </Tooltip>
-//         </CardHeader>
-//           <CardBody
-//             display="flex"
-//             flexDirection="column"
-//             alignItems="start"
-//             width="100%"
-//             p={2}
-//             fontSize="md"
-//           >
-//             {/* <Box mb={1} fontSize="xl">{data.total_count.toLocaleString()}</Box> */}
-//             <Divider orientation="horizontal" mb={2} borderWidth="1px" borderColor={dividerColor}/>
-//             <Flex width="100%" alignItems="center">
-//               <Stack spacing={1} align="start" width="100%">
-//                 <Flex width="100%" alignItems="center">
-//                   <Box flex="1" fontWeight="medium">
-//                     {/* {title === 'Company' ? `Domain Found`: `${alias} D. Found`}  */}
-//                     Pending
-//                   </Box>
-//                   <StatusCount count={100} isSuccess={1} />
-//                 </Flex>
-//                 <Flex width="100%" alignItems="center">
-//                   <Box flex="1" fontWeight="medium">
-//                     {/* {title === 'Company' ? `Domain Not Found`: `${alias} D. Not Found`}  */}
-//                     Processing
-//                   </Box>
-//                   <StatusCount count={200} isSuccess={0} />
-//                 </Flex>
-//                 <Flex width="100%" alignItems="center">
-//                   <Box flex="1" fontWeight="medium">
-//                     Total
-//                   </Box>
-//                   <StatusPercentage
-//                     count={
-//                     50
-//                     }
-//                   />
-//                 </Flex>
-//               </Stack>
-//             </Flex>
-
-//             {/*  <Flex width="100%" alignItems="center">
-//               <Box flex="1">
-//                 <Stack spacing={1} align="start">
-//                   <Box fontWeight="medium">Domain Found</Box>
-//                   // <Box fontWeight="normal">{data.unique_domain.toLocaleString()}</Box>
-//                   <StatusCount count={data.unique_domain.toLocaleString()} isSuccess={true} />
-//                 </Stack>
-//               </Box>
-//               <Divider orientation="vertical" height="40px" mx={2} borderWidth="1px" borderColor={dividerColor} />
-//               <Box flex="1">
-//                 <Stack spacing={1} align="start">
-//                   <Box fontWeight="medium">Not Found</Box>
-//                   // <Box fontWeight="normal">{data.not_found_domain.toLocaleString()}</Box>
-//                   <StatusCount count={data.not_found_domain.toLocaleString()} isSuccess={false} />
-//                 </Stack>
-//               </Box>
-//             </Flex> */}
-
-//           </CardBody>
-//         </Card>
-//   );
-
-//   return (
-//     <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
-//       <Stack spacing={4} direction="column" align="center" mb={8}>
-//         <Input
-//           placeholder="Enter Task ID"
-//           type="number"
-//           value={taskId ?? ''}
-//           onChange={(e) => setTaskId(Number(e.target.value))}
-//           width="200px"
-//         />
-//         <Button colorScheme="blue" onClick={handleFetchData}>Fetch Counts</Button>
-//       </Stack>
-
-//       <SimpleGrid
-//         columns={{ base: 1, md: 2, lg: 3, '2xl': 6 }}
-//         gap="20px"
-//         mb="20px"
-//       >
-//         {renderCard()}
-//         {renderCard()}
-//         {renderCard()}
-//       </SimpleGrid>  
-//     </Box>
-//   );
-
-
-//   // return (
-//   //   <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
-//   //     <SimpleGrid
-//   //       columns={{ base: 1, md: 2, lg: 3, '2xl': 6 }}
-//   //       gap="20px"
-//   //       mb="20px"
-//   //     >
-//   //       <MiniStatistics
-//   //         startContent={
-//   //           <IconBox
-//   //             w="56px"
-//   //             h="56px"
-//   //             bg={boxBg}
-//   //             icon={
-//   //               <Icon w="32px" h="32px" as={MdBarChart} color={brandColor} />
-//   //             }
-//   //           />
-//   //         }
-//   //         name="Earnings"
-//   //         value="$350.4"
-//   //       />
-//   //       <MiniStatistics
-//   //         startContent={
-//   //           <IconBox
-//   //             w="56px"
-//   //             h="56px"
-//   //             bg={boxBg}
-//   //             icon={
-//   //               <Icon w="32px" h="32px" as={MdAttachMoney} color={brandColor} />
-//   //             }
-//   //           />
-//   //         }
-//   //         name="Spend this month"
-//   //         value="$642.39"
-//   //       />
-//   //       <MiniStatistics growth="+23%" name="Sales" value="$574.34" />
-//   //       <MiniStatistics
-//   //         endContent={
-//   //           <Flex me="-16px" mt="10px">
-//   //             <FormLabel htmlFor="balance">
-//   //               <Box boxSize={'12'}>
-//   //                 <Image alt="" src={Usa.src} w={'100%'} h={'100%'} />
-//   //               </Box>
-//   //             </FormLabel>
-//   //             <Select
-//   //               id="balance"
-//   //               variant="mini"
-//   //               mt="5px"
-//   //               me="0px"
-//   //               defaultValue="usd"
-//   //             >
-//   //               <option value="usd">USD</option>
-//   //               <option value="eur">EUR</option>
-//   //               <option value="gba">GBA</option>
-//   //             </Select>
-//   //           </Flex>
-//   //         }
-//   //         name="Your balance"
-//   //         value="$1,000"
-//   //       />
-//   //       <MiniStatistics
-//   //         startContent={
-//   //           <IconBox
-//   //             w="56px"
-//   //             h="56px"
-//   //             bg="linear-gradient(90deg, #4481EB 0%, #04BEFE 100%)"
-//   //             icon={<Icon w="28px" h="28px" as={MdAddTask} color="white" />}
-//   //           />
-//   //         }
-//   //         name="New Tasks"
-//   //         value="154"
-//   //       />
-//   //       <MiniStatistics
-//   //         startContent={
-//   //           <IconBox
-//   //             w="56px"
-//   //             h="56px"
-//   //             bg={boxBg}
-//   //             icon={
-//   //               <Icon w="32px" h="32px" as={MdFileCopy} color={brandColor} />
-//   //             }
-//   //           />
-//   //         }
-//   //         name="Total Projects"
-//   //         value="2935"
-//   //       />
-//   //     </SimpleGrid>
-
-//   //     <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px" mb="20px">
-//   //       <TotalSpent />
-//   //       <WeeklyRevenue />
-//   //     </SimpleGrid>
-//   //     <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
-//   //       <CheckTable tableData={tableDataCheck} />
-//   //       <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
-//   //         <DailyTraffic />
-//   //         <PieCard />
-//   //       </SimpleGrid>
-//   //     </SimpleGrid>
-//   //     <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap="20px" mb="20px">
-//   //       <ComplexTable tableData={tableDataComplex} />
-//   //       <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap="20px">
-//   //         <Tasks />
-//   //         {/* <MiniCalendar h="100%" minW="100%" selectRange={false} /> */}
-//   //       </SimpleGrid>
-//   //     </SimpleGrid>
-//   //   </Box>
-//   // );
-// }
 
 
 const Default: React.FC = () => {
@@ -395,79 +126,78 @@ const Default: React.FC = () => {
     list: { list_total_count: 0, list_pending_count: 0, list_processed_count: 0 },
     seller: { seller_total_count: 0, seller_pending_count: 0, seller_processed_count: 0 },
   });
-  const [tableName, setTableName] = useState<string>('');
   const [dropdownDataCategory, setDropdownDataCategory] = useState([]);
   const [dropdownDataSubCategory, setDropdownDataSubCategory] = useState([]);
   const [dropdownDataDatapoints, setDropdownDataDatapoints] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedSubCategory, setSelectedSubCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectedSubCategory, setSelectedSubCategory] = useState([]);
   const [dropdownDataCity, setDropdownDataCity] = useState([]);
   const [dropdownDataCountry, setDropdownDataCountry] = useState([]);
   const [dropdownDataState, setDropdownDataState] = useState([]);
-  const [selectedCity,setSelectedCity] = useState('')
-  const [selectedState,setSelectedState] = useState('')
-  const [selectedCountry,setSelectedCountry] = useState('')
-  const [amazonData, setAmazonsData] = useState([]);
-  const [activeTab, setActiveTab] = useState(0); 
-  // const []
-  // const [category, setCategory] = useState('');
-  const [filterOptions, setFilterOptions] = useState({
-    product: [],
-    list: [],
-    seller: [],
-  });
-  const [filteredData, setFilteredData] = useState({ products: [], lists: [], sellers: [] });
-  const toast = useToast(); // Initialize the toast hook
+  const [selectedCity,setSelectedCity] = useState([])
+  const [selectedState,setSelectedState] = useState([])
+  const [selectedCountry,setSelectedCountry] = useState([])
+  const [amazonProductData, setAmazonsProductData] = useState([]);
+  const [amazonListData, setAmazonsListData] = useState([]);
+  const [amazonSellerData, setAmazonsSellerData] = useState([]);
+  const [activeTab, setActiveTab] = useState(0);
+
+
+  const toast = useToast();
+
+  const convertToOptions = (items: string[] | undefined) =>
+    items?.map(item => ({ value: item, label: item })) || [];
 
 
   useEffect(() => {
-    if (!taskId) return;
-    fetchApiData(taskId);
-  }, [taskId, selectedCategory, selectedSubCategory, activeTab, tableName, selectedCity, selectedState, selectedCountry]);
+    if (taskId !== null) {
+      fetchApiData(taskId);
+    }
+  }, [selectedCategory, selectedSubCategory, activeTab, selectedCity, selectedState, selectedCountry]);
 
+  
   const fetchApiData = async (task_id: number | null) => {
-    if (!task_id) throw new Error("Task ID is not found");
+    if (!task_id) throw new Error("Task ID not found");
     try {
+      
+      let tableName= ''
         
       const formData = new FormData();
       formData.append('task_id', task_id.toString());
       
         if (activeTab==1){
-          setTableName('PRODUCT_LIST_DATA')
+          tableName = 'PRODUCT_LIST_DATA'
         }
         else if (activeTab==2){
-          setTableName('SELLER_DATA')
+          tableName = 'SELLER_DATA'
         }
         else{
-          setTableName('PRODUCT_DETAIL_DATA')
+          tableName = 'PRODUCT_DETAIL_DATA'
         }
         formData.append('table_name', tableName);
   
       if (selectedCategory) {
-        formData.append('mapped_category', selectedCategory);
+        formData.append('mapped_category', selectedCategory.join(','));
       }
   
-      // Only append sub_category if it's selected
-      if (selectedSubCategory && selectedSubCategory.trim() !== "") {
-        console.log(selectedSubCategory);
-        formData.append('sub_category', selectedSubCategory);
+      if (selectedSubCategory) {
+        formData.append('sub_category', selectedSubCategory.join(','));
       }
 
       if(selectedCity){
-        formData.append('city',selectedCity)
+        formData.append('city',selectedCity.join(','))
       }
 
       if(selectedState){
-        formData.append('state',selectedState)
+        formData.append('state',selectedState.join(','))
       }
 
       if(selectedCountry){
-        formData.append('country',selectedCountry)
+        formData.append('country',selectedCountry.join(','))
       }
   
-      console.log('i am here',formData);
-      const response = await axios.post(
-        `${BACKEND_DOMAIN}/plugin_insights/`,
+      console.log(tableName);
+      const response = await axios.post(`${BACKEND_DOMAIN}/plugin_insights/`,
         formData, 
         {
           headers: {
@@ -477,8 +207,7 @@ const Default: React.FC = () => {
         }
       );
 
-      console.log('API Response:', response.data.data);
-      setAmazonsData(response.data.data);  
+      activeTab==0 ? setAmazonsProductData(response.data.data) : activeTab==1 ? setAmazonsListData(response.data.data) : setAmazonsSellerData(response.data.data); 
     } catch (error: unknown) {
 
       //  ADD TOAST HERE
@@ -512,13 +241,12 @@ const Default: React.FC = () => {
         formData, 
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',  
+            'Content-Type': 'application/x-www-form-urlencoded', 
             'Authorization': token,
           },
         }
       );
 
-      console.log('API Response:', response);
       const alldata = response.data;
       if (alldata && alldata.count) {
         setCountData(alldata.count);
@@ -537,28 +265,65 @@ const Default: React.FC = () => {
           duration: 3000,
           isClosable: true,
         });
-      // setStatsData(response.data.data);
       }
     }
-    catch(e){
-      console.log("fenil",e);
+    catch(error:any){
+      toast({
+        title: "Error",
+        description: error,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   }
 
-  useEffect(()=>{
-    const fetchdropDownData = async(task_id: number) =>{
-      if(!taskId) return
-      try{
+  const downloadData = (task_id: number) => {
+    if (!task_id) throw new Error("Please Mention the Task ID");
+    try{
+      const formData = new FormData();
+      formData.append('task_id', task_id.toString());
+
+      axios.get(`${BACKEND_DOMAIN}/download_data/?task_id=${task_id}&city=${selectedCity}&state=${selectedState}&country=${selectedCountry}`,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Authorization': token,
+          },
+        }
+      ).then((response) => {
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'data.csv');
+        document.body.appendChild(link);
+        link.click();
+      })
+    }
+    catch(error:any){
+      toast({
+        title: "Error",
+        description: error,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
+
+  const fetchdropDownData = async(task_id: number) =>{
+    if (!task_id) return;
+    try{
         const filter_table_data= activeTab==1 ? 'PRODUCT_LIST_DATA' : activeTab==2 ? 'SELLER_DATA' : 'PRODUCT_DETAIL_DATA' 
         const response = await axios.get(`${BACKEND_DOMAIN}/get-data/?task_id=${task_id}&table_name=${filter_table_data}`, {
           headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': token,  
+          'Authorization': token,
         }
       })
 
       const data  = response.data.data;
-
+      
       if(data) {
         if(data.category)setDropdownDataCategory(data.category);
         if(data.sub_category)setDropdownDataSubCategory(data.sub_category);
@@ -568,94 +333,122 @@ const Default: React.FC = () => {
         if(data.country)setDropdownDataCountry(data.country);
       }
     }
-    catch(e){
-      console.log("fenil",e);
+    catch(error:any){
+      toast({
+        title: "Error",
+        description: error,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   }
-  fetchdropDownData(taskId)
-},[taskId,activeTab])
-  
 
-  // Handle button click
-  const handleFetchData = () => {
-    // fetchApiData(taskId);
-    fetchStatsData(taskId);
-  };
+  useEffect(()=>{
+    fetchdropDownData(taskId)
+},[activeTab])
+
 
   const brandColor = useColorModeValue('brand.500', 'white');
-  const dividerColor = useColorModeValue("blue.600", "blue.300");
+  const dividerColor = useColorModeValue("pink.600", "pink.300");
   const hasTaskId = taskId !== null && taskId.toString() !== '';
 
   const handleTabChange = (index: number) => {
     setActiveTab(index);
   };
   
-// const renderTable = (data: any[], config: { columns: string[], headers: string[] }, category?: string[], subCategory?: string[], city?: string[], state?: string[], country?: string[], activeTab?: number) => (
-const renderTable = (data: any[], config: { columns: string[], headers: string[] }, category?: string[], subCategory?: string[], country?: string[], state?: string[], city?: string[], activeTab?: number) => (
-  <Box 
-    maxHeight="500px" 
-    maxWidth="1200px" 
-    overflowY="auto" 
-    overflowX="auto" 
-    border="2px solid" 
-    borderColor="gray.300" 
-    rounded="lg"
-  >
+const renderTable = (
+    data: any[], 
+    config: { 
+      columns: string[], 
+      headers: string[] 
+    }, 
+    category?: string[], 
+    subCategory?: string[], 
+    country?: string[], 
+    state?: string[], 
+    city?: string[], 
+    activeTab?: number)=> (
+    <Box 
+      maxHeight="500px" 
+      maxWidth="full" 
+      overflowY="auto" 
+      overflowX="auto" 
+      border="2px solid" 
+      borderColor="gray.300" 
+      rounded="lg"
+      flexWrap="wrap"
+    >
     <Table 
       variant="striped" 
       colorScheme="gray" 
       minWidth="1000px" 
     >
-    <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
-      <Tr className='flex justify-between align-items-center'>
+    <Thead position="sticky" top="0" bg="gray.100" zIndex="1" flexWrap="wrap">
+      <Tr className='flex justify-between align-items-center flex-wrap'>
         {config.headers.map((header, index) => (
-          <Th key={index} width="200px">
+          <Th key={index} width="200px" flexWrap="wrap">
             <HStack justifyContent={"center"}  align="center">
               <span>{header}</span>
               {header === "Category" && activeTab!=2 &&
-                <Select placeholder='Select Category' width="100px" onChange={(e)=>setSelectedCategory(e.target.value)}>
-                {
-                  category?.map((category,index) => (
-                    <option key={index} value={category}>{category}</option>
-                  )) 
-                }
-                </Select>
+                <Select
+                  options={convertToOptions(category)}
+                  isMulti // Enable multi-select
+                  value={selectedCategory.map(cat => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) => 
+                    setSelectedCategory(selectedOptions.map((option) => option.value))
+                  }
+                  placeholder="Select Categories"
+                  className="w-[100px]"
+                />
               }
               {header === "Sub-Category" && activeTab!=2 &&
-                <Select placeholder='Select Sub-Category' width="100px" onChange={(e)=>setSelectedSubCategory(e.target.value)}>
-                {
-                  subCategory?.map((subCategory,index) => (
-                    <option key={index} value={subCategory}>{subCategory}</option>
-                  )) 
-                }
-                </Select>
+               <Select
+                  options={convertToOptions(subCategory)}
+                  isMulti
+                  value={selectedSubCategory.map(cat => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) => 
+                    setSelectedSubCategory(selectedOptions.map((option) => option.value))
+                  }
+                  placeholder="Select Sub-Categories"
+                  className="w-[100px]"
+                />
               }
               {header === "City" &&
-                <Select placeholder='Select City' width="100px" onChange={(e)=>setSelectedCity(e.target.value)}>
-                {
-                  city?.map((city,index) => (
-                    <option key={index} value={city}>{city}</option>
-                  )) 
-                }
-                </Select>
+                 <Select
+                 options={convertToOptions(city)}
+                 isMulti
+                 value={selectedCity.map(cat => ({ value: cat, label: cat }))}
+                 onChange={(selectedOptions) => 
+                   setSelectedCity(selectedOptions.map((option) => option.value))
+                 }
+                 placeholder="Select City"
+                 className="w-[100px]"
+               />
               }
                 {header === "State" &&
-                <Select placeholder='Select State' width="100px" onChange={(e)=>setSelectedState(e.target.value)}>
-                {
-                  state?.map((state,index) => (
-                    <option key={index} value={state}>{state}</option>
-                  )) 
-                }
-                </Select>
+                 <Select
+                 options={convertToOptions(state)}
+                 isMulti
+                 value={selectedState.map(cat => ({ value: cat, label: cat }))}
+                 onChange={(selectedOptions) => 
+                   setSelectedState(selectedOptions.map((option) => option.value))
+                 }
+                 placeholder="Select State"
+                 className="w-[100px]"
+               />
               }
               {header === "Country" &&
-                <Select placeholder='Select Country' width="100px" onChange={(e)=>setSelectedCountry(e.target.value)}>
-                {
-                  country?.map((country,index) => (
-                    <option key={index} value={country}>{country}</option>
-                  )) 
-                }
-                </Select>
+                 <Select
+                 options={convertToOptions(country)}
+                 isMulti
+                 value={selectedCountry.map(cat => ({ value: cat, label: cat }))}
+                 onChange={(selectedOptions) => 
+                   setSelectedCountry(selectedOptions.map((option) => option.value))
+                 }
+                 placeholder="Select Country"
+                 className="w-[100px]"
+               />
               }
             </HStack>
           </Th>
@@ -663,7 +456,7 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
       </Tr>
     </Thead>
 
-    <Tbody>
+    <Tbody flexWrap="wrap">
       {data?.map((row, index) => {
         return(
         <Tr key={index} border="2px solid" borderColor="gray.200">
@@ -682,7 +475,7 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
 );
 
   return (
-    <Box py={4} overflow="visible" position="relative">
+    <Box py={4} overflow="visible" position="relative" className='flex flex-wrap'>
       <Flex mb={4} direction="column" position="relative">
         <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
           <Flex alignItems="center" gap={6} flexWrap="wrap" justify="space-between">
@@ -692,7 +485,6 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
                   <Input
                     id="task-id"
                     type="number"
-                    
                     value={taskId ?? ''}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -718,7 +510,7 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
                   </FormLabel>
                 </Box>
               </FormControl>
-              <Button colorScheme="blue" onClick={handleFetchData} >
+              <Button colorScheme="blue" onClick={() => [fetchStatsData(taskId), fetchApiData(taskId), fetchdropDownData(taskId)] } >
                 Fetch Counts
               </Button>
             </Stack>
@@ -734,7 +526,7 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
                     fontSize={{ base: "md", md: "lg" }}
                     color={"black"}>Amazon Product Details</Heading>
                 </CardHeader>
-                <Divider borderColor="gray.300" borderWidth="1px" width="90%" mx="auto" />
+                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
                 <CardBody p="3">
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
@@ -762,7 +554,7 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
                     fontSize={{ base: "md", md: "lg" }}
                     color={"black"}>Amazon Product List</Heading>
                 </CardHeader>
-                <Divider borderColor="gray.300" borderWidth="1px" width="90%" mx="auto" />
+                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
                 <CardBody p="3">
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
@@ -791,7 +583,7 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
                     fontSize={{ base: "md", md: "lg" }}
                     color={"black"}>Amazon Seller Details</Heading>
                 </CardHeader>
-                <Divider borderColor="gray.300" borderWidth="1px" width="90%" mx="auto" />
+                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
                 <CardBody p="3">
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
@@ -814,29 +606,48 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
           </Flex>
         </Box>
       </Flex>
-      <Flex mt={2} direction="row" align="flex-start">
-        { /*isLoading ? (
-          <Spinner />
-        ) : */ ( 
-          <Box 
+      <Flex mt={2} direction="row" align="flex-start" flexWrap="wrap" width=''>
+          {taskId ? (<Box 
             flex="1"
-          >
-            <Tabs position='relative' variant='unstyled' onChange={handleTabChange} isLazy>
-            <TabList>
-              <Tab _selected={{ fontWeight: 'bold' }}>
-                Amazon Product Details {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
+            flexWrap="wrap"          
+            >
+            <Tabs position='relative' variant='unstyled' flexWrap="wrap" onChange={handleTabChange} isLazy>
+            <TabList flexWrap="wrap">
+              {/* <Box> */}
+                <Tab _selected={{ fontWeight: 'bold' }}>
+                  Amazon Product Details {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
+                </Tab>
+                <Tab _selected={{ fontWeight: 'bold' }}>
+                  Amazon Product Lists {activeTab === 1 && <Text as="span" fontSize="sm"></Text>}
+                </Tab>
+                <Tab _selected={{ fontWeight: 'bold' }}>
+                  Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
+                </Tab>
+                <Spacer />
+              {/* </Box> */}
+              {
+                activeTab==2 &&
+                <Tab _selected={{ fontWeight: 'bold', alignItems: 'center' }}>
+                <Button
+                  colorScheme='green'
+                  size={"md"}
+                  onClick={() => downloadData(taskId)}
+                  >
+                  <Icon
+                        h="24px"
+                        w="30px"
+                        as={IoMdDownload}
+                        >
+                    </Icon>
+                    {/* {isTechDownloading ? <Spinner size="sm" /> : 'Download'} */}
+                  </Button>
               </Tab>
-              <Tab _selected={{ fontWeight: 'bold' }}>
-                Amazon Product Lists {activeTab === 1 && <Text as="span" fontSize="sm"></Text>}
-              </Tab>
-              <Tab _selected={{ fontWeight: 'bold' }}>
-                Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
-              </Tab>
+            }
             </TabList>
             <TabIndicator mt='-1.5px' height='2px' bg='blue.500' borderRadius='1px' />
               <TabPanels>
                 <TabPanel>
-                  {renderTable(amazonData, {
+                  {renderTable(amazonProductData, {
                       columns: ["mapped_category", "sub_category", "total_counts"],
                       headers: ["Category", "Sub-Category", "Count"]},
                       dropdownDataCategory,
@@ -849,7 +660,7 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
                   }
                 </TabPanel>
                 <TabPanel>
-                  {renderTable(amazonData, {
+                  {renderTable(amazonListData, {
                       columns: ["mapped_category", "sub_category", "total_counts"],
                       headers: ["Category", "Sub-Category", "Count"]},
                       dropdownDataCategory,
@@ -862,25 +673,28 @@ const renderTable = (data: any[], config: { columns: string[], headers: string[]
                   }
                 </TabPanel>
                 <TabPanel>
-                  {renderTable(amazonData, {
-                      columns: ["country", "city", "state", "total_counts"],
-                      headers: ["Country", "State", "City", "Count"]},
-                      null,
-                      null,
-                      dropdownDataCountry,
-                      dropdownDataState,
-                      dropdownDataCity,
-                      activeTab
-                    )
+                  {renderTable(amazonSellerData, {
+                    columns: ["city", "state", "country", "total_counts"],
+                    headers: ["City", "State", "Country", "Count"]},
+                    null,
+                    null,
+                    dropdownDataCountry,
+                    dropdownDataState,
+                    dropdownDataCity,
+                    activeTab
+                  )
                   }
                 </TabPanel>
               </TabPanels>
             </Tabs>
-          </Box>
-          )}
+          </Box>): null}
       </Flex>
     </Box>
   );
 };
 
 export default Default;
+/*isLoading ? (
+  <Spinner />
+  ) : */  
+// )}

@@ -18,6 +18,7 @@ import {
   getActiveNavbarText,
   getActiveRoute,
 } from 'utils/navigation';
+import { useMemo } from 'react';
 
 interface DashboardLayoutProps extends PropsWithChildren {
   [x: string]: any;
