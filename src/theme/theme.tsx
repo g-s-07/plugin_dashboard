@@ -10,16 +10,10 @@ import { switchStyles } from './components/switch';
 import { linkStyles } from './components/link';
 import { breakpoints } from './foundations/breakpoints';
 import { globalStyles } from './styles';
-import {  MultiSelectTheme } from 'chakra-multiselect'
 
 export default extendTheme(
 	{ breakpoints }, // Breakpoints
 	globalStyles,
-	{
-		components:{
-			MultiSelect: MultiSelectTheme
-		}
-	},
 	badgeStyles, // badge styles
 	buttonStyles, // button styles
 	linkStyles, // link styles
