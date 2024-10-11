@@ -532,17 +532,17 @@ const renderTable = (
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Pending: {countData.product.product_pending_count}</Text>
+                    flexShrink={0}>Pending: {countData.product.product_pending_count} - </Text>
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Processed: {countData.product.product_processed_count}</Text>
+                    flexShrink={0}>Processed: {countData.product.product_processed_count} - </Text>
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Total: {countData.product.product_total_count}</Text>
+                    flexShrink={0}>Total: {countData.product.product_total_count} - </Text>
                 </CardBody>
               </Card>
 
@@ -560,17 +560,17 @@ const renderTable = (
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Pending: {countData.list.list_pending_count}</Text>
+                    flexShrink={0}>Pending: {countData.list.list_pending_count} - </Text>
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Processed: {countData.list.list_processed_count}</Text>
+                    flexShrink={0}>Processed: {countData.list.list_processed_count} - </Text>
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Total: {countData.list.list_total_count}</Text>
+                    flexShrink={0}>Total: {countData.list.list_total_count} - </Text>
                 </CardBody>
               </Card>
 
@@ -589,17 +589,17 @@ const renderTable = (
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Pending: {countData.seller.seller_pending_count}</Text>
+                    flexShrink={0}>Pending: {countData.seller.seller_pending_count} - </Text>
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Processed: {countData.seller.seller_processed_count}</Text>
+                    flexShrink={0}>Processed: {countData.seller.seller_processed_count} - </Text>
                   <Text
                     fontSize={{ base: "sm", md: "md" }}
                     fontWeight="medium"
                     mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Total: {countData.seller.seller_total_count}</Text>
+                    flexShrink={0}>Total: {countData.seller.seller_total_count} - </Text>
                 </CardBody>
               </Card>
             </SimpleGrid>
