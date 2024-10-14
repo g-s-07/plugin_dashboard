@@ -44,7 +44,12 @@ import {
   Collapse,
   useQuery,
   HStack,
-  Spacer
+  Spacer,
+  Tfoot,
+  StatGroup,
+  StatLabel,
+  Stat,
+  StatNumber
 } from '@chakra-ui/react';
 // Custom components
 // import MiniCalendar from 'components/calendar/MiniCalendar';
@@ -73,7 +78,8 @@ import { IoMdDownload } from "react-icons/io";
 import Select from 'react-select';
 import axios from 'axios';
 import { BACKEND_DOMAIN, token } from '../../../../urls';
-
+import { saveAs } from 'file-saver';
+import { convertToCSV } from 'utils/converttocsv';
 
 interface StatusCountProps {
   count: number | string;
@@ -118,14 +124,57 @@ const StatusPercentage: React.FC<StatusPercentageProps> = ({ count }) => {
     );
 };
 
+interface CountDataType {
+  product?: {
+    product_total_count?: number;
+    product_success_count?: number;
+    product_processed_count?: number;
+    product_pending_count?: number;
+    product_missed_count?: number;
+  };
+  list?: {
+    list_total_count?: number;
+    list_success_count?: number
+    list_processed_count?: number
+    list_pending_count?: number
+    list_missed_count?: number
+  };
+  seller?: {
+    seller_total_count?: number;
+    seller_success_count?: number
+    seller_processed_count?: number
+    seller_pending_count?: number
+    seller_missed_count?: number
+  };
+}
+
 
 const Default: React.FC = () => {
+  const [statsloading, setStatsLoading] = useState(false);
+  const [tableloading, setTableLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
-  const [countData, setCountData] = useState({
-    product: { product_total_count: 0, product_pending_count: 0, product_processed_count: 0 },
-    list: { list_total_count: 0, list_pending_count: 0, list_processed_count: 0 },
-    seller: { seller_total_count: 0, seller_pending_count: 0, seller_processed_count: 0 },
-  });
+  const [countData, setCountData] = useState<CountDataType>({ product: {
+    product_total_count: 0,
+    product_success_count: 0,
+    product_processed_count:0,
+    product_pending_count:0, 
+    product_missed_count: 0,
+  },
+  list: {
+    list_total_count: 0,
+    list_success_count: 0,
+    list_processed_count: 0,
+    list_pending_count: 0, 
+    list_missed_count: 0
+  },
+  seller: {
+    seller_total_count: 0,
+    seller_success_count: 0,
+    seller_processed_count: 0,
+    seller_pending_count: 0,
+    seller_missed_count: 0,
+  }});
   const [dropdownDataCategory, setDropdownDataCategory] = useState([]);
   const [dropdownDataSubCategory, setDropdownDataSubCategory] = useState([]);
   const [dropdownDataDatapoints, setDropdownDataDatapoints] = useState([]);
@@ -143,6 +192,9 @@ const Default: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
 
 
+  const seller_data = amazonSellerData
+
+
   const toast = useToast();
 
   const convertToOptions = (items: string[] | undefined) =>
@@ -158,6 +210,7 @@ const Default: React.FC = () => {
   
   const fetchApiData = async (task_id: number | null) => {
     if (!task_id) throw new Error("Task ID not found");
+    setTableLoading(true);
     try {
       
       let tableName= ''
@@ -227,12 +280,15 @@ const Default: React.FC = () => {
       } else {
         console.error('Unknown error occurred');
       }
+    }finally {
+      setTableLoading(false);
     }
   };
 
 
   const fetchStatsData = async (task_id: number) => {
     if (!task_id) return;
+    setStatsLoading(true); 
     try {
       const formData = new FormData();
       formData.append('task_id', task_id.toString());
@@ -275,30 +331,21 @@ const Default: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
+    }finally {
+      setStatsLoading(false);
     }
   }
 
   const downloadData = (task_id: number) => {
+    console.log("gaurav");
     if (!task_id) throw new Error("Please Mention the Task ID");
     try{
-      const formData = new FormData();
-      formData.append('task_id', task_id.toString());
-
-      axios.get(`${BACKEND_DOMAIN}/download_data/?task_id=${task_id}&city=${selectedCity}&state=${selectedState}&country=${selectedCountry}`,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded', 
-            'Authorization': token,
-          },
-        }
-      ).then((response) => {
-        const url = URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'data.csv');
-        document.body.appendChild(link);
-        link.click();
-      })
+      console.log(seller_data);
+      console.log("gaurav111222");
+      const csvData = convertToCSV(seller_data)
+      console.log("gaurav111");
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      saveAs(blob, `seller_details${task_id}.csv`);
     }
     catch(error:any){
       toast({
@@ -349,7 +396,30 @@ const Default: React.FC = () => {
 },[activeTab])
 
 
-  const brandColor = useColorModeValue('brand.500', 'white');
+const get_skeleton = (type:string) => {
+  if(type=='stats'){
+    return (
+      <>
+        <Skeleton height="25px" color={"gray.900"} mb={2}/>
+      </>
+    )
+  }
+  else{
+    return (
+      <>
+        <Skeleton startColor='white.100' endColor='gray.100' height='30px' mb={2} rounded={"md"}/>
+        <Skeleton startColor='white.100' endColor='gray.300' height='30px' mb={2} rounded={"md"}/>
+        <Skeleton startColor='white.100' endColor='gray.500' height='30px' mb={2} rounded={"md"}/>
+        <Skeleton startColor='white.100' endColor='gray.700' height='30px' mb={2} rounded={"md"}/>
+        <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"}/>
+        <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"}/>
+        <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"}/>
+      </>
+    )
+  }
+}
+
+
   const dividerColor = useColorModeValue("pink.600", "pink.300");
   const hasTaskId = taskId !== null && taskId.toString() !== '';
 
@@ -368,111 +438,129 @@ const renderTable = (
     country?: string[], 
     state?: string[], 
     city?: string[], 
-    activeTab?: number)=> (
-    <Box 
-      maxHeight="500px" 
-      maxWidth="full" 
-      overflowY="auto" 
-      overflowX="auto" 
-      border="2px solid" 
-      borderColor="gray.300" 
-      rounded="lg"
-      flexWrap="wrap"
-    >
-    <Table 
-      variant="striped" 
-      colorScheme="gray" 
-      minWidth="1000px" 
-    >
-    <Thead position="sticky" top="0" bg="gray.100" zIndex="1" flexWrap="wrap">
-      <Tr className='flex justify-between align-items-center flex-wrap'>
-        {config.headers.map((header, index) => (
-          <Th key={index} width="200px" flexWrap="wrap">
-            <HStack justifyContent={"center"}  align="center">
-              <span>{header}</span>
-              {header === "Category" && activeTab!=2 &&
-                <Select
-                  options={convertToOptions(category)}
-                  isMulti // Enable multi-select
-                  value={selectedCategory.map(cat => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) => 
-                    setSelectedCategory(selectedOptions.map((option) => option.value))
-                  }
-                  placeholder="Select Categories"
-                  className="w-[100px]"
-                />
-              }
-              {header === "Sub-Category" && activeTab!=2 &&
-               <Select
-                  options={convertToOptions(subCategory)}
-                  isMulti
-                  value={selectedSubCategory.map(cat => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) => 
-                    setSelectedSubCategory(selectedOptions.map((option) => option.value))
-                  }
-                  placeholder="Select Sub-Categories"
-                  className="w-[100px]"
-                />
-              }
-              {header === "City" &&
-                 <Select
-                 options={convertToOptions(city)}
-                 isMulti
-                 value={selectedCity.map(cat => ({ value: cat, label: cat }))}
-                 onChange={(selectedOptions) => 
-                   setSelectedCity(selectedOptions.map((option) => option.value))
-                 }
-                 placeholder="Select City"
-                 className="w-[100px]"
-               />
-              }
-                {header === "State" &&
-                 <Select
-                 options={convertToOptions(state)}
-                 isMulti
-                 value={selectedState.map(cat => ({ value: cat, label: cat }))}
-                 onChange={(selectedOptions) => 
-                   setSelectedState(selectedOptions.map((option) => option.value))
-                 }
-                 placeholder="Select State"
-                 className="w-[100px]"
-               />
-              }
-              {header === "Country" &&
-                 <Select
-                 options={convertToOptions(country)}
-                 isMulti
-                 value={selectedCountry.map(cat => ({ value: cat, label: cat }))}
-                 onChange={(selectedOptions) => 
-                   setSelectedCountry(selectedOptions.map((option) => option.value))
-                 }
-                 placeholder="Select Country"
-                 className="w-[100px]"
-               />
-              }
-            </HStack>
-          </Th>
-        ))}
-      </Tr>
-    </Thead>
-
-    <Tbody flexWrap="wrap">
-      {data?.map((row, index) => {
-        return(
-        <Tr key={index} border="2px solid" borderColor="gray.200">
-          {config.columns.map((column,index) => (
-            <Td key={index} width="200px" textAlign="center">
-              {row[column]}
-            </Td>
-          ))}
-        </Tr>
-      )})}
+    activeTab?: number)=> 
     
-    </Tbody>
+      
+      (
+    <Box
+      maxHeight="500px"
+      maxWidth="full"
+      overflowY="auto"
+      overflowX="auto"
+      border="2px solid"
+      borderColor="gray.300"
+      rounded="lg"
+      position="relative" 
+    >
+      <Table variant="striped" colorScheme="gray" minWidth="1000px">
+        <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
+          <Tr className="flex justify-between align-items-center flex-wrap">
+            {config.headers.map((header, index) => (
+              <Th key={index} width="200px" flexWrap="wrap" position="relative">
+                <HStack justifyContent={"center"} align="center">
+                  <span>{header}</span>
+                  {header === "Category" && activeTab !== 2 && (
+                    <Select
+                      options={convertToOptions(category)}
+                      isMulti // Enable multi-select
+                      value={selectedCategory.map(cat => ({ value: cat, label: cat }))}
+                      onChange={(selectedOptions) =>
+                        setSelectedCategory(selectedOptions.map((option) => option.value))
+                      }
+                      placeholder="Select Categories"
+                      className="w-[100px]"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      }}
+                      menuPortalTarget={document.body}
+                    />
+                  )}
+                  {header === "Sub-Category" && activeTab !== 2 && (
+                    <Select
+                      options={convertToOptions(subCategory)}
+                      isMulti
+                      value={selectedSubCategory.map(cat => ({ value: cat, label: cat }))}
+                      onChange={(selectedOptions) =>
+                        setSelectedSubCategory(selectedOptions.map((option) => option.value))
+                      }
+                      placeholder="Select Sub-Categories"
+                      className="w-[100px]"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 50 }), 
+                      }}
+                      menuPortalTarget={document.body} 
+                    />
+                  )}
+                  {header === "City" && (
+                    <Select
+                      options={convertToOptions(city)}
+                      isMulti
+                      value={selectedCity.map(cat => ({ value: cat, label: cat }))}
+                      onChange={(selectedOptions) =>
+                        setSelectedCity(selectedOptions.map((option) => option.value))
+                      }
+                      placeholder="Select City"
+                      className="w-[100px]"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      }}
+                      menuPortalTarget={document.body}
+                    />
+                  )}
+                  {header === "State" && (
+                    <Select
+                      options={convertToOptions(state)}
+                      isMulti
+                      value={selectedState.map(cat => ({ value: cat, label: cat }))}
+                      onChange={(selectedOptions) =>
+                        setSelectedState(selectedOptions.map((option) => option.value))
+                      }
+                      placeholder="Select State"
+                      className="w-[100px]"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 50 }), 
+                      }}
+                      menuPortalTarget={document.body}
+                    />
+                  )}
+                  {header === "Country" && (
+                    <Select
+                      options={convertToOptions(country)}
+                      isMulti
+                      value={selectedCountry.map(cat => ({ value: cat, label: cat }))}
+                      onChange={(selectedOptions) =>
+                        setSelectedCountry(selectedOptions.map((option) => option.value))
+                      }
+                      placeholder="Select Country"
+                      className="w-[100px]"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      }}
+                      menuPortalTarget={document.body}
+                    />
+                  )}
+                </HStack>
+              </Th>
+            ))}
+          </Tr>
+        </Thead>
 
-    </Table>
-  </Box>
+        <Tbody flexWrap="wrap">
+          {data?.map((row, index) => (
+            <Tr key={index} border="2px solid" borderColor="gray.200">
+              {config.columns.map((column, index) => (
+                <Td key={index} width="200px" textAlign="center">
+                  {row[column]}
+                </Td>
+              ))}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    </Box>
 );
+
+
 
   return (
     <Box py={4} overflow="visible" position="relative" className='flex flex-wrap'>
@@ -510,7 +598,7 @@ const renderTable = (
                   </FormLabel>
                 </Box>
               </FormControl>
-              <Button colorScheme="blue" onClick={() => [fetchStatsData(taskId), fetchApiData(taskId), fetchdropDownData(taskId)] } >
+              <Button colorScheme="blue" onClick={() => [fetchStatsData(taskId), fetchApiData(taskId), fetchdropDownData(taskId)]} >
                 Fetch Counts
               </Button>
             </Stack>
@@ -518,88 +606,148 @@ const renderTable = (
             {/* Cards for counts */}
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="20px" flex="1" >
               {/* Render Product Card */}
-              <Card height="175px">
+              <Card height="200px">
                 <CardHeader p="4">
                   <Heading
                     textAlign="start"
                     fontWeight="bold"
-                    fontSize={{ base: "md", md: "lg" }}
-                    color={"black"}>Amazon Product Details</Heading>
+                    fontSize={{ base: "sm", md: "lg" }}
+                    color={"black"}>Amazon Product Details
+                  </Heading>
+                  <Box mt="3" textAlign={"center"}>
+                    <StatGroup>
+                      <Stat>
+                        <StatLabel>Total</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_total_count}</StatNumber>
+                      </Stat>
+                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                      <Stat>
+                        <StatLabel>Ready</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_success_count}</StatNumber>
+                      </Stat>
+                    </StatGroup>
+                  </Box>
                 </CardHeader>
                 <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                <CardBody p="3">
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Pending: {countData.product.product_pending_count} - </Text>
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Processed: {countData.product.product_processed_count} - </Text>
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Total: {countData.product.product_total_count} - </Text>
+                <CardBody p="3" textAlign={"center"}>
+                  <StatGroup>
+                    <Stat>
+                      <StatLabel>Processed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_processed_count}</StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Pending</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_pending_count}</StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Missed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_missed_count}</StatNumber>
+                    </Stat>
+                  </StatGroup>
                 </CardBody>
               </Card>
 
-              <Card height="175px">
+              <Card height="200px">
                 <CardHeader p="4">
                   <Heading
                     textAlign="start"
                     fontWeight="bold"
                     fontSize={{ base: "md", md: "lg" }}
-                    color={"black"}>Amazon Product List</Heading>
+                    color={"black"}>Amazon Product List
+                  </Heading>
+                  <Box mt="3" textAlign={"center"}>
+                    <StatGroup>
+                      <Stat>
+                        <StatLabel>Total</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_total_count}</StatNumber>
+                      </Stat>
+                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                      <Stat>
+                        <StatLabel>Ready</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_success_count}</StatNumber>
+                      </Stat>
+                    </StatGroup>
+                  </Box>
                 </CardHeader>
                 <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                <CardBody p="3">
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Pending: {countData.list.list_pending_count} - </Text>
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Processed: {countData.list.list_processed_count} - </Text>
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Total: {countData.list.list_total_count} - </Text>
+                <CardBody p="3" textAlign={"center"}>
+                  <StatGroup>
+                    <Stat>
+                      <StatLabel>Processed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_processed_count}</StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Pending</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_pending_count}</StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Missed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_missed_count}</StatNumber>
+                    </Stat>
+                  </StatGroup>
                 </CardBody>
               </Card>
 
               {/* Render Seller Card */}
-              <Card height="175px">
+              <Card height="200px">
                 <CardHeader p="4">
                   <Heading
                     textAlign="start"
                     fontWeight="bold"
                     fontSize={{ base: "md", md: "lg" }}
-                    color={"black"}>Amazon Seller Details</Heading>
+                    color={"black"}>Amazon Seller Details
+                  </Heading>
+                  <Box mt="3" textAlign={"center"}>
+                    <StatGroup >
+                      <Stat>
+                        <StatLabel>Total</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_total_count}</StatNumber>
+                      </Stat>
+                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                      <Stat>
+                        <StatLabel>Ready</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_success_count}</StatNumber>
+                      </Stat>
+                    </StatGroup>
+                  </Box>
                 </CardHeader>
                 <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                <CardBody p="3">
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Pending: {countData.seller.seller_pending_count} - </Text>
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Processed: {countData.seller.seller_processed_count} - </Text>
-                  <Text
-                    fontSize={{ base: "sm", md: "md" }}
-                    fontWeight="medium"
-                    mt={{ base: 2, md: 1 }}
-                    flexShrink={0}>Total: {countData.seller.seller_total_count} - </Text>
+                <CardBody p="3" textAlign={"center"}>
+                  <StatGroup>
+                    <Stat>
+                      <StatLabel>Processed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_processed_count}</StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Pending</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_pending_count}</StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Missed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_missed_count}</StatNumber>
+                    </Stat>
+                  </StatGroup>
                 </CardBody>
               </Card>
             </SimpleGrid>
@@ -627,25 +775,34 @@ const renderTable = (
               {/* </Box> */}
               {
                 activeTab==2 &&
-                <Tab _selected={{ fontWeight: 'bold', alignItems: 'center' }}>
-                <Button
-                  colorScheme='green'
-                  size={"md"}
-                  onClick={() => downloadData(taskId)}
+                <Box 
+                  display={'flex'} 
+                  bg={'green.500'}
+                  rounded={'full'}
+                  width={'60px'}
+                  fontWeight={'bold'} 
+                  alignItems={'center'}
                   >
+                  
                   <Icon
-                        h="24px"
-                        w="30px"
-                        as={IoMdDownload}
-                        >
+                      h="30px"
+                      w="30px"
+                      // px={2}
+                      // justifyItems={"center"}
+                      mx={"auto"}
+                      justifyContent={"center"}
+                      as={IoMdDownload}
+                      cursor={'pointer'}
+                      color={'white'}
+                      onClick={()=> downloadData(taskId)}
+                      >
                     </Icon>
-                    {/* {isTechDownloading ? <Spinner size="sm" /> : 'Download'} */}
-                  </Button>
-              </Tab>
+              </Box>
             }
             </TabList>
             <TabIndicator mt='-1.5px' height='2px' bg='blue.500' borderRadius='1px' />
-              <TabPanels>
+            {tableloading ? get_skeleton('table') : 
+              (<TabPanels>
                 <TabPanel>
                   {renderTable(amazonProductData, {
                       columns: ["mapped_category", "sub_category", "total_counts"],
@@ -656,8 +813,7 @@ const renderTable = (
                       null,
                       null,
                       activeTab
-                    )
-                  }
+                  )}
                 </TabPanel>
                 <TabPanel>
                   {renderTable(amazonListData, {
@@ -685,13 +841,14 @@ const renderTable = (
                   )
                   }
                 </TabPanel>
-              </TabPanels>
+              </TabPanels>)}
             </Tabs>
           </Box>): null}
       </Flex>
     </Box>
   );
 };
+
 
 export default Default;
 /*isLoading ? (
