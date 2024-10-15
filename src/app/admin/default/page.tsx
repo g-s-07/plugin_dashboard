@@ -787,8 +787,6 @@ const renderTable = (
                   <Icon
                       h="30px"
                       w="30px"
-                      // px={2}
-                      // justifyItems={"center"}
                       mx={"auto"}
                       justifyContent={"center"}
                       as={IoMdDownload}
