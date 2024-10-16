@@ -191,13 +191,13 @@ const Default: React.FC = () => {
       formData.append('task_id', task_id.toString());
       
         if (activeTab==1){
-          tableName = 'PRODUCT_LIST_DATA'
+          tableName = 'PRODUCT_DETAIL_DATA'
         }
         else if (activeTab==2){
           tableName = 'SELLER_DATA'
         }
         else{
-          tableName = 'PRODUCT_DETAIL_DATA'
+          tableName = 'PRODUCT_LIST_DATA'
         }
         formData.append('table_name', tableName);
   
@@ -235,7 +235,7 @@ const Default: React.FC = () => {
       console.log('i am response',response);
 
       setCountData(response.data.data_count);
-      activeTab==0 ? setAmazonsProductData(response.data.data) : activeTab==1 ? setAmazonsListData(response.data.data) : setAmazonsSellerData(response.data.data); 
+      activeTab==0 ? setAmazonsListData(response.data.data) : activeTab==1 ? setAmazonsProductData(response.data.data) : setAmazonsSellerData(response.data.data); 
     } catch (error: any) {
       toast({
         title: "Error",
@@ -406,127 +406,252 @@ const renderTable = (
     
       
       (
-    <Box
-      maxHeight="500px"
-      maxWidth="full"
-      overflowY="auto"
-      overflowX="auto"
-      border="2px solid"
-      borderColor="gray.300"
-      rounded="lg"
-      position="relative" 
-    >
-      <Table variant="striped" colorScheme="gray" minWidth="1000px">
-        <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
-          <Tr className="flex justify-between align-items-center flex-wrap">
-            {config.headers.map((header, index) => (
-              <Th key={index} width="200px" flexWrap="wrap" position="relative">
-                <HStack justifyContent={"center"} align="center">
-                  <span>{header}</span>
-                  {header === "Category" && activeTab !== 2 && (
-                    <Select
-                      options={convertToOptions(category)}
-                      isMulti // Enable multi-select
-                      value={selectedCategory.map(cat => ({ value: cat, label: cat }))}
-                      onChange={(selectedOptions) =>
-                        setSelectedCategory(selectedOptions.map((option) => option.value))
-                      }
-                      placeholder="Select Categories"
-                      className="w-[100px]"
-                      styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
-                      }}
-                      menuPortalTarget={document.body}
-                    />
-                  )}
-                  {header === "Sub-Category" && activeTab !== 2 && (
-                    <Select
-                      options={convertToOptions(subCategory)}
-                      isMulti
-                      value={selectedSubCategory.map(cat => ({ value: cat, label: cat }))}
-                      onChange={(selectedOptions) =>
-                        setSelectedSubCategory(selectedOptions.map((option) => option.value))
-                      }
-                      placeholder="Select Sub-Categories"
-                      className="w-[100px]"
-                      styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 50 }), 
-                      }}
-                      menuPortalTarget={document.body} 
-                    />
-                  )}
-                  {header === "City" && (
-                    <Select
-                      options={convertToOptions(city)}
-                      isMulti
-                      value={selectedCity.map(cat => ({ value: cat, label: cat }))}
-                      onChange={(selectedOptions) =>
-                        setSelectedCity(selectedOptions.map((option) => option.value))
-                      }
-                      placeholder="Select City"
-                      className="w-[100px]"
-                      styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
-                      }}
-                      menuPortalTarget={document.body}
-                    />
-                  )}
-                  {header === "State" && (
-                    <Select
-                      options={convertToOptions(state)}
-                      isMulti
-                      value={selectedState.map(cat => ({ value: cat, label: cat }))}
-                      onChange={(selectedOptions) =>
-                        setSelectedState(selectedOptions.map((option) => option.value))
-                      }
-                      placeholder="Select State"
-                      className="w-[100px]"
-                      styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 50 }), 
-                      }}
-                      menuPortalTarget={document.body}
-                    />
-                  )}
-                  {header === "Country" && (
-                    <Select
-                      options={convertToOptions(country)}
-                      isMulti
-                      value={selectedCountry.map(cat => ({ value: cat, label: cat }))}
-                      onChange={(selectedOptions) =>
-                        setSelectedCountry(selectedOptions.map((option) => option.value))
-                      }
-                      placeholder="Select Country"
-                      className="w-[100px]"
-                      styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
-                      }}
-                      menuPortalTarget={document.body}
-                    />
-                  )}
-                </HStack>
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
+    // <Box
+    //   maxHeight="500px"
+    //   maxWidth="full"
+    //   overflowY="auto"
+    //   overflowX="auto"
+    //   border="2px solid"
+    //   borderColor="gray.300"
+    //   rounded="lg"
+    //   position="relative" 
+    // >
+    //   <Table variant="striped" colorScheme="gray" minWidth="1000px">
+    //     <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
+    //       <Tr className="flex justify-between align-items-center flex-wrap">
+    //         {config.headers.map((header, index) => (
+    //           <Th key={index} width="200px" flexWrap="wrap" position="relative">
+    //             <HStack justifyContent={"center"} align="center">
+    //               <span>{header}</span>
+    //               {header === "Category" && activeTab !== 2 && (
+    //                 <Select
+    //                   options={convertToOptions(category)}
+    //                   isMulti // Enable multi-select
+    //                   value={selectedCategory.map(cat => ({ value: cat, label: cat }))}
+    //                   onChange={(selectedOptions) =>
+    //                     setSelectedCategory(selectedOptions.map((option) => option.value))
+    //                   }
+    //                   placeholder="Select Categories"
+    //                   className="w-[100px]"
+    //                   styles={{
+    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
+    //                   }}
+    //                   menuPortalTarget={document.body}
+    //                 />
+    //               )}
+    //               {header === "Sub-Category" && activeTab !== 2 && (
+    //                 <Select
+    //                   options={convertToOptions(subCategory)}
+    //                   isMulti
+    //                   value={selectedSubCategory.map(cat => ({ value: cat, label: cat }))}
+    //                   onChange={(selectedOptions) =>
+    //                     setSelectedSubCategory(selectedOptions.map((option) => option.value))
+    //                   }
+    //                   placeholder="Select Sub-Categories"
+    //                   className="w-[100px]"
+    //                   styles={{
+    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }), 
+    //                   }}
+    //                   menuPortalTarget={document.body} 
+    //                 />
+    //               )}
+    //               {header === "City" && (
+    //                 <Select
+    //                   options={convertToOptions(city)}
+    //                   isMulti
+    //                   value={selectedCity.map(cat => ({ value: cat, label: cat }))}
+    //                   onChange={(selectedOptions) =>
+    //                     setSelectedCity(selectedOptions.map((option) => option.value))
+    //                   }
+    //                   placeholder="Select City"
+    //                   className="w-[100px]"
+    //                   styles={{
+    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
+    //                   }}
+    //                   menuPortalTarget={document.body}
+    //                 />
+    //               )}
+    //               {header === "State" && (
+    //                 <Select
+    //                   options={convertToOptions(state)}
+    //                   isMulti
+    //                   value={selectedState.map(cat => ({ value: cat, label: cat }))}
+    //                   onChange={(selectedOptions) =>
+    //                     setSelectedState(selectedOptions.map((option) => option.value))
+    //                   }
+    //                   placeholder="Select State"
+    //                   className="w-[100px]"
+    //                   styles={{
+    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }), 
+    //                   }}
+    //                   menuPortalTarget={document.body}
+    //                 />
+    //               )}
+    //               {header === "Country" && (
+    //                 <Select
+    //                   options={convertToOptions(country)}
+    //                   isMulti
+    //                   value={selectedCountry.map(cat => ({ value: cat, label: cat }))}
+    //                   onChange={(selectedOptions) =>
+    //                     setSelectedCountry(selectedOptions.map((option) => option.value))
+    //                   }
+    //                   placeholder="Select Country"
+    //                   className="w-[100px]"
+    //                   styles={{
+    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
+    //                   }}
+    //                   menuPortalTarget={document.body}
+    //                 />
+    //               )}
+    //             </HStack>
+    //           </Th>
+    //         ))}
+    //       </Tr>
+    //     </Thead>
 
-        <Tbody flexWrap="wrap">
-          {data?.map((row, index) => (
-            <Tr key={index} border="2px solid" borderColor="gray.200">
-              {config.columns.map((column, index) => (
-                <Td key={index} width="200px" textAlign="center">
-                  {row[column]}
-                </Td>
-              ))}
-            </Tr>
+    //     <Tbody flexWrap="wrap">
+    //       {data?.map((row, index) => (
+    //         <Tr key={index} border="2px solid" borderColor="gray.200">
+    //           {config.columns.map((column, index) => (
+    //             <Td key={index} width="200px" textAlign="center">
+    //               {row[column]}
+    //             </Td>
+    //           ))}
+    //         </Tr>
+    //       ))}
+    //     </Tbody>
+    //     <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
+    //       <Tr>
+    //         {data?.reduce((acc, row) => acc + row.total_counts, 0)}
+    //       </Tr>
+    //     </Tfoot>
+    //   </Table>
+    // </Box>
+    <Box
+  maxHeight="500px"
+  maxWidth="full"
+  overflowY="auto"
+  overflowX="auto"
+  border="2px solid"
+  borderColor="gray.300"
+  rounded="lg"
+  position="relative"
+>
+  <Table variant="striped" colorScheme="gray" minWidth="1000px">
+    <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
+      <Tr>
+        {config.headers.map((header, index) => (
+          <Th key={index} width="200px">
+            <HStack justifyContent={"center"} align="center">
+              <span>{header}</span>
+              {header === "Category" && activeTab !== 2 && (
+                <Select
+                  options={convertToOptions(category)}
+                  isMulti
+                  value={selectedCategory.map((cat) => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) =>
+                    setSelectedCategory(selectedOptions.map((option) => option.value))
+                  }
+                  placeholder="Select Categories"
+                  className="w-[100px]"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                  }}
+                  menuPortalTarget={document.body}
+                />
+              )}
+              {header === "Sub-Category" && activeTab !== 2 && (
+                <Select
+                  options={convertToOptions(subCategory)}
+                  isMulti
+                  value={selectedSubCategory.map((cat) => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) =>
+                    setSelectedSubCategory(selectedOptions.map((option) => option.value))
+                  }
+                  placeholder="Select Sub-Categories"
+                  className="w-[100px]"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                  }}
+                  menuPortalTarget={document.body}
+                />
+              )}
+              {header === "City" && (
+                <Select
+                  options={convertToOptions(city)}
+                  isMulti
+                  value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) =>
+                    setSelectedCity(selectedOptions.map((option) => option.value))
+                  }
+                  placeholder="Select City"
+                  className="w-[100px]"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                  }}
+                  menuPortalTarget={document.body}
+                />
+              )}
+              {header === "State" && (
+                <Select
+                  options={convertToOptions(state)}
+                  isMulti
+                  value={selectedState.map((cat) => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) =>
+                    setSelectedState(selectedOptions.map((option) => option.value))
+                  }
+                  placeholder="Select State"
+                  className="w-[100px]"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                  }}
+                  menuPortalTarget={document.body}
+                />
+              )}
+              {header === "Country" && (
+                <Select
+                  options={convertToOptions(country)}
+                  isMulti
+                  value={selectedCountry.map((cat) => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) =>
+                    setSelectedCountry(selectedOptions.map((option) => option.value))
+                  }
+                  placeholder="Select Country"
+                  className="w-[100px]"
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                  }}
+                  menuPortalTarget={document.body}
+                />
+              )}
+            </HStack>
+          </Th>
+        ))}
+      </Tr>
+    </Thead>
+
+    <Tbody>
+      {data?.map((row, index) => (
+        <Tr key={index} border="2px solid" borderColor="gray.200">
+          {config.columns.map((column, index1) => (
+            <Td key={index1} width="200px" textAlign="center">
+              {column=='id' ? index+1 : row[column]}
+            </Td>
           ))}
-        </Tbody>
-        <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
-          <Tr>
-            {data?.reduce((acc, row) => acc + row.total_counts, 0)}
-          </Tr>
-        </Tfoot>
-      </Table>
-    </Box>
+        </Tr>
+      ))}
+    </Tbody>
+
+    <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
+      <Tr>
+        <Td colSpan={config.columns.length} textAlign="end" pl={12} fontWeight={'bold'}>
+          Total Count: {data?.reduce((acc, row) => acc + row.total_counts, 0)}
+        </Td>
+      </Tr>
+    </Tfoot>
+  </Table>
+</Box>
+
 );
 
 
@@ -574,6 +699,91 @@ const renderTable = (
             {/* Cards for counts */}
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="20px" flex="1">
               {/* Render Product Card */}
+              <Card height="200px">
+                <CardHeader p="4">
+                  <Heading
+                    textAlign="start"
+                    fontWeight="bold"
+                    fontSize={{ base: "md", md: "lg" }}
+                    color={"black"}>Amazon Product List
+                  </Heading>
+                  <Box mt="3" textAlign={"center"}>
+                    <StatGroup>
+                      <Stat>
+                        <StatLabel>Total</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}
+                        >
+                           <Tooltip                             
+                              
+                              fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_total_count[1]} aria-label="Total list count tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.list?.list_total_count[0]}
+                            </span>
+                          </Tooltip> 
+                        </StatNumber>
+                      </Stat>
+                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                      <Stat>
+                        <StatLabel>Ready</StatLabel>
+                        <StatNumber
+                          fontSize={{ base: "md", md: "lg" }}
+                        >
+                           <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_success_count[1]} aria-label="Total list ready tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
+                            </span>
+                          </Tooltip> 
+                        </StatNumber>
+                      </Stat>
+                    </StatGroup>
+                  </Box>
+                </CardHeader>
+                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
+                <CardBody p="3" textAlign={"center"}>
+                  <StatGroup>
+                    <Stat>
+                      <StatLabel>Processed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_processed_count[1]} aria-label="Total list processed tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.list?.list_processed_count[0]}
+                            </span>
+                          </Tooltip> 
+                      </StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Pending</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_pending_count[1]} aria-label="Total list pending tooltip">
+                          <span>
+                            {tableloading ? get_skeleton('stats') : countData.list?.list_pending_count[0]}
+                          </span>
+                        </Tooltip> 
+                      </StatNumber>
+                    </Stat>
+                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                    <Stat>
+                      <StatLabel>Missed</StatLabel>
+                      <StatNumber
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_missed_count[1]} aria-label="Total list missed tooltip">
+                          <span>
+                            {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
+                          </span>
+                        </Tooltip>
+                      </StatNumber>
+                    </Stat>
+                  </StatGroup>
+                </CardBody>
+              </Card>
+
               <Card height="200px" >
                 <CardHeader p="4">
                   <Heading
@@ -658,91 +868,6 @@ const renderTable = (
                           </span>
                         </Tooltip>
                         </StatNumber>
-                    </Stat>
-                  </StatGroup>
-                </CardBody>
-              </Card>
-
-              <Card height="200px">
-                <CardHeader p="4">
-                  <Heading
-                    textAlign="start"
-                    fontWeight="bold"
-                    fontSize={{ base: "md", md: "lg" }}
-                    color={"black"}>Amazon Product List
-                  </Heading>
-                  <Box mt="3" textAlign={"center"}>
-                    <StatGroup>
-                      <Stat>
-                        <StatLabel>Total</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                           <Tooltip                             
-                              
-                              fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_total_count[1]} aria-label="Total list count tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.list?.list_total_count[0]}
-                            </span>
-                          </Tooltip> 
-                        </StatNumber>
-                      </Stat>
-                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                      <Stat>
-                        <StatLabel>Ready</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                           <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_success_count[1]} aria-label="Total list ready tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
-                            </span>
-                          </Tooltip> 
-                        </StatNumber>
-                      </Stat>
-                    </StatGroup>
-                  </Box>
-                </CardHeader>
-                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                <CardBody p="3" textAlign={"center"}>
-                  <StatGroup>
-                    <Stat>
-                      <StatLabel>Processed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_processed_count[1]} aria-label="Total list processed tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.list?.list_processed_count[0]}
-                            </span>
-                          </Tooltip> 
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Pending</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_pending_count[1]} aria-label="Total list pending tooltip">
-                          <span>
-                            {tableloading ? get_skeleton('stats') : countData.list?.list_pending_count[0]}
-                          </span>
-                        </Tooltip> 
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Missed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_missed_count[1]} aria-label="Total list missed tooltip">
-                          <span>
-                            {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
-                          </span>
-                        </Tooltip>
-                      </StatNumber>
                     </Stat>
                   </StatGroup>
                 </CardBody>
@@ -844,10 +969,10 @@ const renderTable = (
             <TabList flexWrap="wrap">
               {/* <Box> */}
                 <Tab _selected={{ fontWeight: 'bold' }}>
-                  Amazon Product Details {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
+                  Amazon Product Lists {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
                 </Tab>
                 <Tab _selected={{ fontWeight: 'bold' }}>
-                  Amazon Product Lists {activeTab === 1 && <Text as="span" fontSize="sm"></Text>}
+                  Amazon Product Details {activeTab === 1 && <Text as="span" fontSize="sm"></Text>}
                 </Tab>
                 <Tab _selected={{ fontWeight: 'bold' }}>
                   Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
@@ -883,9 +1008,9 @@ const renderTable = (
             {tableloading ? get_skeleton('table') : 
               (<TabPanels>
                 <TabPanel>
-                  {renderTable(amazonProductData, {
-                      columns: ["mapped_category", "sub_category", "total_counts"],
-                      headers: ["Category", "Sub-Category", "Count"]},
+                  {renderTable(amazonListData, {
+                      columns: ["id","mapped_category", "sub_category", "total_counts"],
+                      headers: ["id","Category", "Sub-Category", "Count"]},
                       dropdownDataCategory,
                       dropdownDataSubCategory,
                       null,
@@ -895,9 +1020,9 @@ const renderTable = (
                   )}
                 </TabPanel>
                 <TabPanel>
-                  {renderTable(amazonListData, {
-                      columns: ["mapped_category", "sub_category", "total_counts"],
-                      headers: ["Category", "Sub-Category", "Count"]},
+                  {renderTable(amazonProductData, {
+                      columns: ["id","mapped_category", "sub_category", "total_counts"],
+                      headers: ["id","Category", "Sub-Category", "Count"]},
                       dropdownDataCategory,
                       dropdownDataSubCategory,
                       null,
@@ -909,8 +1034,8 @@ const renderTable = (
                 </TabPanel>
                 <TabPanel>
                   {renderTable(amazonSellerData, {
-                    columns: ["city", "state", "country", "total_counts"],
-                    headers: ["City", "State", "Country", "Count"]},
+                    columns: ["id","city", "state", "country", "total_counts"],
+                    headers: ["id","City", "State", "Country", "Count"]},
                     null,
                     null,
                     dropdownDataCountry,
