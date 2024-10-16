@@ -26,17 +26,9 @@ import {
   TabIndicator,
   TabPanels,
   TabPanel,
-  IconButton,
   Tooltip,
   Skeleton,
-  Spinner,
-  Menu,
-  MenuList,
-  MenuItem,
-  MenuButton,
   Button,
-  ListItem,
-  List,
   Input,
   FormControl,
   FormLabel,
@@ -45,34 +37,13 @@ import {
   useQuery,
   HStack,
   Spacer,
-  Tfoot,
   StatGroup,
   StatLabel,
   Stat,
-  StatNumber
+  StatNumber,
+  Tfoot
 } from '@chakra-ui/react';
-// Custom components
-// import MiniCalendar from 'components/calendar/MiniCalendar';
-import MiniStatistics from 'components/card/MiniStatistics';
-import IconBox from 'components/icons/IconBox';
-import {
-  MdAddTask,
-  MdAttachMoney,
-  MdBarChart,
-  MdFileCopy,
-} from 'react-icons/md';
-import CheckTable from 'views/admin/default/components/CheckTable';
-import ComplexTable from 'views/admin/default/components/ComplexTable';
-import DailyTraffic from 'views/admin/default/components/DailyTraffic';
-import PieCard from 'views/admin/default/components/PieCard';
-import Tasks from 'views/admin/default/components/Tasks';
-import TotalSpent from 'views/admin/default/components/TotalSpent';
-import WeeklyRevenue from 'views/admin/default/components/WeeklyRevenue';
-import tableDataCheck from 'views/admin/default/variables/tableDataCheck';
-import tableDataComplex from 'views/admin/default/variables/tableDataComplex';
-// Assets
-import Usa from 'img/dashboards/usa.png';
-import { CheckIcon, InfoIcon, SmallCloseIcon, StarIcon } from '@chakra-ui/icons';
+import { CheckIcon, SmallCloseIcon, StarIcon } from '@chakra-ui/icons';
 // import { IoAdd, IoRemove } from 'react-icons/io5';
 import { IoMdDownload } from "react-icons/io";
 import Select from 'react-select';
@@ -81,70 +52,70 @@ import { BACKEND_DOMAIN, token } from '../../../../urls';
 import { saveAs } from 'file-saver';
 import { convertToCSV } from 'utils/converttocsv';
 
-interface StatusCountProps {
-  count: number | string;
-  isSuccess: number;
-}
+// interface StatusCountProps {
+//   count: number | string;
+//   isSuccess: number;
+// }
 
-interface StatusPercentageProps {
-  count: number | string;
-}
+// interface StatusPercentageProps {
+//   count: number | string;
+// }
 
-const StatusCount: React.FC<StatusCountProps> = ({ count, isSuccess }) => {
-  return (
-    <Flex alignItems="center" flexWrap="wrap">
-      <Text color={isSuccess ? "green.500" : "red.500"} fontSize={["sm", "md"]}>
-        {count}
-      </Text>
-      <Box
-        as={isSuccess ? CheckIcon : SmallCloseIcon}
-        bg={isSuccess ? "green.100" : "red.100"}
-        color={isSuccess ? "green.500" : "red.500"}
-        borderRadius="full"
-        ml={[1, 2]}
-        boxSize={[3, 4]}
-      />
-    </Flex>
-  );
-};
+// const StatusCount: React.FC<StatusCountProps> = ({ count, isSuccess }) => {
+//   return (
+//     <Flex alignItems="center" flexWrap="wrap">
+//       <Text color={isSuccess ? "green.500" : "red.500"} fontSize={["sm", "md"]}>
+//         {count}
+//       </Text>
+//       <Box
+//         as={isSuccess ? CheckIcon : SmallCloseIcon}
+//         bg={isSuccess ? "green.100" : "red.100"}
+//         color={isSuccess ? "green.500" : "red.500"}
+//         borderRadius="full"
+//         ml={[1, 2]}
+//         boxSize={[3, 4]}
+//       />
+//     </Flex>
+//   );
+// };
 
-const StatusPercentage: React.FC<StatusPercentageProps> = ({ count }) => {
-    return (
-      <Flex alignItems="center"  flexWrap="wrap">
-        <Text color='blue.500' fontSize={["sm", "md"]}>{count}</Text>
-        <Box
-          as={StarIcon}
-          bg={'blue.100'}
-          color={'blue.400'}
-          borderRadius="full" 
-          ml={[1, 2]}
-          boxSize={[3, 4]}
-        />
-      </Flex>
-    );
-};
+// const StatusPercentage: React.FC<StatusPercentageProps> = ({ count }) => {
+//     return (
+//       <Flex alignItems="center"  flexWrap="wrap">
+//         <Text color='blue.500' fontSize={["sm", "md"]}>{count}</Text>
+//         <Box
+//           as={StarIcon}
+//           bg={'blue.100'}
+//           color={'blue.400'}
+//           borderRadius="full" 
+//           ml={[1, 2]}
+//           boxSize={[3, 4]}
+//         />
+//       </Flex>
+//     );
+// };
 
 interface CountDataType {
   product?: {
-    product_total_count?: number;
-    product_success_count?: number;
-    product_processed_count?: number;
-    product_pending_count?: number;
-    product_missed_count?: number;
+    product_total_count?: number[];
+    product_success_count?: number[];
+    product_processed_count?: number[];
+    product_pending_count?: number[];
+    product_missed_count?: number[];
   };
   list?: {
-    list_total_count?: number;
-    list_success_count?: number
-    list_processed_count?: number
-    list_pending_count?: number
-    list_missed_count?: number
+    list_total_count?: number[];
+    list_success_count?: number[];
+    list_processed_count?: number[];
+    list_pending_count?: number[];
+    list_missed_count?: number[];
   };
   seller?: {
-    seller_total_count?: number;
-    seller_success_count?: number
-    seller_processed_count?: number
-    seller_pending_count?: number
-    seller_missed_count?: number
+    seller_total_count?: number[];
+    seller_success_count?: number[];
+    seller_processed_count?: number[];
+    seller_pending_count?: number[];
+    seller_missed_count?: number[];
   };
 }
 
@@ -155,25 +126,25 @@ const Default: React.FC = () => {
   // const [loading, setLoading] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
   const [countData, setCountData] = useState<CountDataType>({ product: {
-    product_total_count: 0,
-    product_success_count: 0,
-    product_processed_count:0,
-    product_pending_count:0, 
-    product_missed_count: 0,
+    product_total_count: [0,0],
+    product_success_count: [0,0],
+    product_processed_count: [0,0],
+    product_pending_count: [0,0], 
+    product_missed_count: [0,0]
   },
   list: {
-    list_total_count: 0,
-    list_success_count: 0,
-    list_processed_count: 0,
-    list_pending_count: 0, 
-    list_missed_count: 0
+    list_total_count: [0,0],
+    list_success_count: [0,0],
+    list_processed_count: [0,0],
+    list_pending_count: [0,0], 
+    list_missed_count: [0,0]
   },
   seller: {
-    seller_total_count: 0,
-    seller_success_count: 0,
-    seller_processed_count: 0,
-    seller_pending_count: 0,
-    seller_missed_count: 0,
+    seller_total_count: [0,0],
+    seller_success_count: [0,0],
+    seller_processed_count: [0,0],
+    seller_pending_count: [0,0],
+    seller_missed_count: [0,0]
   }});
   const [dropdownDataCategory, setDropdownDataCategory] = useState([]);
   const [dropdownDataSubCategory, setDropdownDataSubCategory] = useState([]);
@@ -199,6 +170,7 @@ const Default: React.FC = () => {
 
   const convertToOptions = (items: string[] | undefined) =>
     items?.map(item => ({ value: item, label: item })) || [];
+
 
 
   useEffect(() => {
@@ -260,70 +232,11 @@ const Default: React.FC = () => {
         }
       );
 
+      console.log('i am response',response);
+
+      setCountData(response.data.data_count);
       activeTab==0 ? setAmazonsProductData(response.data.data) : activeTab==1 ? setAmazonsListData(response.data.data) : setAmazonsSellerData(response.data.data); 
-    } catch (error: unknown) {
-
-      //  ADD TOAST HERE
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          console.error('Error status:', error.response.status);
-          console.error('Error details:', error.response.data);
-          
-          if (error.response.data && error.response.data.detail) {
-            console.error('Error detail:', error.response.data.detail);
-          }
-        } else {
-          console.error('API Error:', error.message);
-        }
-      } else if (error instanceof Error) {
-        console.error('General Error:', error.message);
-      } else {
-        console.error('Unknown error occurred');
-      }
-    }finally {
-      setTableLoading(false);
-    }
-  };
-
-
-  const fetchStatsData = async (task_id: number) => {
-    if (!task_id) return;
-    setStatsLoading(true); 
-    try {
-      const formData = new FormData();
-      formData.append('task_id', task_id.toString());
-      const response = await axios.post(
-        `${BACKEND_DOMAIN}/get_plugin_stats/`,
-        formData, 
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded', 
-            'Authorization': token,
-          },
-        }
-      );
-
-      const alldata = response.data;
-      if (alldata && alldata.count) {
-        setCountData(alldata.count);
-        toast({
-          title: "Data Found",
-          description: "Counts have been successfully retrieved.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "No Data Found",
-          description: "No counts were found for the provided Task ID.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    }
-    catch(error:any){
+    } catch (error: any) {
       toast({
         title: "Error",
         description: error,
@@ -332,9 +245,60 @@ const Default: React.FC = () => {
         isClosable: true,
       });
     }finally {
-      setStatsLoading(false);
+      setTableLoading(false);
     }
-  }
+  };
+
+
+  // const fetchStatsData = async (task_id: number) => {
+  //   if (!task_id) throw new Error("Please Mention the Task ID");
+  //   setStatsLoading(true); 
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append('task_id', task_id.toString());
+  //     const response = await axios.post(
+  //       `${BACKEND_DOMAIN}/get_plugin_stats/`,
+  //       formData, 
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/x-www-form-urlencoded', 
+  //           'Authorization': token,
+  //         },
+  //       }
+  //     );
+
+  //     const alldata = response.data;
+  //     if (alldata && alldata.count) {
+  //       setCountData(alldata.count);
+  //       toast({
+  //         title: "Data Found",
+  //         description: "Counts have been successfully retrieved.",
+  //         status: "success",
+  //         duration: 3000,
+  //         isClosable: true,
+  //       });
+  //     } else {
+  //       toast({
+  //         title: "No Data Found",
+  //         description: "No counts were found for the provided Task ID.",
+  //         status: "error",
+  //         duration: 3000,
+  //         isClosable: true,
+  //       });
+  //     }
+  //   }
+  //   catch(error:any){
+  //     toast({
+  //       title: "Error",
+  //       description: error,
+  //       status: "error",
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //   }finally {
+  //     setStatsLoading(false);
+  //   }
+  // }
 
   const downloadData = (task_id: number) => {
     console.log("gaurav");
@@ -556,10 +520,14 @@ const renderTable = (
             </Tr>
           ))}
         </Tbody>
+        <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
+          <Tr>
+            {data?.reduce((acc, row) => acc + row.total_counts, 0)}
+          </Tr>
+        </Tfoot>
       </Table>
     </Box>
 );
-
 
 
   return (
@@ -598,15 +566,15 @@ const renderTable = (
                   </FormLabel>
                 </Box>
               </FormControl>
-              <Button colorScheme="blue" onClick={() => [fetchStatsData(taskId), fetchApiData(taskId), fetchdropDownData(taskId)]} >
+              <Button colorScheme="blue" onClick={() => [fetchApiData(taskId), fetchdropDownData(taskId)]} >
                 Fetch Counts
               </Button>
             </Stack>
 
             {/* Cards for counts */}
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="20px" flex="1" >
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="20px" flex="1">
               {/* Render Product Card */}
-              <Card height="200px">
+              <Card height="200px" >
                 <CardHeader p="4">
                   <Heading
                     textAlign="start"
@@ -619,13 +587,33 @@ const renderTable = (
                       <Stat>
                         <StatLabel>Total</StatLabel>
                         <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_total_count}</StatNumber>
+                          fontSize={{ base: "md", md: "lg" }}
+                          >
+                          <Tooltip fontSize={"18px"} 
+                            hasArrow  
+                            
+                            placement='right-end'
+                            label={countData.product?.product_total_count[1]} 
+                            aria-label="Total product count tooltip"
+                            >
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.product?.product_total_count[0]}
+                            </span>
+                          </Tooltip>
+                        </StatNumber>
                       </Stat>
                       <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                       <Stat>
                         <StatLabel>Ready</StatLabel>
                         <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_success_count}</StatNumber>
+                          fontSize={{ base: "md", md: "lg" }}
+                          > 
+                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_success_count[1]} aria-label="Total ready tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.product?.product_success_count[0]}
+                            </span>
+                          </Tooltip>
+                        </StatNumber>
                       </Stat>
                     </StatGroup>
                   </Box>
@@ -636,19 +624,40 @@ const renderTable = (
                     <Stat>
                       <StatLabel>Processed</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_processed_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_processed_count[1]} aria-label="Total processed tooltip">
+                          <span>
+                            {tableloading ? get_skeleton('stats') : countData.product?.product_processed_count[0]}
+                          </span>
+                        </Tooltip>
+                      </StatNumber>
                     </Stat>
                     <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                     <Stat>
                       <StatLabel>Pending</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_pending_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_pending_count[1]} aria-label="Total pending tooltip">
+                          <span>
+                            {tableloading ? get_skeleton('stats') : countData.product?.product_pending_count[0]}
+                          </span>
+                        </Tooltip>
+                      </StatNumber>
                     </Stat>
                     <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                     <Stat>
                       <StatLabel>Missed</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.product?.product_missed_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_missed_count[1]} aria-label="Total missed tooltip">
+                          <span>
+                            {tableloading ? get_skeleton('stats') : countData.product?.product_missed_count[0]}
+                          </span>
+                        </Tooltip>
+                        </StatNumber>
                     </Stat>
                   </StatGroup>
                 </CardBody>
@@ -667,13 +676,29 @@ const renderTable = (
                       <Stat>
                         <StatLabel>Total</StatLabel>
                         <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_total_count}</StatNumber>
+                          fontSize={{ base: "md", md: "lg" }}
+                        >
+                           <Tooltip                             
+                              
+                              fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_total_count[1]} aria-label="Total list count tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.list?.list_total_count[0]}
+                            </span>
+                          </Tooltip> 
+                        </StatNumber>
                       </Stat>
                       <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                       <Stat>
                         <StatLabel>Ready</StatLabel>
                         <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_success_count}</StatNumber>
+                          fontSize={{ base: "md", md: "lg" }}
+                        >
+                           <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_success_count[1]} aria-label="Total list ready tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
+                            </span>
+                          </Tooltip> 
+                        </StatNumber>
                       </Stat>
                     </StatGroup>
                   </Box>
@@ -684,19 +709,40 @@ const renderTable = (
                     <Stat>
                       <StatLabel>Processed</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_processed_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_processed_count[1]} aria-label="Total list processed tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.list?.list_processed_count[0]}
+                            </span>
+                          </Tooltip> 
+                      </StatNumber>
                     </Stat>
                     <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                     <Stat>
                       <StatLabel>Pending</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_pending_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_pending_count[1]} aria-label="Total list pending tooltip">
+                          <span>
+                            {tableloading ? get_skeleton('stats') : countData.list?.list_pending_count[0]}
+                          </span>
+                        </Tooltip> 
+                      </StatNumber>
                     </Stat>
                     <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                     <Stat>
                       <StatLabel>Missed</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.list?.list_missed_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_missed_count[1]} aria-label="Total list missed tooltip">
+                          <span>
+                            {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
+                          </span>
+                        </Tooltip>
+                      </StatNumber>
                     </Stat>
                   </StatGroup>
                 </CardBody>
@@ -716,13 +762,27 @@ const renderTable = (
                       <Stat>
                         <StatLabel>Total</StatLabel>
                         <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_total_count}</StatNumber>
+                          fontSize={{ base: "md", md: "lg" }}
+                        >
+                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_total_count[1]} aria-label="Total seller count tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_total_count[0]}
+                            </span>
+                          </Tooltip>
+                        </StatNumber>
                       </Stat>
                       <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                       <Stat>
                         <StatLabel>Ready</StatLabel>
                         <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_success_count}</StatNumber>
+                          fontSize={{ base: "md", md: "lg" }}
+                        >
+                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_success_count[1]} aria-label="Total seller ready tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_success_count[0]}
+                            </span>
+                          </Tooltip>
+                        </StatNumber>
                       </Stat>
                     </StatGroup>
                   </Box>
@@ -733,19 +793,40 @@ const renderTable = (
                     <Stat>
                       <StatLabel>Processed</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_processed_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_processed_count[1]} aria-label="Total seller processed tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_processed_count[0]}
+                            </span>
+                        </Tooltip>
+                      </StatNumber>
                     </Stat>
                     <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                     <Stat>
                       <StatLabel>Pending</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_pending_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_pending_count[1]} aria-label="Total seller pending tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_pending_count[0]}
+                            </span>
+                        </Tooltip>
+                      </StatNumber>
                     </Stat>
                     <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                     <Stat>
                       <StatLabel>Missed</StatLabel>
                       <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}>{statsloading ? get_skeleton('stats') : countData.seller?.seller_missed_count}</StatNumber>
+                        fontSize={{ base: "md", md: "lg" }}
+                      >
+                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_missed_count[1]} aria-label="Total seller missed tooltip">
+                            <span>
+                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_missed_count[0]}
+                            </span>
+                        </Tooltip>
+                      </StatNumber>
                     </Stat>
                   </StatGroup>
                 </CardBody>
