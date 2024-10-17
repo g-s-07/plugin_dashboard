@@ -43,7 +43,6 @@ import {
   StatNumber,
   Tfoot
 } from '@chakra-ui/react';
-import { CheckIcon, SmallCloseIcon, StarIcon } from '@chakra-ui/icons';
 // import { IoAdd, IoRemove } from 'react-icons/io5';
 import { IoMdDownload } from "react-icons/io";
 import Select from 'react-select';
@@ -172,7 +171,6 @@ const Default: React.FC = () => {
     items?.map(item => ({ value: item, label: item })) || [];
 
 
-
   useEffect(() => {
     if (taskId !== null) {
       fetchApiData(taskId);
@@ -221,25 +219,29 @@ const Default: React.FC = () => {
         formData.append('country',selectedCountry.join(','))
       }
   
-      console.log(tableName);
-      const response = await axios.post(`${BACKEND_DOMAIN}/plugin_insights/`,
-        formData, 
+      const response = await fetch(
+        `${BACKEND_DOMAIN}/plugin_insights/`,
         {
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',  
-            'Authorization': token,
+            Authorization: token,
           },
-        }
+          body: formData,
+        },
       );
+  
+      const data = await response.json();
+ 
+      if(data.error){
+        throw new Error(data.error);
+      }
 
-      console.log('i am response',response);
-
-      setCountData(response.data.data_count);
-      activeTab==0 ? setAmazonsListData(response.data.data) : activeTab==1 ? setAmazonsProductData(response.data.data) : setAmazonsSellerData(response.data.data); 
+      setCountData(data.data_count);
+      activeTab==0 ? setAmazonsListData(data.data) : activeTab==1 ? setAmazonsProductData(data.data) : setAmazonsSellerData(data.data); 
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error,
+        description:error.toString(),
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -248,57 +250,6 @@ const Default: React.FC = () => {
       setTableLoading(false);
     }
   };
-
-
-  // const fetchStatsData = async (task_id: number) => {
-  //   if (!task_id) throw new Error("Please Mention the Task ID");
-  //   setStatsLoading(true); 
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append('task_id', task_id.toString());
-  //     const response = await axios.post(
-  //       `${BACKEND_DOMAIN}/get_plugin_stats/`,
-  //       formData, 
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/x-www-form-urlencoded', 
-  //           'Authorization': token,
-  //         },
-  //       }
-  //     );
-
-  //     const alldata = response.data;
-  //     if (alldata && alldata.count) {
-  //       setCountData(alldata.count);
-  //       toast({
-  //         title: "Data Found",
-  //         description: "Counts have been successfully retrieved.",
-  //         status: "success",
-  //         duration: 3000,
-  //         isClosable: true,
-  //       });
-  //     } else {
-  //       toast({
-  //         title: "No Data Found",
-  //         description: "No counts were found for the provided Task ID.",
-  //         status: "error",
-  //         duration: 3000,
-  //         isClosable: true,
-  //       });
-  //     }
-  //   }
-  //   catch(error:any){
-  //     toast({
-  //       title: "Error",
-  //       description: error,
-  //       status: "error",
-  //       duration: 3000,
-  //       isClosable: true,
-  //     });
-  //   }finally {
-  //     setStatsLoading(false);
-  //   }
-  // }
 
   const downloadData = (task_id: number) => {
     console.log("gaurav");
@@ -323,7 +274,6 @@ const Default: React.FC = () => {
   }
 
   const fetchdropDownData = async(task_id: number) =>{
-    if (!task_id) return;
     try{
         const filter_table_data= activeTab==1 ? 'PRODUCT_LIST_DATA' : activeTab==2 ? 'SELLER_DATA' : 'PRODUCT_DETAIL_DATA' 
         const response = await axios.get(`${BACKEND_DOMAIN}/get-data/?task_id=${task_id}&table_name=${filter_table_data}`, {
@@ -332,6 +282,10 @@ const Default: React.FC = () => {
           'Authorization': token,
         }
       })
+
+      if(response.data.error){
+        throw new Error(response.data.error);
+      }
 
       const data  = response.data.data;
       
@@ -347,7 +301,7 @@ const Default: React.FC = () => {
     catch(error:any){
       toast({
         title: "Error",
-        description: error,
+        description: error.toString(),
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -355,7 +309,9 @@ const Default: React.FC = () => {
     }
   }
 
+
   useEffect(()=>{
+    if(taskId==null)return
     fetchdropDownData(taskId)
 },[activeTab])
 
@@ -406,127 +362,6 @@ const renderTable = (
     
       
       (
-    // <Box
-    //   maxHeight="500px"
-    //   maxWidth="full"
-    //   overflowY="auto"
-    //   overflowX="auto"
-    //   border="2px solid"
-    //   borderColor="gray.300"
-    //   rounded="lg"
-    //   position="relative" 
-    // >
-    //   <Table variant="striped" colorScheme="gray" minWidth="1000px">
-    //     <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
-    //       <Tr className="flex justify-between align-items-center flex-wrap">
-    //         {config.headers.map((header, index) => (
-    //           <Th key={index} width="200px" flexWrap="wrap" position="relative">
-    //             <HStack justifyContent={"center"} align="center">
-    //               <span>{header}</span>
-    //               {header === "Category" && activeTab !== 2 && (
-    //                 <Select
-    //                   options={convertToOptions(category)}
-    //                   isMulti // Enable multi-select
-    //                   value={selectedCategory.map(cat => ({ value: cat, label: cat }))}
-    //                   onChange={(selectedOptions) =>
-    //                     setSelectedCategory(selectedOptions.map((option) => option.value))
-    //                   }
-    //                   placeholder="Select Categories"
-    //                   className="w-[100px]"
-    //                   styles={{
-    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
-    //                   }}
-    //                   menuPortalTarget={document.body}
-    //                 />
-    //               )}
-    //               {header === "Sub-Category" && activeTab !== 2 && (
-    //                 <Select
-    //                   options={convertToOptions(subCategory)}
-    //                   isMulti
-    //                   value={selectedSubCategory.map(cat => ({ value: cat, label: cat }))}
-    //                   onChange={(selectedOptions) =>
-    //                     setSelectedSubCategory(selectedOptions.map((option) => option.value))
-    //                   }
-    //                   placeholder="Select Sub-Categories"
-    //                   className="w-[100px]"
-    //                   styles={{
-    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }), 
-    //                   }}
-    //                   menuPortalTarget={document.body} 
-    //                 />
-    //               )}
-    //               {header === "City" && (
-    //                 <Select
-    //                   options={convertToOptions(city)}
-    //                   isMulti
-    //                   value={selectedCity.map(cat => ({ value: cat, label: cat }))}
-    //                   onChange={(selectedOptions) =>
-    //                     setSelectedCity(selectedOptions.map((option) => option.value))
-    //                   }
-    //                   placeholder="Select City"
-    //                   className="w-[100px]"
-    //                   styles={{
-    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
-    //                   }}
-    //                   menuPortalTarget={document.body}
-    //                 />
-    //               )}
-    //               {header === "State" && (
-    //                 <Select
-    //                   options={convertToOptions(state)}
-    //                   isMulti
-    //                   value={selectedState.map(cat => ({ value: cat, label: cat }))}
-    //                   onChange={(selectedOptions) =>
-    //                     setSelectedState(selectedOptions.map((option) => option.value))
-    //                   }
-    //                   placeholder="Select State"
-    //                   className="w-[100px]"
-    //                   styles={{
-    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }), 
-    //                   }}
-    //                   menuPortalTarget={document.body}
-    //                 />
-    //               )}
-    //               {header === "Country" && (
-    //                 <Select
-    //                   options={convertToOptions(country)}
-    //                   isMulti
-    //                   value={selectedCountry.map(cat => ({ value: cat, label: cat }))}
-    //                   onChange={(selectedOptions) =>
-    //                     setSelectedCountry(selectedOptions.map((option) => option.value))
-    //                   }
-    //                   placeholder="Select Country"
-    //                   className="w-[100px]"
-    //                   styles={{
-    //                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
-    //                   }}
-    //                   menuPortalTarget={document.body}
-    //                 />
-    //               )}
-    //             </HStack>
-    //           </Th>
-    //         ))}
-    //       </Tr>
-    //     </Thead>
-
-    //     <Tbody flexWrap="wrap">
-    //       {data?.map((row, index) => (
-    //         <Tr key={index} border="2px solid" borderColor="gray.200">
-    //           {config.columns.map((column, index) => (
-    //             <Td key={index} width="200px" textAlign="center">
-    //               {row[column]}
-    //             </Td>
-    //           ))}
-    //         </Tr>
-    //       ))}
-    //     </Tbody>
-    //     <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
-    //       <Tr>
-    //         {data?.reduce((acc, row) => acc + row.total_counts, 0)}
-    //       </Tr>
-    //     </Tfoot>
-    //   </Table>
-    // </Box>
     <Box
   maxHeight="500px"
   maxWidth="full"
