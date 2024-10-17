@@ -560,11 +560,11 @@ const renderTable = (
                       </Stat>
                       <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                       <Stat>
-                        <StatLabel>Ready</StatLabel>
+                        <StatLabel>Extracted Data</StatLabel>
                         <StatNumber
                           fontSize={{ base: "md", md: "lg" }}
                         >
-                           <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_success_count[1]} aria-label="Total list ready tooltip">
+                           <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_success_count[1]} aria-label="Total list Extracted Data tooltip">
                             <span>
                               {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
                             </span>
@@ -649,11 +649,11 @@ const renderTable = (
                       </Stat>
                       <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                       <Stat>
-                        <StatLabel>Ready</StatLabel>
+                        <StatLabel>Extracted Data</StatLabel>
                         <StatNumber
                           fontSize={{ base: "md", md: "lg" }}
                           > 
-                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_success_count[1]} aria-label="Total ready tooltip">
+                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_success_count[1]} aria-label="Total Extracted Data tooltip">
                             <span>
                               {tableloading ? get_skeleton('stats') : countData.product?.product_success_count[0]}
                             </span>
@@ -733,11 +733,11 @@ const renderTable = (
                       </Stat>
                       <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
                       <Stat>
-                        <StatLabel>Ready</StatLabel>
+                        <StatLabel>Extracted Data</StatLabel>
                         <StatNumber
                           fontSize={{ base: "md", md: "lg" }}
                         >
-                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_success_count[1]} aria-label="Total seller ready tooltip">
+                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_success_count[1]} aria-label="Total seller Extracted Data tooltip">
                             <span>
                               {tableloading ? get_skeleton('stats') : countData.seller?.seller_success_count[0]}
                             </span>
