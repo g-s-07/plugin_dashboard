@@ -40,7 +40,8 @@ import {
   StatLabel,
   Stat,
   StatNumber,
-  Tfoot
+  Tfoot,
+  Container
 } from '@chakra-ui/react';
 import { IoMdDownload } from "react-icons/io";
 import Select from 'react-select';
@@ -77,6 +78,7 @@ interface CountDataType {
 
 const Default: React.FC = () => {
   const [tableloading, setTableLoading] = useState(false);
+  const [dropdownloading, setDropdownLoading] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
   const [countData, setCountData] = useState<CountDataType>({ product: {
     product_total_count: [0,0],
@@ -132,9 +134,9 @@ const Default: React.FC = () => {
 
   
   const fetchApiData = async (task_id: number | null) => {
-    if (!task_id) throw new Error("Task ID not found");
     setTableLoading(true);
     try {
+      if (!task_id) throw new Error("Task ID not found");
       
       let tableName= ''
         
@@ -197,7 +199,23 @@ const Default: React.FC = () => {
       }
 
       setCountData(data.data_count);
-      activeTab==0 ? setAmazonsListData(data.data) : activeTab==1 ? setAmazonsProductData(data.data) : setAmazonsSellerData(data.data); 
+      activeTab==0 ? setAmazonsListData(data.data) : activeTab==1 ? setAmazonsProductData(data.data) : setAmazonsSellerData(data.data);
+      if (activeTab==1) {
+        toast({
+          title: "Success",
+          description: "Datapoints fetched successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+      toast({
+        title: "Success",
+        description: "Data fetched successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      })
     } catch (error: any) {
       toast({
         title: "Error",
@@ -233,7 +251,9 @@ const Default: React.FC = () => {
   }
 
   const fetchdropDownData = async(task_id: number) =>{
+    setDropdownLoading(true);
     try{
+      if (!task_id) throw new Error("Task ID not found");
         const filter_table_data= activeTab==1 ? 'PRODUCT_DETAIL_DATA' : activeTab==2 ? 'SELLER_DATA' : 'PRODUCT_LIST_DATA' 
         const response = await axios.get(
           `${BACKEND_DOMAIN}/get-data/?task_id=${task_id}&table_name=${filter_table_data}`,
@@ -259,8 +279,19 @@ const Default: React.FC = () => {
         if(data.state)setDropdownDataState(data.state);
         if(data.country)setDropdownDataCountry(data.country);
       }
+      toast({
+        title: "Success",
+        description: "Dropdown Data fetched successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      })
     }
     catch(error:any){
+      if (error.toString().includes('')) {
+        
+      }
+      console.log(error);
       toast({
         title: "Error",
         description: error.toString(),
@@ -269,37 +300,44 @@ const Default: React.FC = () => {
         isClosable: true,
       });
     }
+    finally{
+      setDropdownLoading(false);
+    }
   }
 
 
   useEffect(()=>{
-    if(taskId==null)return
-    fetchdropDownData(taskId)
+    if(taskId!=null){
+      fetchdropDownData(taskId)
+    }
 },[activeTab])
 
 
-const get_skeleton = (type:string) => {
-  if(type=='stats'){
+
+const get_skeleton = (type: string) => {
+  if (type === 'stats') {
     return (
-      <>
-        <Skeleton height="25px" color={"gray.900"} mb={2}/>
-      </>
-    )
-  }
-  else{
+      <Skeleton height="25px" color={"gray.900"} mb={2} />
+    );
+  } else if (type === 'dropdown') {
     return (
-      <>
-        <Skeleton startColor='white.100' endColor='gray.100' height='30px' mb={2} rounded={"md"}/>
-        <Skeleton startColor='white.100' endColor='gray.300' height='30px' mb={2} rounded={"md"}/>
-        <Skeleton startColor='white.100' endColor='gray.500' height='30px' mb={2} rounded={"md"}/>
-        <Skeleton startColor='white.100' endColor='gray.700' height='30px' mb={2} rounded={"md"}/>
-        <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"}/>
-        <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"}/>
-        <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"}/>
-      </>
-    )
+      <Skeleton startColor='white.100' endColor='gray.700' height='50px' mb={2} rounded={"md"} />
+    );
+  } else {
+    return (
+      <Tr>
+        <Td colSpan={5}>
+          <Skeleton startColor='white.100' endColor='gray.100' height='30px' mb={2} rounded={"md"} w={'100%'} />
+          <Skeleton startColor='white.100' endColor='gray.300' height='30px' mb={2} rounded={"md"} w={'100%'} />
+          <Skeleton startColor='white.100' endColor='gray.500' height='30px' mb={2} rounded={"md"} w={'100%'} />
+          <Skeleton startColor='white.100' endColor='gray.700' height='30px' mb={2} rounded={"md"} w={'100%'} />
+          <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"} w={'100%'} />
+        </Td>
+      </Tr>
+    );
   }
-}
+};
+
 
 
   const dividerColor = useColorModeValue("pink.600", "pink.300");
@@ -332,33 +370,34 @@ const renderTable = (
       border="2px solid"
       borderColor="gray.300"
       rounded="lg"
-      position="relative"
+      position="relative" 
     >
-  <Table variant="striped" colorScheme="gray" minWidth="1000px">
-    <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
-      <Tr>
-        {config.headers.map((header, index) => (
-          <Th key={index} width="200px">
-            <HStack justifyContent={"center"} align="center">
-              <span>{header}</span>
-              {header === "Category" && activeTab !== 2 && (
-                <Select
-                  options={convertToOptions(category)}
-                  isMulti
-                  value={selectedCategory.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) =>
-                    setSelectedCategory(selectedOptions.map((option) => option.value))
-                  }
-                  placeholder="Select Categories"
-                  className="w-[100px]"
-                  styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
-                  }}
-                  menuPortalTarget={document.body}
-                />
-              )}
-              {header === "Sub-Category" && activeTab !== 2 && (
-                <Select
+    <Table variant="striped" colorScheme="gray">
+      <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
+      {dropdownloading ? get_skeleton('dropdown') : 
+        <Tr>
+          {config.headers.map((header, index) => (
+            <Th key={index} width="200px">
+              <HStack justifyContent={"center"} align="center">
+                <span>{header}</span>
+                {header === "Category" && activeTab !== 2 && (
+                  <Select
+                    options={convertToOptions(category)}
+                    isMulti
+                    value={selectedCategory.map((cat) => ({ value: cat, label: cat }))}
+                    onChange={(selectedOptions) =>
+                      setSelectedCategory(selectedOptions.map((option) => option.value))
+                    }
+                    placeholder="Select Categories"
+                    // className="w-[100px]"
+                    styles={{
+                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                    }}
+                    menuPortalTarget={document.body}
+                    />
+                  )}
+                {header === "Sub-Category" && activeTab !== 2 && (
+                  <Select
                   options={convertToOptions(subCategory)}
                   isMulti
                   value={selectedSubCategory.map((cat) => ({ value: cat, label: cat }))}
@@ -366,47 +405,47 @@ const renderTable = (
                     setSelectedSubCategory(selectedOptions.map((option) => option.value))
                   }
                   placeholder="Select Sub-Categories"
-                  className="w-[100px]"
-                  styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
-                  }}
-                  menuPortalTarget={document.body}
-                />
-              )}
-              {header === "City" && (
-                <Select
-                options={convertToOptions(city)}
-                isMulti
-                value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
-                onChange={(selectedOptions) =>
+                    className="w-[100px]"
+                    styles={{
+                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                    }}
+                    menuPortalTarget={document.body}
+                  />
+                )}
+                {header === "City" && (
+                  <Select
+                  options={convertToOptions(city)}
+                  isMulti
+                  value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
+                  onChange={(selectedOptions) =>
                     setSelectedCity(selectedOptions.map((option) => option.value))
                   }
                   placeholder="Select City"
                   className="w-[100px]"
                   styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
-                  }}
-                  menuPortalTarget={document.body}
-                />
-              )}
-              {header === "State" && (
-                <Select
+                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                    }}
+                    menuPortalTarget={document.body}
+                  />
+                )}
+                {header === "State" && (
+                  <Select
                   options={convertToOptions(state)}
                   isMulti
                   value={selectedState.map((cat) => ({ value: cat, label: cat }))}
                   onChange={(selectedOptions) =>
-                    setSelectedState(selectedOptions.map((option) => option.value))
-                  }
-                  placeholder="Select State"
-                  className="w-[100px]"
-                  styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
-                  }}
-                  menuPortalTarget={document.body}
-                  />
-                )}
-              {header === "Country" && (
-                <Select
+                      setSelectedState(selectedOptions.map((option) => option.value))
+                    }
+                    placeholder="Select State"
+                    className="w-[100px]"
+                    styles={{
+                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                    }}
+                    menuPortalTarget={document.body}
+                    />
+                  )}
+                {header === "Country" && (
+                  <Select
                   options={convertToOptions(country)}
                   isMulti
                   value={selectedCountry.map((cat) => ({ value: cat, label: cat }))}
@@ -414,40 +453,49 @@ const renderTable = (
                     setSelectedCountry(selectedOptions.map((option) => option.value))
                   }
                   placeholder="Select Country"
-                  className="w-[100px]"
+                  className="w-[200px]"
                   styles={{
                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
                   }}
                   menuPortalTarget={document.body}
                   />
                 )}
-            </HStack>
-          </Th>
-        ))}
-      </Tr>
-    </Thead>
-
-    <Tbody>
-      {data?.map((row, index) => (
-        <Tr key={index} border="2px solid" borderColor="gray.200">
-          {config.columns.map((column, index1) => (
-            <Td key={index1} width="200px" textAlign="center">
-              {column=='id' ? index+1 : row[column]}
-            </Td>
+              </HStack>
+            </Th>
           ))}
         </Tr>
-      ))}
-    </Tbody>
-
-    <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
-      <Tr>
-        <Td colSpan={config.columns.length} textAlign="end" pl={12} fontWeight={'bold'}>
-          Total Count: {data?.reduce((acc, row) => acc + row.total_counts, 0)}
-        </Td>
-      </Tr>
-    </Tfoot>
-  </Table>
-</Box>
+      }
+      </Thead>
+    {tableloading ? (
+      <>
+        {Array.from({ length: 2 }).map((_, index) => (
+          get_skeleton('table')
+        ))}
+      </>
+    ) : (
+      <>
+      <Tbody>
+        {data?.map((row, index) => (
+          <Tr key={index} border="2px solid" borderColor="gray.200">
+            {config.columns.map((column, index1) => (
+              <Td key={index1} textAlign="center">
+                {column === 'id' ? index + 1 : row[column]}
+              </Td>
+            ))}
+          </Tr>
+        ))}
+      </Tbody>
+       <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
+       <Tr>
+         <Td colSpan={config.columns.length} textAlign="end" pl={12} fontWeight={'bold'}>
+           Total Count: {data?.reduce((acc, row) => acc + row.total_counts, 0)}
+         </Td>
+       </Tr>
+     </Tfoot>
+    </>
+)}
+    </Table>
+  </Box>
 
 );
 
@@ -822,8 +870,8 @@ const renderTable = (
                 }
             </TabList>
             <TabIndicator mt='-1.5px' height='2px' bg='blue.500' borderRadius='1px' />
-            {tableloading ? get_skeleton('table') : 
-              (<TabPanels>
+            {/* {tableloading ? get_skeleton('table') :  */}
+              <TabPanels>
                 <TabPanel>
                   {renderTable(amazonListData, {
                       columns: ["id","mapped_category", "sub_category", "total_counts"],
@@ -862,7 +910,8 @@ const renderTable = (
                   )
                   }
                 </TabPanel>
-              </TabPanels>)}
+              </TabPanels>
+              {/* } */}
             </Tabs>
           </Box>): null}
       </Flex>
