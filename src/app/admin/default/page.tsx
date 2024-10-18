@@ -217,6 +217,10 @@ const Default: React.FC = () => {
         isClosable: true,
       })
     } catch (error: any) {
+      setCountData({})
+      if (activeTab == 0) setAmazonsListData([]);
+      else if (activeTab == 1) setAmazonsProductData([]);
+      else setAmazonsSellerData([]);
       toast({
         title: "Error",
         description:error.toString(),
@@ -288,9 +292,12 @@ const Default: React.FC = () => {
       })
     }
     catch(error:any){
-      if (error.toString().includes('')) {
-        
-      }
+      setDropdownDataCategory([]);
+      setDropdownDataSubCategory([]);
+      setDropdownDataDatapoints([]);
+      setDropdownDataCity([]);
+      setDropdownDataState([]);
+      setDropdownDataCountry([]);
       console.log(error);
       toast({
         title: "Error",
