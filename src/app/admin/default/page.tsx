@@ -33,7 +33,6 @@ import {
   FormControl,
   FormLabel,
   Icon,
-  Collapse,
   useQuery,
   HStack,
   Spacer,
@@ -43,56 +42,13 @@ import {
   StatNumber,
   Tfoot
 } from '@chakra-ui/react';
-// import { IoAdd, IoRemove } from 'react-icons/io5';
 import { IoMdDownload } from "react-icons/io";
 import Select from 'react-select';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { BACKEND_DOMAIN, token } from '../../../../urls';
 import { saveAs } from 'file-saver';
 import { convertToCSV } from 'utils/converttocsv';
 
-// interface StatusCountProps {
-//   count: number | string;
-//   isSuccess: number;
-// }
-
-// interface StatusPercentageProps {
-//   count: number | string;
-// }
-
-// const StatusCount: React.FC<StatusCountProps> = ({ count, isSuccess }) => {
-//   return (
-//     <Flex alignItems="center" flexWrap="wrap">
-//       <Text color={isSuccess ? "green.500" : "red.500"} fontSize={["sm", "md"]}>
-//         {count}
-//       </Text>
-//       <Box
-//         as={isSuccess ? CheckIcon : SmallCloseIcon}
-//         bg={isSuccess ? "green.100" : "red.100"}
-//         color={isSuccess ? "green.500" : "red.500"}
-//         borderRadius="full"
-//         ml={[1, 2]}
-//         boxSize={[3, 4]}
-//       />
-//     </Flex>
-//   );
-// };
-
-// const StatusPercentage: React.FC<StatusPercentageProps> = ({ count }) => {
-//     return (
-//       <Flex alignItems="center"  flexWrap="wrap">
-//         <Text color='blue.500' fontSize={["sm", "md"]}>{count}</Text>
-//         <Box
-//           as={StarIcon}
-//           bg={'blue.100'}
-//           color={'blue.400'}
-//           borderRadius="full" 
-//           ml={[1, 2]}
-//           boxSize={[3, 4]}
-//         />
-//       </Flex>
-//     );
-// };
 
 interface CountDataType {
   product?: {
@@ -120,9 +76,7 @@ interface CountDataType {
 
 
 const Default: React.FC = () => {
-  const [statsloading, setStatsLoading] = useState(false);
   const [tableloading, setTableLoading] = useState(false);
-  // const [loading, setLoading] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
   const [countData, setCountData] = useState<CountDataType>({ product: {
     product_total_count: [0,0],
@@ -150,6 +104,7 @@ const Default: React.FC = () => {
   const [dropdownDataDatapoints, setDropdownDataDatapoints] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
+  const [selectedDatapoints, setSelectedDatapoints] = useState([]);
   const [dropdownDataCity, setDropdownDataCity] = useState([]);
   const [dropdownDataCountry, setDropdownDataCountry] = useState([]);
   const [dropdownDataState, setDropdownDataState] = useState([]);
@@ -163,8 +118,6 @@ const Default: React.FC = () => {
 
 
   const seller_data = amazonSellerData
-
-
   const toast = useToast();
 
   const convertToOptions = (items: string[] | undefined) =>
@@ -175,7 +128,7 @@ const Default: React.FC = () => {
     if (taskId !== null) {
       fetchApiData(taskId);
     }
-  }, [selectedCategory, selectedSubCategory, activeTab, selectedCity, selectedState, selectedCountry]);
+  }, [selectedCategory, selectedSubCategory, selectedDatapoints, activeTab, selectedCity, selectedState, selectedCountry]);
 
   
   const fetchApiData = async (task_id: number | null) => {
@@ -197,6 +150,7 @@ const Default: React.FC = () => {
         else{
           tableName = 'PRODUCT_LIST_DATA'
         }
+        console.log(tableName);
         formData.append('table_name', tableName);
   
       if (selectedCategory) {
@@ -205,6 +159,10 @@ const Default: React.FC = () => {
   
       if (selectedSubCategory) {
         formData.append('sub_category', selectedSubCategory.join(','));
+      }
+
+      if (selectedDatapoints) {
+        formData.append('datapoints', selectedDatapoints.join(','));
       }
 
       if(selectedCity){
@@ -218,6 +176,8 @@ const Default: React.FC = () => {
       if(selectedCountry){
         formData.append('country',selectedCountry.join(','))
       }
+
+      console.log(formData);
   
       const response = await fetch(
         `${BACKEND_DOMAIN}/plugin_insights/`,
@@ -255,7 +215,6 @@ const Default: React.FC = () => {
     console.log("gaurav");
     if (!task_id) throw new Error("Please Mention the Task ID");
     try{
-      console.log(seller_data);
       console.log("gaurav111222");
       const csvData = convertToCSV(seller_data)
       console.log("gaurav111");
@@ -275,13 +234,16 @@ const Default: React.FC = () => {
 
   const fetchdropDownData = async(task_id: number) =>{
     try{
-        const filter_table_data= activeTab==1 ? 'PRODUCT_LIST_DATA' : activeTab==2 ? 'SELLER_DATA' : 'PRODUCT_DETAIL_DATA' 
-        const response = await axios.get(`${BACKEND_DOMAIN}/get-data/?task_id=${task_id}&table_name=${filter_table_data}`, {
-          headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': token,
-        }
-      })
+        const filter_table_data= activeTab==1 ? 'PRODUCT_DETAIL_DATA' : activeTab==2 ? 'SELLER_DATA' : 'PRODUCT_LIST_DATA' 
+        const response = await axios.get(
+          `${BACKEND_DOMAIN}/get-data/?task_id=${task_id}&table_name=${filter_table_data}`,
+          {
+              headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                  Authorization: token,
+              },
+          }
+      );
 
       if(response.data.error){
         throw new Error(response.data.error);
@@ -292,7 +254,7 @@ const Default: React.FC = () => {
       if(data) {
         if(data.category)setDropdownDataCategory(data.category);
         if(data.sub_category)setDropdownDataSubCategory(data.sub_category);
-        if(data.datapoint)setDropdownDataDatapoints(data.datapoint);
+        if(data.datapoints)setDropdownDataDatapoints(data.datapoints);
         if(data.city)setDropdownDataCity(data.city);
         if(data.state)setDropdownDataState(data.state);
         if(data.country)setDropdownDataCountry(data.country);
@@ -354,7 +316,7 @@ const renderTable = (
       headers: string[] 
     }, 
     category?: string[], 
-    subCategory?: string[], 
+    subCategory?: string[],
     country?: string[], 
     state?: string[], 
     city?: string[], 
@@ -363,15 +325,15 @@ const renderTable = (
       
       (
     <Box
-  maxHeight="500px"
-  maxWidth="full"
-  overflowY="auto"
-  overflowX="auto"
-  border="2px solid"
-  borderColor="gray.300"
-  rounded="lg"
-  position="relative"
->
+      maxHeight="500px"
+      maxWidth="full"
+      overflowY="auto"
+      overflowX="auto"
+      border="2px solid"
+      borderColor="gray.300"
+      rounded="lg"
+      position="relative"
+    >
   <Table variant="striped" colorScheme="gray" minWidth="1000px">
     <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
       <Tr>
@@ -413,10 +375,10 @@ const renderTable = (
               )}
               {header === "City" && (
                 <Select
-                  options={convertToOptions(city)}
-                  isMulti
-                  value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) =>
+                options={convertToOptions(city)}
+                isMulti
+                value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
+                onChange={(selectedOptions) =>
                     setSelectedCity(selectedOptions.map((option) => option.value))
                   }
                   placeholder="Select City"
@@ -441,8 +403,8 @@ const renderTable = (
                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
                   }}
                   menuPortalTarget={document.body}
-                />
-              )}
+                  />
+                )}
               {header === "Country" && (
                 <Select
                   options={convertToOptions(country)}
@@ -457,8 +419,8 @@ const renderTable = (
                     menuPortal: (base) => ({ ...base, zIndex: 50 }),
                   }}
                   menuPortalTarget={document.body}
-                />
-              )}
+                  />
+                )}
             </HStack>
           </Th>
         ))}
@@ -795,14 +757,13 @@ const renderTable = (
           </Flex>
         </Box>
       </Flex>
-      <Flex mt={2} direction="row" align="flex-start" flexWrap="wrap" width=''>
+      <Flex mt={2} direction="row" align="flex-start" flexWrap="wrap">
           {taskId ? (<Box 
             flex="1"
-            flexWrap="wrap"          
+            flexWrap="wrap"
             >
             <Tabs position='relative' variant='unstyled' flexWrap="wrap" onChange={handleTabChange} isLazy>
             <TabList flexWrap="wrap">
-              {/* <Box> */}
                 <Tab _selected={{ fontWeight: 'bold' }}>
                   Amazon Product Lists {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
                 </Tab>
@@ -812,32 +773,53 @@ const renderTable = (
                 <Tab _selected={{ fontWeight: 'bold' }}>
                   Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
                 </Tab>
-                <Spacer />
-              {/* </Box> */}
-              {
-                activeTab==2 &&
-                <Box 
-                  display={'flex'} 
-                  bg={'green.500'}
-                  rounded={'full'}
-                  width={'60px'}
-                  fontWeight={'bold'} 
-                  alignItems={'center'}
-                  >
-                  
-                  <Icon
-                      h="30px"
-                      w="30px"
-                      mx={"auto"}
-                      justifyContent={"center"}
-                      as={IoMdDownload}
-                      cursor={'pointer'}
-                      color={'white'}
-                      onClick={()=> downloadData(taskId)}
+                <Spacer className='gap-2'/>
+                {
+                  (
+                    activeTab==2 
+                    &&
+                    <Box 
+                      display={'flex'} 
+                      bg={'green.500'}
+                      rounded={'full'}
+                      width={'60px'}
+                      fontWeight={'bold'} 
+                      alignItems={'center'}
                       >
-                    </Icon>
-              </Box>
-            }
+                      
+                      <Icon
+                          h="30px"
+                          w="30px"
+                          mx={"auto"}
+                          justifyContent={"center"}
+                          as={IoMdDownload}
+                          cursor={'pointer'}
+                          color={'white'}
+                          onClick={()=> downloadData(taskId)}
+                          >
+                      </Icon>
+                    </Box>
+                  )
+                  ||
+                  (
+                    activeTab==1 
+                    &&
+                    <Select
+                      options={convertToOptions(dropdownDataDatapoints)}
+                      isMulti
+                      value={selectedDatapoints.map((cat) => ({ value: cat, label: cat }))}
+                      onChange={(selectedOptions) =>
+                        setSelectedDatapoints(selectedOptions.map((option) => option.value))
+                      }
+                      placeholder="Select Datapoints"
+                      className="w-[100px]"
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      }}
+                      menuPortalTarget={document.body}
+                    />
+                  )
+                }
             </TabList>
             <TabIndicator mt='-1.5px' height='2px' bg='blue.500' borderRadius='1px' />
             {tableloading ? get_skeleton('table') : 
@@ -860,7 +842,7 @@ const renderTable = (
                       headers: ["id","Category", "Sub-Category", "Count"]},
                       dropdownDataCategory,
                       dropdownDataSubCategory,
-                      null,
+                      dropdownDataDatapoints,
                       null,
                       null,
                       activeTab
@@ -890,7 +872,3 @@ const renderTable = (
 
 
 export default Default;
-/*isLoading ? (
-  <Spinner />
-  ) : */  
-// )}
