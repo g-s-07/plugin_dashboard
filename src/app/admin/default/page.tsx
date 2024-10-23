@@ -51,27 +51,32 @@ import { saveAs } from 'file-saver';
 import { convertToCSV } from 'utils/converttocsv';
 
 
+interface MissedCountType {
+  [key: string]: number | string; 
+}
+
+
 interface CountDataType {
   product?: {
     product_total_count?: number[];
     product_success_count?: number[];
     product_processed_count?: number[];
     product_pending_count?: number[];
-    product_missed_count?: number[];
+    product_missed_count?: [number,MissedCountType ];
   };
   list?: {
     list_total_count?: number[];
     list_success_count?: number[];
     list_processed_count?: number[];
     list_pending_count?: number[];
-    list_missed_count?: number[];
+    list_missed_count?: [number,MissedCountType];
   };
   seller?: {
     seller_total_count?: number[];
     seller_success_count?: number[];
     seller_processed_count?: number[];
     seller_pending_count?: number[];
-    seller_missed_count?: number[];
+    seller_missed_count?: [number,MissedCountType];
   };
 }
 
@@ -85,21 +90,21 @@ const Default: React.FC = () => {
     product_success_count: [0,0],
     product_processed_count: [0,0],
     product_pending_count: [0,0], 
-    product_missed_count: [0,0]
+    product_missed_count: [0,{}]
   },
   list: {
     list_total_count: [0,0],
     list_success_count: [0,0],
     list_processed_count: [0,0],
     list_pending_count: [0,0], 
-    list_missed_count: [0,0]
+    list_missed_count: [0,{}]
   },
   seller: {
     seller_total_count: [0,0],
     seller_success_count: [0,0],
     seller_processed_count: [0,0],
     seller_pending_count: [0,0],
-    seller_missed_count: [0,0]
+    seller_missed_count: [0,{}]
   }});
   const [dropdownDataCategory, setDropdownDataCategory] = useState([]);
   const [dropdownDataSubCategory, setDropdownDataSubCategory] = useState([]);
@@ -197,7 +202,8 @@ const Default: React.FC = () => {
       if(data.error){
         throw new Error(data.error);
       }
-
+      
+      console.log('i am data',data.data_count);
       setCountData(data.data_count);
       activeTab==0 ? setAmazonsListData(data.data) : activeTab==1 ? setAmazonsProductData(data.data) : setAmazonsSellerData(data.data);
       if (activeTab==1) {
@@ -234,12 +240,9 @@ const Default: React.FC = () => {
   };
 
   const downloadData = (task_id: number) => {
-    console.log("gaurav");
     if (!task_id) throw new Error("Please Mention the Task ID");
     try{
-      console.log("gaurav111222");
       const csvData = convertToCSV(seller_data)
-      console.log("gaurav111");
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       saveAs(blob, `seller_details${task_id}.csv`);
     }
@@ -298,7 +301,6 @@ const Default: React.FC = () => {
       setDropdownDataCity([]);
       setDropdownDataState([]);
       setDropdownDataCountry([]);
-      console.log(error);
       toast({
         title: "Error",
         description: error.toString(),
@@ -625,7 +627,7 @@ const renderTable = (
                       <StatNumber
                         fontSize={{ base: "md", md: "lg" }}
                       >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_missed_count[1]} aria-label="Total list missed tooltip">
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt-0: ${countData.list?.list_missed_count[1][0]!==undefined ? countData.list?.list_missed_count[1][0] : 0}, Attempt-1: ${countData.list?.list_missed_count[1][1]!==undefined ? countData.list?.list_missed_count[1][1] : 0}, Attempt-2: ${countData.list?.list_missed_count[1][2] !== undefined ? countData.list?.list_missed_count[1][2] : 0}, Attempt-3: ${countData.list?.list_missed_count[1][3] !== undefined ? countData.list?.list_missed_count[1][3] : 0}`} aria-label="Total list missed tooltip">
                           <span>
                             {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
                           </span>
@@ -714,7 +716,7 @@ const renderTable = (
                       <StatNumber
                         fontSize={{ base: "md", md: "lg" }}
                       >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_missed_count[1]} aria-label="Total missed tooltip">
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={`Attempt-0: ${countData.product?.product_missed_count[1][0]!==undefined ? countData.product?.product_missed_count[1][0] : 0}, Attempt-1: ${countData.product?.product_missed_count[1][1] !== undefined ? countData.product?.product_missed_count[1][1] : 0}, Attempt-2: ${countData.product?.product_missed_count[1][2] !== undefined ? countData.product?.product_missed_count[1][2] : 0}, Attempt-3: ${countData.product?.product_missed_count[1][3]!== undefined ? countData.product?.product_missed_count[1][3] : 0}`} aria-label="Total missed tooltip">
                           <span>
                             {tableloading ? get_skeleton('stats') : countData.product?.product_missed_count[0]}
                           </span>
@@ -798,7 +800,7 @@ const renderTable = (
                       <StatNumber
                         fontSize={{ base: "md", md: "lg" }}
                       >
-                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_missed_count[1]} aria-label="Total seller missed tooltip">
+                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt-0: ${countData.seller?.seller_missed_count[1][0]!==undefined?countData.seller?.seller_missed_count[1][0]:0}, Attempt-1: ${countData.seller?.seller_missed_count[1][1]!==undefined?countData.seller?.seller_missed_count[1][1]:0}, Attempt-2: ${countData.seller?.seller_missed_count[1][2]!==undefined?countData.seller?.seller_missed_count[1][2]:0}, Attempt-3: ${countData.seller?.seller_missed_count[1][3]!==undefined?countData.seller?.seller_missed_count[1][3]:0}`} aria-label="Total seller missed tooltip">
                             <span>
                               {tableloading ? get_skeleton('stats') : countData.seller?.seller_missed_count[0]}
                             </span>
