@@ -627,7 +627,7 @@ const renderTable = (
                       <StatNumber
                         fontSize={{ base: "md", md: "lg" }}
                       >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt-0: ${countData.list?.list_missed_count[1][0]!==undefined ? countData.list?.list_missed_count[1][0] : 0}, Attempt-1: ${countData.list?.list_missed_count[1][1]!==undefined ? countData.list?.list_missed_count[1][1] : 0}, Attempt-2: ${countData.list?.list_missed_count[1][2] !== undefined ? countData.list?.list_missed_count[1][2] : 0}, Attempt-3: ${countData.list?.list_missed_count[1][3] !== undefined ? countData.list?.list_missed_count[1][3] : 0}`} aria-label="Total list missed tooltip">
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt - 0:${countData.list?.list_missed_count[1][0]!==undefined ? countData.list?.list_missed_count[1][0] : 0} | 1:${countData.list?.list_missed_count[1][1]!==undefined ? countData.list?.list_missed_count[1][1] : 0} | 2:${countData.list?.list_missed_count[1][2] !== undefined ? countData.list?.list_missed_count[1][2] : 0} | 3:${countData.list?.list_missed_count[1][3] !== undefined ? countData.list?.list_missed_count[1][3] : 0}`} aria-label="Total list missed tooltip">
                           <span>
                             {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
                           </span>
@@ -716,7 +716,7 @@ const renderTable = (
                       <StatNumber
                         fontSize={{ base: "md", md: "lg" }}
                       >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={`Attempt-0: ${countData.product?.product_missed_count[1][0]!==undefined ? countData.product?.product_missed_count[1][0] : 0}, Attempt-1: ${countData.product?.product_missed_count[1][1] !== undefined ? countData.product?.product_missed_count[1][1] : 0}, Attempt-2: ${countData.product?.product_missed_count[1][2] !== undefined ? countData.product?.product_missed_count[1][2] : 0}, Attempt-3: ${countData.product?.product_missed_count[1][3]!== undefined ? countData.product?.product_missed_count[1][3] : 0}`} aria-label="Total missed tooltip">
+                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={`Attempt - 0:${countData.product?.product_missed_count[1][0]!==undefined ? countData.product?.product_missed_count[1][0] : 0} | 1:${countData.product?.product_missed_count[1][1] !== undefined ? countData.product?.product_missed_count[1][1] : 0} | 2:${countData.product?.product_missed_count[1][2] !== undefined ? countData.product?.product_missed_count[1][2] : 0} | 3:${countData.product?.product_missed_count[1][3]!== undefined ? countData.product?.product_missed_count[1][3] : 0}`} aria-label="Total missed tooltip">
                           <span>
                             {tableloading ? get_skeleton('stats') : countData.product?.product_missed_count[0]}
                           </span>
@@ -800,7 +800,7 @@ const renderTable = (
                       <StatNumber
                         fontSize={{ base: "md", md: "lg" }}
                       >
-                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt-0: ${countData.seller?.seller_missed_count[1][0]!==undefined?countData.seller?.seller_missed_count[1][0]:0}, Attempt-1: ${countData.seller?.seller_missed_count[1][1]!==undefined?countData.seller?.seller_missed_count[1][1]:0}, Attempt-2: ${countData.seller?.seller_missed_count[1][2]!==undefined?countData.seller?.seller_missed_count[1][2]:0}, Attempt-3: ${countData.seller?.seller_missed_count[1][3]!==undefined?countData.seller?.seller_missed_count[1][3]:0}`} aria-label="Total seller missed tooltip">
+                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt - 0:${countData.seller?.seller_missed_count[1][0]!==undefined?countData.seller?.seller_missed_count[1][0]:0} | 1:${countData.seller?.seller_missed_count[1][1]!==undefined?countData.seller?.seller_missed_count[1][1]:0} | 2:${countData.seller?.seller_missed_count[1][2]!==undefined?countData.seller?.seller_missed_count[1][2]:0} | 3:${countData.seller?.seller_missed_count[1][3]!==undefined?countData.seller?.seller_missed_count[1][3]:0}`} aria-label="Total seller missed tooltip">
                             <span>
                               {tableloading ? get_skeleton('stats') : countData.seller?.seller_missed_count[0]}
                             </span>
