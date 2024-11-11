@@ -387,7 +387,7 @@ export const lineChartOptionsTotalSpent: ApexOptions = {
     fillOpacity: 1,
     discrete: [],
     shape: "circle",
-    radius: 2,
+    // radius: 2,
     offsetX: 0,
     offsetY: 0,
     showNullDataPoints: true,
