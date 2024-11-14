@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Flex,
   Box,
@@ -49,6 +49,7 @@ import axios, { AxiosError } from 'axios';
 import { BACKEND_DOMAIN, token } from '../../../../urls';
 import { saveAs } from 'file-saver';
 import { convertToCSV } from 'utils/converttocsv';
+import { TaskContext } from 'contexts/TaskId';
 
 
 interface MissedCountType {
@@ -85,6 +86,8 @@ const Default: React.FC = () => {
   const [tableloading, setTableLoading] = useState(false);
   const [dropdownloading, setDropdownLoading] = useState(false);
   const [taskId, setTaskId] = useState<number | null>(null);
+  const { setTaskid } = useContext(TaskContext);
+
   const [countData, setCountData] = useState<CountDataType>({ product: {
     product_total_count: [0,0],
     product_success_count: [0,0],
@@ -147,6 +150,12 @@ const Default: React.FC = () => {
         
       const formData = new FormData();
       formData.append('task_id', task_id.toString());
+      setTaskid((prev)=>{
+        return{
+          ...prev,
+          task_id: task_id
+        }
+      });
       
         if (activeTab==1){
           tableName = 'PRODUCT_DETAIL_DATA'
@@ -394,13 +403,13 @@ const renderTable = (
                     options={convertToOptions(category)}
                     isMulti
                     value={selectedCategory.map((cat) => ({ value: cat, label: cat }))}
-                    onChange={(selectedOptions) =>
-                      setSelectedCategory(selectedOptions.map((option) => option.value))
+                    onChange={(selectedOptions: any) =>
+                      setSelectedCategory(selectedOptions.map((option: any) => option.value))
                     }
                     placeholder="Select Categories"
                     // className="w-[100px]"
                     styles={{
-                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      menuPortal: (base:any) => ({ ...base, zIndex: 50 }),
                     }}
                     menuPortalTarget={document.body}
                     />
@@ -410,13 +419,13 @@ const renderTable = (
                   options={convertToOptions(subCategory)}
                   isMulti
                   value={selectedSubCategory.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) =>
-                    setSelectedSubCategory(selectedOptions.map((option) => option.value))
+                  onChange={(selectedOptions: any) =>
+                    setSelectedSubCategory(selectedOptions.map((option: any) => option.value))
                   }
                   placeholder="Select Sub-Categories"
                     className="w-[100px]"
                     styles={{
-                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
                     }}
                     menuPortalTarget={document.body}
                   />
@@ -426,13 +435,13 @@ const renderTable = (
                   options={convertToOptions(city)}
                   isMulti
                   value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) =>
-                    setSelectedCity(selectedOptions.map((option) => option.value))
+                  onChange={(selectedOptions: any) =>
+                    setSelectedCity(selectedOptions.map((option: any) => option.value))
                   }
                   placeholder="Select City"
                   className="w-[100px]"
                   styles={{
-                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
                     }}
                     menuPortalTarget={document.body}
                   />
@@ -442,13 +451,13 @@ const renderTable = (
                   options={convertToOptions(state)}
                   isMulti
                   value={selectedState.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) =>
-                      setSelectedState(selectedOptions.map((option) => option.value))
+                  onChange={(selectedOptions: any) =>
+                      setSelectedState(selectedOptions.map((option: any) => option.value))
                     }
                     placeholder="Select State"
                     className="w-[100px]"
                     styles={{
-                      menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                      menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
                     }}
                     menuPortalTarget={document.body}
                     />
@@ -458,13 +467,13 @@ const renderTable = (
                   options={convertToOptions(country)}
                   isMulti
                   value={selectedCountry.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions) =>
-                    setSelectedCountry(selectedOptions.map((option) => option.value))
+                  onChange={(selectedOptions: any) =>
+                    setSelectedCountry(selectedOptions.map((option: any) => option.value))
                   }
                   placeholder="Select Country"
                   className="w-[200px]"
                   styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                    menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
                   }}
                   menuPortalTarget={document.body}
                   />
@@ -510,9 +519,9 @@ const renderTable = (
 
 
   return (
-    <Box py={4} overflow="visible" position="relative" className='flex flex-wrap'>
+    <Box  overflow="visible" position="relative" className='flex flex-wrap'>
       <Flex mb={4} direction="column" position="relative">
-        <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
+        <Box>
           <Flex alignItems="center" gap={6} flexWrap="wrap" justify="space-between">
             <Stack direction="column" spacing={2} alignItems="center">
               <FormControl isRequired>
@@ -865,13 +874,13 @@ const renderTable = (
                       options={convertToOptions(dropdownDataDatapoints)}
                       isMulti
                       value={selectedDatapoints.map((cat) => ({ value: cat, label: cat }))}
-                      onChange={(selectedOptions) =>
-                        setSelectedDatapoints(selectedOptions.map((option) => option.value))
+                      onChange={(selectedOptions: any) =>
+                        setSelectedDatapoints(selectedOptions.map((option: any) => option.value))
                       }
                       placeholder="Select Datapoints"
                       className="w-[100px]"
                       styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 50 }),
+                        menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
                       }}
                       menuPortalTarget={document.body}
                     />

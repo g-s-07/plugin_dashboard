@@ -6,4 +6,6 @@ export interface IRoute {
   icon: ReactComponentElement | string;
   secondary?: boolean;
   path: string;
+  isPage?:boolean;
+  children?:IRoute[]
 }

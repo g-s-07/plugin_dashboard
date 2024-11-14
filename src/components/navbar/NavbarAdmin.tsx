@@ -5,6 +5,7 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  Button,
   Flex,
   Link,
   Text,
@@ -13,6 +14,9 @@ import {
 import { useState, useEffect } from 'react'
 import AdminNavbarLinks from 'components/navbar/NavbarLinksAdmin'
 import { isWindowAvailable } from 'utils/navigation'
+import { IRoute } from 'types/navigation'
+import { IoChevronBackOutline } from 'react-icons/io5'
+import { useRouter, usePathname } from 'next/navigation'
 
 export default function AdminNavbar (props: {
   secondary: boolean
@@ -20,22 +24,26 @@ export default function AdminNavbar (props: {
   brandText: string
   logoText: string
   fixed: boolean
+  routes: IRoute[]
   onOpen: (...args: any[]) => any
 }) {
   const [scrolled, setScrolled] = useState(false)
 
-  useEffect(() => {
-    if (isWindowAvailable()) {
-      // You now have access to `window`
-      window.addEventListener('scroll', changeNavbar)
+  // useEffect(() => {
+  //   if (isWindowAvailable()) {
+  //     // You now have access to `window`
+  //     window.addEventListener('scroll', changeNavbar)
 
-      return () => {
-        window.removeEventListener('scroll', changeNavbar)
-      }
-    }
-  })
+  //     return () => {
+  //       window.removeEventListener('scroll', changeNavbar)
+  //     }
+  //   }
+  // })
 
-  const { secondary, message, brandText } = props
+  const { secondary, message, brandText, routes } = props
+  const router = useRouter();
+  const pathname = usePathname();
+
 
   // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
   let mainText = useColorModeValue('navy.700', 'white')
@@ -52,13 +60,13 @@ export default function AdminNavbar (props: {
   let secondaryMargin = '0px'
   let paddingX = '15px'
   let gap = '0px'
-  const changeNavbar = () => {
-    if (isWindowAvailable() && window.scrollY > 1) {
-      setScrolled(true)
-    } else {
-      setScrolled(false)
-    }
-  }
+  // const changeNavbar = () => {
+  //   if (isWindowAvailable() && window.scrollY > 1) {
+  //     setScrolled(true)
+  //   } else {
+  //     setScrolled(false)
+  //   }
+  // }
 
   return (
     <Box
@@ -102,6 +110,7 @@ export default function AdminNavbar (props: {
         xl: 'calc(100vw - 350px)',
         '2xl': 'calc(100vw - 365px)'
       }}
+      zIndex={999}
     >
       <Flex
         w='100%'
@@ -109,46 +118,42 @@ export default function AdminNavbar (props: {
           sm: 'column',
           md: 'row'
         }}
-        alignItems={{ xl: 'center' }}
+        alignItems={{ sm: 'flex-start', md: 'center'}}
         mb={gap}
       >
         <Box mb={{ sm: '8px', md: '0px' }}>
-          <Breadcrumb>
-            <BreadcrumbItem color={secondaryText} fontSize='sm' mb='5px'>
-              <BreadcrumbLink href='#' color={secondaryText}>
-                Pages
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-
-            <BreadcrumbItem color={secondaryText} fontSize='sm'>
-              <BreadcrumbLink href='#' color={secondaryText}>
-                {brandText}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
-          {/* Here we create navbar brand, based on route name */}
-          <Link
-            color={mainText}
-            href='#'
-            bg='inherit'
-            borderRadius='inherit'
-            fontWeight='bold'
-            fontSize='34px'
-            _hover={{ color: { mainText } }}
-            _active={{
-              bg: 'inherit',
-              transform: 'none',
-              borderColor: 'transparent'
-            }}
-            _focus={{
-              boxShadow: 'none'
-            }}
-          >
-            {brandText}
-          </Link>
+           {/* Here we create navbar brand, based on route name */}
+           {brandText === '' ? (
+            <Button
+              display={'flex'}
+              alignItems={'center'}
+              onClick={() => {
+                router.back();
+              }}
+            >
+              <IoChevronBackOutline /> <Box ml={'.2rem'}>Back</Box>
+            </Button>
+          ) : (
+            <Box
+              color={mainText}
+              bg="inherit"
+              borderRadius="inherit"
+              fontWeight="bold"
+              fontSize="34px"
+              _hover={{ color: { mainText } }}
+              _active={{
+                bg: 'inherit',
+                transform: 'none',
+                borderColor: 'transparent',
+              }}
+            >
+              {brandText}
+            </Box>
+          )}
         </Box>
         <Box ms='auto' w={{ sm: '100%', md: 'unset' }}>
           <AdminNavbarLinks
+            routes={routes}
             onOpen={props.onOpen}
             secondary={props.secondary}
             fixed={props.fixed}

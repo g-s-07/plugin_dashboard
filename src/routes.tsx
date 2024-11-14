@@ -21,8 +21,8 @@ import { IRoute } from 'types/navigation';
 const routes: IRoute[] = [
   {
     name: 'Amazon Plugin Dashboard',
-    layout: '/admin',
-    path: '/default',
+    layout: '/dashboard',
+    path: '/amazon',
     icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
   },
   // {

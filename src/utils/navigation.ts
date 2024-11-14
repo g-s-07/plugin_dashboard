@@ -1,9 +1,10 @@
 import { IRoute } from "types/navigation";
 
+
 // NextJS Requirement
 export const isWindowAvailable = () => typeof window !== "undefined";
 
-export const findCurrentRoute = (routes: IRoute[]): IRoute => { 
+export const findCurrentRoute = (routes: IRoute[]): IRoute => {   
   const foundRoute: IRoute = routes.find(
     (route) =>
       isWindowAvailable() &&
@@ -16,6 +17,8 @@ export const findCurrentRoute = (routes: IRoute[]): IRoute => {
 
 export const getActiveRoute = (routes: IRoute[]): string => {
   const route = findCurrentRoute(routes);
+  console.log(route);
+  console.log(route.name);
   return route?.name || "Default Brand Text";
 };
 

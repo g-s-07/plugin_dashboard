@@ -12,13 +12,15 @@ import { SidebarResponsive } from 'components/sidebar/Sidebar';
 // Assets
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import routes from 'routes';
+import { IRoute } from 'types/navigation';
 
 export default function HeaderLinks(props: {
   secondary: boolean;
-  onOpen: boolean | any;
+  onOpen: ()=>void;
   fixed: boolean | any;
+  routes: IRoute[];
 }) {
-  const { secondary } = props;
+  const { secondary, routes } = props;
   const { colorMode, toggleColorMode } = useColorMode();
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.400', 'white');

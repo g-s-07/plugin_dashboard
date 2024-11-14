@@ -1,11 +1,24 @@
-/* eslint-disable */
+'use client';
 
 // chakra imports
-import { Box, Flex, HStack, Text, useColorModeValue } from '@chakra-ui/react';
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Flex,
+  HStack,
+  Icon,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import Link from 'next/link';
 import { IRoute } from 'types/navigation';
-import { usePathname } from 'next/navigation';
-import { useCallback } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { IoChevronDown } from 'react-icons/io5';
 
 interface SidebarLinksProps {
   routes: IRoute[];
@@ -40,7 +53,8 @@ export function SidebarLinks(props: SidebarLinksProps) {
       if (
         route.layout === '/admin' ||
         route.layout === '/auth' ||
-        route.layout === '/rtl'
+        route.layout === '/rtl' ||
+        route.layout === '/dashboard'
       ) {
         return (
           <Link key={index} href={route.layout + route.path}>
@@ -61,6 +75,8 @@ export function SidebarLinks(props: SidebarLinksProps) {
                           : textColor
                       }
                       me="18px"
+                      display={'flex'}
+                      alignItems={'center'}
                     >
                       {route.icon}
                     </Box>
@@ -127,4 +143,125 @@ export function SidebarLinks(props: SidebarLinksProps) {
   return <>{createLinks(routes)}</>;
 }
 
-export default SidebarLinks;
+// export default SidebarLinks;
+
+const NavigationItem = ({ routes }: { routes: IRoute[] }) => {
+  const pathname = usePathname();
+
+  let activeColor = useColorModeValue('gray.700', 'white');
+  let inactiveColor = useColorModeValue(
+    'secondaryGray.600',
+    'secondaryGray.600',
+  );
+  let activeIcon = useColorModeValue('brand.500', 'white');
+  let textColor = useColorModeValue('secondaryGray.500', 'white');
+  let brandColor = useColorModeValue('brand.500', 'brand.400');
+
+  const expandedIndex = routes.findIndex((route) => {
+    return pathname.includes(route.layout + route.path);
+  });
+
+  const activeRoute = (routeName: string) => {
+    return pathname === routeName;
+  };
+
+  const defaultIndex = expandedIndex !== -1 ? [expandedIndex] : [];
+
+  return (
+    <Accordion
+      key={routes.join(',').toString()}
+      allowMultiple
+      defaultIndex={defaultIndex}
+    >
+      {routes.map((route: IRoute) => (
+        <AccordionItem key={route.path} border={'none'}>
+          <Link href={route.isPage ? `${route.layout}${route.path}` : ''}>
+            <AccordionButton
+              bg={'transparent'}
+              _hover={{
+                bg: 'transparent',
+              }}
+            >
+              {/* {route.icon}
+              <Box ml={2} as="span" flex="1" textAlign="left">
+                <Text
+                  color={
+                    activeRoute(route.layout + route.path)
+                      ? activeColor
+                      : textColor
+                  }
+                  fontWeight={
+                    activeRoute(route.layout + route.path) ? 'bold' : 'normal'
+                  }
+                >
+                  {route.name}
+                </Text>
+              </Box> */}
+              <Box as="span" flex="1" textAlign="left">
+                <HStack>
+                  <Flex w="100%" alignItems="center" justifyContent="center">
+                    <Box
+                      color={
+                        activeRoute(route.layout + route.path)
+                          ? activeIcon
+                          : textColor
+                      }
+                      display={'flex'}
+                      alignItems={'center'}
+                    >
+                      {route.icon}
+                    </Box>
+                    <Text
+                      me="auto"
+                      color={
+                        activeRoute(route.layout + route.path)
+                          ? activeColor
+                          : textColor
+                      }
+                      ml={2}
+                      fontWeight={
+                        activeRoute(route.layout + route.path)
+                          ? 'bold'
+                          : 'normal'
+                      }
+                    >
+                      {route.name}
+                    </Text>
+                  </Flex>
+                  {route.children && (
+                    <Box
+                      color={
+                        activeRoute(route.layout + route.path)
+                          ? activeIcon
+                          : textColor
+                      }
+                      display={'flex'}
+                      alignItems={'center'}
+                    >
+                      <AccordionIcon />
+                    </Box>
+                  )}
+                </HStack>
+              </Box>
+            </AccordionButton>
+          </Link>
+          {route.children && (
+            <AccordionPanel pb={2} pt={0} border={'none'}>
+              <NavigationItem routes={route.children} />
+            </AccordionPanel>
+          )}
+        </AccordionItem>
+      ))}
+    </Accordion>
+  );
+};
+
+const NavigationMenu = ({ routes }: { routes: IRoute[] }) => {
+  return (
+    <div>
+      <NavigationItem key={'my-navigation'} routes={routes} />
+    </div>
+  );
+};
+
+export default NavigationMenu;
