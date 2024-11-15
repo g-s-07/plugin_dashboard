@@ -143,24 +143,34 @@ export default function Playwright() {
                         spacing={{ base: "8px", md: "10px" }}
                         flex="1"
                     >
-                        {data.map((item: { table_name: string, row_count: number }, index: number) => (
+                        {data?.map((item: { table_name: string, row_count: number }, index: number) => (
                             <Card 
                                 key={index} 
                                 height={{ base: "100px", md: "80px" }} 
                                 width={{ base: "100%", md: "280px" }}
+                                alignItems={"center"}
+                                borderRadius={"10px"}
+                                boxShadow="7px 14px 20px rgba(0, 0, 0, 0.1)"
                             >
                                 <CardHeader p="2">
                                     <Heading
                                         textAlign="center"
                                         fontWeight="bold"
-                                        fontSize={{ base: "md", md: "sm" }} 
+                                        fontSize={{ base: "xl", md: "md" }} 
                                         color="black"
                                     >
                                         {item.table_name}
                                     </Heading>
                                 </CardHeader>
-                                <CardBody p="2" textAlign="center">
-                                    <Text fontSize="lg" fontWeight="bold">{item.row_count}</Text>
+                                <CardBody p="2" textAlign="center" w="fit-content" h="fit-content" display="inline-block">
+                                    <Text 
+                                        px={"16px"}
+                                        bg={"#F4F8FE"} borderRadius={"10px"} boxShadow="inset 2px 5px 10px rgba(0, 0, 0, 0.1)"
+                                        fontSize="lg" 
+                                        fontWeight="bold" 
+
+                                    >
+                                    {item.row_count}</Text>
                                 </CardBody>
                             </Card>
                         ))}
