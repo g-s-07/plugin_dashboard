@@ -20,7 +20,7 @@ interface DashboardLayoutProps extends PropsWithChildren {
 
 // Custom Chakra theme
 export default function AdminLayout (props: DashboardLayoutProps) {
-  const { children, ...rest } = props
+  const { children, routes, ...rest } = props
   // states and functions
   const [fixed] = useState(false)
   const [toggleSidebar, setToggleSidebar] = useState(false)
@@ -57,6 +57,7 @@ export default function AdminLayout (props: DashboardLayoutProps) {
           <Portal>
             <Box>
               <Navbar
+              routes={routes}
                 onOpen={onOpen}
                 logoText={'Horizon UI Dashboard PRO'}
                 brandText={getActiveRoute(routes)}

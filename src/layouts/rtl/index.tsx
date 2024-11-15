@@ -14,7 +14,7 @@ interface RTLLayoutProps extends PropsWithChildren {}
 
 // Custom Chakra theme
 export default function RTLLayout(props: RTLLayoutProps) {
-	const { children, ...rest } = props;
+	const { children , ...rest } = props;
 	const [ fixed ] = useState(false);
 	const [ toggleSidebar, setToggleSidebar ] = useState(false);
 
@@ -49,6 +49,7 @@ export default function RTLLayout(props: RTLLayoutProps) {
 						<Portal>
 							<Box>
 								<Navbar
+									routes={routes}
 									onOpen={onOpen}
 									logoText={'Horizon UI Dashboard'}
 									brandText={getActiveRoute(routes)}

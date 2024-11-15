@@ -13,6 +13,7 @@ import {
 import { useState, useEffect } from 'react'
 import AdminNavbarLinks from 'components/navbar/NavbarLinksAdmin'
 import { isWindowAvailable } from 'utils/navigation'
+import { IRoute } from 'types/navigation'
 
 export default function AdminNavbar (props: {
   secondary: boolean
@@ -20,6 +21,7 @@ export default function AdminNavbar (props: {
   brandText: string
   logoText: string
   fixed: boolean
+  routes: IRoute[]
   onOpen: (...args: any[]) => any
 }) {
   const [scrolled, setScrolled] = useState(false)
@@ -34,7 +36,7 @@ export default function AdminNavbar (props: {
     }
   })
 
-  const { secondary, message, brandText, fixed } = props
+  const { secondary, message, brandText, fixed, routes } = props
 
   // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
   let mainText = useColorModeValue('navy.700', 'white')
@@ -149,6 +151,7 @@ export default function AdminNavbar (props: {
         </Box>
         <Box ms='auto' w={{ sm: '100%', md: 'unset' }}>
           <AdminNavbarLinks
+            routes={routes}
             onOpen={props.onOpen}
             secondary={secondary}
             fixed={fixed}
