@@ -104,11 +104,11 @@ export default function DashboardLayout(props: DashboardLayoutProps) {
           <>
         <Box
           float="right"
-          // minHeight="100vh"
+          minHeight="100vh"
           height="100%"
           overflow="auto"
           position="relative"
-          // maxHeight="100%"
+          maxHeight="100%"
           w={{ base: '100%', xl: 'calc( 100% - 290px )' }}
           maxWidth={{ base: '100%', xl: 'calc( 100% - 290px )' }}
           transition="all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1)"
@@ -138,7 +138,7 @@ export default function DashboardLayout(props: DashboardLayoutProps) {
             minH="100vh"
             pt="50px"
           >
-            <Box pt={{ base: '180px', md: '80px', xl: '80px' }}>{children}</Box>
+            <Box pt={{ base: '100px', md: '80px', xl: '80px' }}>{children}</Box>
           </Box>
           <Box>
             <Footer />

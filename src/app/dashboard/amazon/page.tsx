@@ -41,7 +41,9 @@ import {
   Stat,
   StatNumber,
   Tfoot,
-  Container
+  Container,
+  Accordion,
+  AccordionItem
 } from '@chakra-ui/react';
 import { IoMdDownload } from "react-icons/io";
 import Select from 'react-select';
@@ -50,10 +52,11 @@ import { BACKEND_DOMAIN, token } from '../../../../urls';
 import { saveAs } from 'file-saver';
 import { convertToCSV } from 'utils/converttocsv';
 import { TaskContext } from 'contexts/TaskId';
+import GeneralCard from 'components/card/GeneralCard';
 
 
 interface MissedCountType {
-  [key: string]: number | string; 
+  [key: string]: number | string;
 }
 
 
@@ -63,21 +66,21 @@ interface CountDataType {
     product_success_count?: number[];
     product_processed_count?: number[];
     product_pending_count?: number[];
-    product_missed_count?: [number,MissedCountType ];
+    product_missed_count?: [number, MissedCountType];
   };
   list?: {
     list_total_count?: number[];
     list_success_count?: number[];
     list_processed_count?: number[];
     list_pending_count?: number[];
-    list_missed_count?: [number,MissedCountType];
+    list_missed_count?: [number, MissedCountType];
   };
   seller?: {
     seller_total_count?: number[];
     seller_success_count?: number[];
     seller_processed_count?: number[];
     seller_pending_count?: number[];
-    seller_missed_count?: [number,MissedCountType];
+    seller_missed_count?: [number, MissedCountType];
   };
 }
 
@@ -88,27 +91,29 @@ const Default: React.FC = () => {
   const [taskId, setTaskId] = useState<number | null>(null);
   const { setTaskid } = useContext(TaskContext);
 
-  const [countData, setCountData] = useState<CountDataType>({ product: {
-    product_total_count: [0,0],
-    product_success_count: [0,0],
-    product_processed_count: [0,0],
-    product_pending_count: [0,0], 
-    product_missed_count: [0,{}]
-  },
-  list: {
-    list_total_count: [0,0],
-    list_success_count: [0,0],
-    list_processed_count: [0,0],
-    list_pending_count: [0,0], 
-    list_missed_count: [0,{}]
-  },
-  seller: {
-    seller_total_count: [0,0],
-    seller_success_count: [0,0],
-    seller_processed_count: [0,0],
-    seller_pending_count: [0,0],
-    seller_missed_count: [0,{}]
-  }});
+  const [countData, setCountData] = useState<CountDataType>({
+    product: {
+      product_total_count: [0, 0],
+      product_success_count: [0, 0],
+      product_processed_count: [0, 0],
+      product_pending_count: [0, 0],
+      product_missed_count: [0, {}]
+    },
+    list: {
+      list_total_count: [0, 0],
+      list_success_count: [0, 0],
+      list_processed_count: [0, 0],
+      list_pending_count: [0, 0],
+      list_missed_count: [0, {}]
+    },
+    seller: {
+      seller_total_count: [0, 0],
+      seller_success_count: [0, 0],
+      seller_processed_count: [0, 0],
+      seller_pending_count: [0, 0],
+      seller_missed_count: [0, {}]
+    }
+  });
   const [dropdownDataCategory, setDropdownDataCategory] = useState([]);
   const [dropdownDataSubCategory, setDropdownDataSubCategory] = useState([]);
   const [dropdownDataDatapoints, setDropdownDataDatapoints] = useState([]);
@@ -118,13 +123,15 @@ const Default: React.FC = () => {
   const [dropdownDataCity, setDropdownDataCity] = useState([]);
   const [dropdownDataCountry, setDropdownDataCountry] = useState([]);
   const [dropdownDataState, setDropdownDataState] = useState([]);
-  const [selectedCity,setSelectedCity] = useState([])
-  const [selectedState,setSelectedState] = useState([])
-  const [selectedCountry,setSelectedCountry] = useState([])
+  const [selectedCity, setSelectedCity] = useState([])
+  const [selectedState, setSelectedState] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState([])
   const [amazonProductData, setAmazonsProductData] = useState([]);
   const [amazonListData, setAmazonsListData] = useState([]);
   const [amazonSellerData, setAmazonsSellerData] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
+  const textColor = useColorModeValue('navy.700', 'white');
+
 
 
   const seller_data = amazonSellerData
@@ -140,39 +147,39 @@ const Default: React.FC = () => {
     }
   }, [selectedCategory, selectedSubCategory, selectedDatapoints, activeTab, selectedCity, selectedState, selectedCountry]);
 
-  
+
   const fetchApiData = async (task_id: number | null) => {
     setTableLoading(true);
     try {
       if (!task_id) throw new Error("Task ID not found");
-      
-      let tableName= ''
-        
+
+      let tableName = ''
+
       const formData = new FormData();
       formData.append('task_id', task_id.toString());
-      setTaskid((prev)=>{
-        return{
+      setTaskid((prev) => {
+        return {
           ...prev,
           task_id: task_id
         }
       });
-      
-        if (activeTab==1){
-          tableName = 'PRODUCT_DETAIL_DATA'
-        }
-        else if (activeTab==2){
-          tableName = 'SELLER_DATA'
-        }
-        else{
-          tableName = 'PRODUCT_LIST_DATA'
-        }
-        console.log(tableName);
-        formData.append('table_name', tableName);
-  
+
+      if (activeTab == 1) {
+        tableName = 'PRODUCT_DETAIL_DATA'
+      }
+      else if (activeTab == 2) {
+        tableName = 'SELLER_DATA'
+      }
+      else {
+        tableName = 'PRODUCT_LIST_DATA'
+      }
+      console.log(tableName);
+      formData.append('table_name', tableName);
+
       if (selectedCategory) {
         formData.append('mapped_category', selectedCategory.join(','));
       }
-  
+
       if (selectedSubCategory) {
         formData.append('sub_category', selectedSubCategory.join(','));
       }
@@ -181,20 +188,20 @@ const Default: React.FC = () => {
         formData.append('datapoints', selectedDatapoints.join(','));
       }
 
-      if(selectedCity){
-        formData.append('city',selectedCity.join(','))
+      if (selectedCity) {
+        formData.append('city', selectedCity.join(','))
       }
 
-      if(selectedState){
-        formData.append('state',selectedState.join(','))
+      if (selectedState) {
+        formData.append('state', selectedState.join(','))
       }
 
-      if(selectedCountry){
-        formData.append('country',selectedCountry.join(','))
+      if (selectedCountry) {
+        formData.append('country', selectedCountry.join(','))
       }
 
       console.log(formData);
-  
+
       const response = await fetch(
         `${BACKEND_DOMAIN}/plugin_insights/`,
         {
@@ -205,17 +212,17 @@ const Default: React.FC = () => {
           body: formData,
         },
       );
-  
+
       const data = await response.json();
- 
-      if(data.error){
+
+      if (data.error) {
         throw new Error(data.error);
       }
-      
-      console.log('i am data',data.data_count);
+
+      console.log('i am data', data.data_count);
       setCountData(data.data_count);
-      activeTab==0 ? setAmazonsListData(data.data) : activeTab==1 ? setAmazonsProductData(data.data) : setAmazonsSellerData(data.data);
-      if (activeTab==1) {
+      activeTab == 0 ? setAmazonsListData(data.data) : activeTab == 1 ? setAmazonsProductData(data.data) : setAmazonsSellerData(data.data);
+      if (activeTab == 1) {
         toast({
           title: "Success",
           description: "Datapoints fetched successfully",
@@ -238,24 +245,24 @@ const Default: React.FC = () => {
       else setAmazonsSellerData([]);
       toast({
         title: "Error",
-        description:error.toString(),
+        description: error.toString(),
         status: "error",
         duration: 3000,
         isClosable: true,
       });
-    }finally {
+    } finally {
       setTableLoading(false);
     }
   };
 
   const downloadData = (task_id: number) => {
     if (!task_id) throw new Error("Please Mention the Task ID");
-    try{
+    try {
       const csvData = convertToCSV(seller_data)
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       saveAs(blob, `seller_details${task_id}.csv`);
     }
-    catch(error:any){
+    catch (error: any) {
       toast({
         title: "Error",
         description: error,
@@ -266,34 +273,34 @@ const Default: React.FC = () => {
     }
   }
 
-  const fetchdropDownData = async(task_id: number) =>{
+  const fetchdropDownData = async (task_id: number) => {
     setDropdownLoading(true);
-    try{
+    try {
       if (!task_id) throw new Error("Task ID not found");
-        const filter_table_data= activeTab==1 ? 'PRODUCT_DETAIL_DATA' : activeTab==2 ? 'SELLER_DATA' : 'PRODUCT_LIST_DATA' 
-        const response = await axios.get(
-          `${BACKEND_DOMAIN}/get-data/?task_id=${task_id}&table_name=${filter_table_data}`,
-          {
-              headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                  Authorization: token,
-              },
-          }
+      const filter_table_data = activeTab == 1 ? 'PRODUCT_DETAIL_DATA' : activeTab == 2 ? 'SELLER_DATA' : 'PRODUCT_LIST_DATA'
+      const response = await axios.get(
+        `${BACKEND_DOMAIN}/get-data/?task_id=${task_id}&table_name=${filter_table_data}`,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: token,
+          },
+        }
       );
 
-      if(response.data.error){
+      if (response.data.error) {
         throw new Error(response.data.error);
       }
 
-      const data  = response.data.data;
-      
-      if(data) {
-        if(data.category)setDropdownDataCategory(data.category);
-        if(data.sub_category)setDropdownDataSubCategory(data.sub_category);
-        if(data.datapoints)setDropdownDataDatapoints(data.datapoints);
-        if(data.city)setDropdownDataCity(data.city);
-        if(data.state)setDropdownDataState(data.state);
-        if(data.country)setDropdownDataCountry(data.country);
+      const data = response.data.data;
+
+      if (data) {
+        if (data.category) setDropdownDataCategory(data.category);
+        if (data.sub_category) setDropdownDataSubCategory(data.sub_category);
+        if (data.datapoints) setDropdownDataDatapoints(data.datapoints);
+        if (data.city) setDropdownDataCity(data.city);
+        if (data.state) setDropdownDataState(data.state);
+        if (data.country) setDropdownDataCountry(data.country);
       }
       toast({
         title: "Success",
@@ -303,7 +310,7 @@ const Default: React.FC = () => {
         isClosable: true,
       })
     }
-    catch(error:any){
+    catch (error: any) {
       setDropdownDataCategory([]);
       setDropdownDataSubCategory([]);
       setDropdownDataDatapoints([]);
@@ -318,43 +325,44 @@ const Default: React.FC = () => {
         isClosable: true,
       });
     }
-    finally{
+    finally {
       setDropdownLoading(false);
     }
   }
 
 
-  useEffect(()=>{
-    if(taskId!=null){
+  useEffect(() => {
+    if (taskId != null) {
       fetchdropDownData(taskId)
     }
-},[activeTab])
+  }, [activeTab])
 
 
 
-const get_skeleton = (type: string) => {
-  if (type === 'stats') {
-    return (
-      <Skeleton height="25px" color={"gray.900"} mb={2} />
-    );
-  } else if (type === 'dropdown') {
-    return (
-      <Skeleton startColor='white.100' endColor='gray.700' height='50px' mb={2} rounded={"md"} />
-    );
-  } else {
-    return (
-      <Tr>
-        <Td colSpan={5}>
-          <Skeleton startColor='white.100' endColor='gray.100' height='30px' mb={2} rounded={"md"} w={'100%'} />
-          <Skeleton startColor='white.100' endColor='gray.300' height='30px' mb={2} rounded={"md"} w={'100%'} />
-          <Skeleton startColor='white.100' endColor='gray.500' height='30px' mb={2} rounded={"md"} w={'100%'} />
-          <Skeleton startColor='white.100' endColor='gray.700' height='30px' mb={2} rounded={"md"} w={'100%'} />
-          <Skeleton startColor='white.100' endColor='gray.900' height='30px' mb={2} rounded={"md"} w={'100%'} />
-        </Td>
-      </Tr>
-    );
-  }
-};
+  const get_skeleton = (type: string) => {
+    if (type === 'stats') {
+      return (
+        <Skeleton height="25px" mb={2} />
+      );
+    } else if (type === 'dropdown') {
+      return (
+        <Skeleton height='50px' mb={2} rounded={"md"} />
+      );
+    }
+    else {
+      return (
+        <Tr>
+          <Td colSpan={5}>
+            <Skeleton height='30px' mb={2} rounded={"md"} w={'100%'} />
+            <Skeleton height='30px' mb={2} rounded={"md"} w={'100%'} />
+            <Skeleton height='30px' mb={2} rounded={"md"} w={'100%'} />
+            <Skeleton height='30px' mb={2} rounded={"md"} w={'100%'} />
+            <Skeleton height='30px' mb={2} rounded={"md"} w={'100%'} />
+          </Td>
+        </Tr>
+      );
+    }
+  };
 
 
 
@@ -364,22 +372,22 @@ const get_skeleton = (type: string) => {
   const handleTabChange = (index: number) => {
     setActiveTab(index);
   };
-  
-const renderTable = (
-    data: any[], 
-    config: { 
-      columns: string[], 
-      headers: string[] 
-    }, 
-    category?: string[], 
+
+  const renderTable = (
+    data: any[],
+    config: {
+      columns: string[],
+      headers: string[]
+    },
+    category?: string[],
     subCategory?: string[],
-    country?: string[], 
-    state?: string[], 
-    city?: string[], 
-    activeTab?: number)=> 
-    
-      
-      (
+    country?: string[],
+    state?: string[],
+    city?: string[],
+    activeTab?: number) =>
+
+
+  (
     <Box
       maxHeight="500px"
       maxWidth="full"
@@ -388,442 +396,487 @@ const renderTable = (
       border="2px solid"
       borderColor="gray.300"
       rounded="lg"
-      position="relative" 
+      position="relative"
     >
-    <Table variant="striped" colorScheme="gray">
-      <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
-      {dropdownloading ? get_skeleton('dropdown') : 
-        <Tr>
-          {config.headers.map((header, index) => (
-            <Th key={index} width="200px">
-              <HStack justifyContent={"center"} align="center">
-                <span>{header}</span>
-                {header === "Category" && activeTab !== 2 && (
-                  <Select
-                    options={convertToOptions(category)}
-                    isMulti
-                    value={selectedCategory.map((cat) => ({ value: cat, label: cat }))}
-                    onChange={(selectedOptions: any) =>
-                      setSelectedCategory(selectedOptions.map((option: any) => option.value))
-                    }
-                    placeholder="Select Categories"
-                    // className="w-[100px]"
-                    styles={{
-                      menuPortal: (base:any) => ({ ...base, zIndex: 50 }),
-                    }}
-                    menuPortalTarget={document.body}
-                    />
-                  )}
-                {header === "Sub-Category" && activeTab !== 2 && (
-                  <Select
-                  options={convertToOptions(subCategory)}
-                  isMulti
-                  value={selectedSubCategory.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions: any) =>
-                    setSelectedSubCategory(selectedOptions.map((option: any) => option.value))
-                  }
-                  placeholder="Select Sub-Categories"
-                    className="w-[100px]"
-                    styles={{
-                      menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
-                    }}
-                    menuPortalTarget={document.body}
-                  />
-                )}
-                {header === "City" && (
-                  <Select
-                  options={convertToOptions(city)}
-                  isMulti
-                  value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions: any) =>
-                    setSelectedCity(selectedOptions.map((option: any) => option.value))
-                  }
-                  placeholder="Select City"
-                  className="w-[100px]"
-                  styles={{
-                      menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
-                    }}
-                    menuPortalTarget={document.body}
-                  />
-                )}
-                {header === "State" && (
-                  <Select
-                  options={convertToOptions(state)}
-                  isMulti
-                  value={selectedState.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions: any) =>
-                      setSelectedState(selectedOptions.map((option: any) => option.value))
-                    }
-                    placeholder="Select State"
-                    className="w-[100px]"
-                    styles={{
-                      menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
-                    }}
-                    menuPortalTarget={document.body}
-                    />
-                  )}
-                {header === "Country" && (
-                  <Select
-                  options={convertToOptions(country)}
-                  isMulti
-                  value={selectedCountry.map((cat) => ({ value: cat, label: cat }))}
-                  onChange={(selectedOptions: any) =>
-                    setSelectedCountry(selectedOptions.map((option: any) => option.value))
-                  }
-                  placeholder="Select Country"
-                  className="w-[200px]"
-                  styles={{
-                    menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
-                  }}
-                  menuPortalTarget={document.body}
-                  />
-                )}
-              </HStack>
-            </Th>
-          ))}
-        </Tr>
-      }
-      </Thead>
-    {tableloading ? (
-      <>
-        {Array.from({ length: 2 }).map((_, index) => (
-          get_skeleton('table')
-        ))}
-      </>
-    ) : (
-      <>
-      <Tbody>
-        {data?.map((row, index) => (
-          <Tr key={index} border="2px solid" borderColor="gray.200">
-            {config.columns.map((column, index1) => (
-              <Td key={index1} textAlign="center">
-                {column === 'id' ? index + 1 : row[column]}
-              </Td>
+      <Table variant="striped" colorScheme="gray">
+        <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
+          {dropdownloading ? get_skeleton('dropdown') :
+            <Tr>
+              {config.headers.map((header, index) => (
+                <Th key={index} width="200px">
+                  <HStack justifyContent={"center"} align="center">
+                    <span>{header}</span>
+                    {header === "Category" && activeTab !== 2 && (
+                      <Select
+                        options={convertToOptions(category)}
+                        isMulti
+                        value={selectedCategory.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(selectedOptions: any) =>
+                          setSelectedCategory(selectedOptions.map((option: any) => option.value))
+                        }
+                        placeholder="Select Categories"
+                        // className="w-[100px]"
+                        styles={{
+                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                        }}
+                        menuPortalTarget={document.body}
+                      />
+                    )}
+                    {header === "Sub-Category" && activeTab !== 2 && (
+                      <Select
+                        options={convertToOptions(subCategory)}
+                        isMulti
+                        value={selectedSubCategory.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(selectedOptions: any) =>
+                          setSelectedSubCategory(selectedOptions.map((option: any) => option.value))
+                        }
+                        placeholder="Select Sub-Categories"
+                        className="w-[100px]"
+                        styles={{
+                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                        }}
+                        menuPortalTarget={document.body}
+                      />
+                    )}
+                    {header === "City" && (
+                      <Select
+                        options={convertToOptions(city)}
+                        isMulti
+                        value={selectedCity.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(selectedOptions: any) =>
+                          setSelectedCity(selectedOptions.map((option: any) => option.value))
+                        }
+                        placeholder="Select City"
+                        className="w-[100px]"
+                        styles={{
+                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                        }}
+                        menuPortalTarget={document.body}
+                      />
+                    )}
+                    {header === "State" && (
+                      <Select
+                        options={convertToOptions(state)}
+                        isMulti
+                        value={selectedState.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(selectedOptions: any) =>
+                          setSelectedState(selectedOptions.map((option: any) => option.value))
+                        }
+                        placeholder="Select State"
+                        className="w-[100px]"
+                        styles={{
+                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                        }}
+                        menuPortalTarget={document.body}
+                      />
+                    )}
+                    {header === "Country" && (
+                      <Select
+                        options={convertToOptions(country)}
+                        isMulti
+                        value={selectedCountry.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(selectedOptions: any) =>
+                          setSelectedCountry(selectedOptions.map((option: any) => option.value))
+                        }
+                        placeholder="Select Country"
+                        className="w-[200px]"
+                        styles={{
+                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                        }}
+                        menuPortalTarget={document.body}
+                      />
+                    )}
+                  </HStack>
+                </Th>
+              ))}
+            </Tr>
+          }
+        </Thead>
+        {tableloading ? (
+          <>
+            {Array.from({ length: 2 }).map((_, index) => (
+              get_skeleton('table')
             ))}
-          </Tr>
-        ))}
-      </Tbody>
-       <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
-       <Tr>
-         <Td colSpan={config.columns.length} textAlign="end" pl={12} fontWeight={'bold'}>
-           Total Count: {data?.reduce((acc, row) => acc + row.total_counts, 0)}
-         </Td>
-       </Tr>
-     </Tfoot>
-    </>
-)}
-    </Table>
-  </Box>
+          </>
+        ) : (
+          <>
+            <Tbody>
+              {data?.map((row, index) => (
+                <Tr key={index} border="2px solid" borderColor="gray.200">
+                  {config.columns.map((column, index1) => (
+                    <Td key={index1} textAlign="center">
+                      {column === 'id' ? index + 1 : row[column]}
+                    </Td>
+                  ))}
+                </Tr>
+              ))}
+            </Tbody>
+            <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
+              <Tr>
+                <Td colSpan={config.columns.length} textAlign="end" pl={12} fontWeight={'bold'}>
+                  Total Count: {data?.reduce((acc, row) => acc + row.total_counts, 0)}
+                </Td>
+              </Tr>
+            </Tfoot>
+          </>
+        )}
+      </Table>
+    </Box>
 
-);
+  );
 
 
   return (
-    <Box  overflow="visible" position="relative" className='flex flex-wrap'>
-      <Flex mb={4} direction="column" position="relative">
-        <Box>
-          <Flex alignItems="center" gap={6} flexWrap="wrap" justify="space-between">
-            <Stack direction="column" spacing={2} alignItems="center">
-              <FormControl isRequired>
-                <Box position="relative">
-                  <Input
-                    id="task-id"
-                    type="number"
-                    value={taskId ?? ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setTaskId(value === '' ? null : Number(value));
-                    }}
-                    placeholder=" "
-                    _placeholder={{ color: 'transparent' }} 
-                    _focus={{ borderColor: 'blue.400' }} 
-                    _hover={{ borderColor: 'blue.300' }} 
-                  />
-                  <FormLabel 
-                    position="absolute"
-                    top={hasTaskId ? '-6px' : '50%'}
-                    left="10px"
-                    px={2}
-                    color={hasTaskId ? 'black.500' : 'gray.500'}
-                    fontWeight={hasTaskId ? 'bold' : 'normal'}
-                    fontSize={hasTaskId ? 'sm' : 'md'}
-                    transform={hasTaskId ? 'translateY(-100%) translateX(-15%)' : 'translateY(-50%)'}
-                    transition="all 0.2s ease-in-out"
-                  >
-                    Task ID
-                  </FormLabel>
-                </Box>
-              </FormControl>
-              <Button colorScheme="blue" onClick={() => [fetchApiData(taskId), fetchdropDownData(taskId)]} >
-                Fetch Counts
-              </Button>
-            </Stack>
-
-            {/* Cards for counts */}
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="20px" flex="1">
-              {/* Render Product Card */}
-              <Card height="200px">
-                <CardHeader p="4">
-                  <Heading
-                    textAlign="start"
-                    fontWeight="bold"
-                    fontSize={{ base: "md", md: "lg" }}
-                    color={"black"}>Amazon Product List
-                  </Heading>
-                  <Box mt="3" textAlign={"center"}>
-                    <StatGroup>
-                      <Stat>
-                        <StatLabel>Total</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                           <Tooltip                             
-                              
-                              fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_total_count[1]} aria-label="Total list count tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.list?.list_total_count[0]}
-                            </span>
-                          </Tooltip> 
-                        </StatNumber>
-                      </Stat>
-                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                      <Stat>
-                        <StatLabel>Extracted Data</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                           <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_success_count[1]} aria-label="Total list Extracted Data tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
-                            </span>
-                          </Tooltip> 
-                        </StatNumber>
-                      </Stat>
-                    </StatGroup>
-                  </Box>
-                </CardHeader>
-                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                <CardBody p="3" textAlign={"center"}>
-                  <StatGroup>
-                    <Stat>
-                      <StatLabel>Processed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_processed_count[1]} aria-label="Total list processed tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.list?.list_processed_count[0]}
-                            </span>
-                          </Tooltip> 
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Pending</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.list?.list_pending_count[1]} aria-label="Total list pending tooltip">
-                          <span>
-                            {tableloading ? get_skeleton('stats') : countData.list?.list_pending_count[0]}
-                          </span>
-                        </Tooltip> 
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Missed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt - 0:${countData.list?.list_missed_count[1][0]!==undefined ? countData.list?.list_missed_count[1][0] : 0} | 1:${countData.list?.list_missed_count[1][1]!==undefined ? countData.list?.list_missed_count[1][1] : 0} | 2:${countData.list?.list_missed_count[1][2] !== undefined ? countData.list?.list_missed_count[1][2] : 0} | 3:${countData.list?.list_missed_count[1][3] !== undefined ? countData.list?.list_missed_count[1][3] : 0}`} aria-label="Total list missed tooltip">
-                          <span>
-                            {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
-                          </span>
-                        </Tooltip>
-                      </StatNumber>
-                    </Stat>
-                  </StatGroup>
-                </CardBody>
-              </Card>
-
-              <Card height="200px" >
-                <CardHeader p="4">
-                  <Heading
-                    textAlign="start"
-                    fontWeight="bold"
-                    fontSize={{ base: "sm", md: "lg" }}
-                    color={"black"}>Amazon Product Details
-                  </Heading>
-                  <Box mt="3" textAlign={"center"}>
-                    <StatGroup>
-                      <Stat>
-                        <StatLabel>Total</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                          >
-                          <Tooltip fontSize={"18px"} 
-                            hasArrow  
-                            
-                            placement='right-end'
-                            label={countData.product?.product_total_count[1]} 
-                            aria-label="Total product count tooltip"
-                            >
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.product?.product_total_count[0]}
-                            </span>
-                          </Tooltip>
-                        </StatNumber>
-                      </Stat>
-                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                      <Stat>
-                        <StatLabel>Extracted Data</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                          > 
-                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_success_count[1]} aria-label="Total Extracted Data tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.product?.product_success_count[0]}
-                            </span>
-                          </Tooltip>
-                        </StatNumber>
-                      </Stat>
-                    </StatGroup>
-                  </Box>
-                </CardHeader>
-                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                <CardBody p="3" textAlign={"center"}>
-                  <StatGroup>
-                    <Stat>
-                      <StatLabel>Processed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_processed_count[1]} aria-label="Total processed tooltip">
-                          <span>
-                            {tableloading ? get_skeleton('stats') : countData.product?.product_processed_count[0]}
-                          </span>
-                        </Tooltip>
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Pending</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.product?.product_pending_count[1]} aria-label="Total pending tooltip">
-                          <span>
-                            {tableloading ? get_skeleton('stats') : countData.product?.product_pending_count[0]}
-                          </span>
-                        </Tooltip>
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Missed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={`Attempt - 0:${countData.product?.product_missed_count[1][0]!==undefined ? countData.product?.product_missed_count[1][0] : 0} | 1:${countData.product?.product_missed_count[1][1] !== undefined ? countData.product?.product_missed_count[1][1] : 0} | 2:${countData.product?.product_missed_count[1][2] !== undefined ? countData.product?.product_missed_count[1][2] : 0} | 3:${countData.product?.product_missed_count[1][3]!== undefined ? countData.product?.product_missed_count[1][3] : 0}`} aria-label="Total missed tooltip">
-                          <span>
-                            {tableloading ? get_skeleton('stats') : countData.product?.product_missed_count[0]}
-                          </span>
-                        </Tooltip>
-                        </StatNumber>
-                    </Stat>
-                  </StatGroup>
-                </CardBody>
-              </Card>
-
-              {/* Render Seller Card */}
-              <Card height="200px">
-                <CardHeader p="4">
-                  <Heading
-                    textAlign="start"
-                    fontWeight="bold"
-                    fontSize={{ base: "md", md: "lg" }}
-                    color={"black"}>Amazon Seller Details
-                  </Heading>
-                  <Box mt="3" textAlign={"center"}>
-                    <StatGroup >
-                      <Stat>
-                        <StatLabel>Total</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_total_count[1]} aria-label="Total seller count tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_total_count[0]}
-                            </span>
-                          </Tooltip>
-                        </StatNumber>
-                      </Stat>
-                      <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                      <Stat>
-                        <StatLabel>Extracted Data</StatLabel>
-                        <StatNumber
-                          fontSize={{ base: "md", md: "lg" }}
-                        >
-                          <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_success_count[1]} aria-label="Total seller Extracted Data tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_success_count[0]}
-                            </span>
-                          </Tooltip>
-                        </StatNumber>
-                      </Stat>
-                    </StatGroup>
-                  </Box>
-                </CardHeader>
-                <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                <CardBody p="3" textAlign={"center"}>
-                  <StatGroup>
-                    <Stat>
-                      <StatLabel>Processed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                        <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_processed_count[1]} aria-label="Total seller processed tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_processed_count[0]}
-                            </span>
-                        </Tooltip>
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Pending</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end'label={countData.seller?.seller_pending_count[1]} aria-label="Total seller pending tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_pending_count[0]}
-                            </span>
-                        </Tooltip>
-                      </StatNumber>
-                    </Stat>
-                    <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                    <Stat>
-                      <StatLabel>Missed</StatLabel>
-                      <StatNumber
-                        fontSize={{ base: "md", md: "lg" }}
-                      >
-                         <Tooltip  fontSize={"18px"} hasArrow   placement='right-end' label={`Attempt - 0:${countData.seller?.seller_missed_count[1][0]!==undefined?countData.seller?.seller_missed_count[1][0]:0} | 1:${countData.seller?.seller_missed_count[1][1]!==undefined?countData.seller?.seller_missed_count[1][1]:0} | 2:${countData.seller?.seller_missed_count[1][2]!==undefined?countData.seller?.seller_missed_count[1][2]:0} | 3:${countData.seller?.seller_missed_count[1][3]!==undefined?countData.seller?.seller_missed_count[1][3]:0}`} aria-label="Total seller missed tooltip">
-                            <span>
-                              {tableloading ? get_skeleton('stats') : countData.seller?.seller_missed_count[0]}
-                            </span>
-                        </Tooltip>
-                      </StatNumber>
-                    </Stat>
-                  </StatGroup>
-                </CardBody>
-              </Card>
-            </SimpleGrid>
-          </Flex>
+    <Stack 
+      direction={{ base: "column" }} // Responsive direction
+      spacing={4}
+      alignItems="center"
+      justifyContent="center"
+      width="full"
+    >
+  {/* First Stack */}
+    <Flex
+    direction={{ base: "row" }} // Responsive direction
+    gap={4}
+    alignItems="center"
+    justifyContent="center"
+    width="full">
+    <Stack
+      direction="column"
+      spacing={5}
+      alignItems="center"
+      flex="0.5" // Allow responsive width allocation
+    >
+      <FormControl isRequired>
+        <Box position="relative">
+          <Input
+            id="task-id"
+            type="number"
+            value={taskId ?? ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              setTaskId(value === "" ? null : Number(value));
+            }}
+            placeholder=" "
+            color={textColor}
+            _focus={{ borderColor: "blue.400" }}
+            _hover={{ borderColor: "blue.300" }}
+          />
+          <FormLabel
+            position="absolute"
+            top={hasTaskId ? "-6px" : "50%"}
+            px={2}
+            color={hasTaskId ? textColor : "gray.500"}
+            fontWeight={hasTaskId ? "bold" : "normal"}
+            fontSize={hasTaskId ? "sm" : "md"}
+            transform={
+              hasTaskId
+                ? "translateY(-100%) translateX(-15%)"
+                : "translateY(-50%)"
+            }
+            transition="all 0.2s ease-in-out"
+          >
+            Task ID
+          </FormLabel>
         </Box>
-      </Flex>
-      <Flex mt={2} direction="row" align="flex-start" flexWrap="wrap">
+      </FormControl>
+      <Button
+        colorScheme="blue"
+        onClick={() => [fetchApiData(taskId), fetchdropDownData(taskId)]}
+      >
+        Fetch Counts
+      </Button>
+    </Stack>
+    <Stack
+        direction="column"
+        flex="2" // Allow responsive width allocation
+        width="full"
+        alignItems="center"
+        spacing={6} // Add spacing between the elements
+      >
+        <Card
+          width="full"
+          bg="#ffffff1a"
+          brightness={0.2}
+          mt={4}
+          borderRadius="2px"
+          height="auto"
+          overflowY="hidden"
+          rounded={"xl"}
+          p={4}
+        >
+              <SimpleGrid
+                columns={{
+                  base: 1, 
+                  sm: 2,   
+                  lg: 3,   
+                  xl: 4, 
+                }}
+                w={"100%"}
+                spacing={4}
+              >
+                  <Card >
+                    <CardHeader p="4">
+                      <Heading
+                        textAlign="start"
+                        fontWeight="bold"
+                        fontSize={{ base: "md", md: "lg" }}
+                        color={textColor}>Amazon Product List
+                      </Heading>
+                      <Box mt="3" textAlign={"center"}>
+                        <StatGroup>
+                          <Stat>
+                            <StatLabel color={textColor}>Total</StatLabel>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip
+                                fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_total_count[1]} aria-label="Total list count tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.list?.list_total_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <StatLabel color={textColor}>Extracted Data</StatLabel>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_success_count[1]} aria-label="Total list Extracted Data tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                        </StatGroup>
+                      </Box>
+                    </CardHeader>
+                    <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
+                    <CardBody p="3" textAlign={"center"}>
+                      <StatGroup>
+                        <Stat>
+                          <StatLabel color={textColor}>Processed</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_processed_count[1]} aria-label="Total list processed tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.list?.list_processed_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                        <Stat>
+                          <StatLabel color={textColor}>Pending</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_pending_count[1]} aria-label="Total list pending tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.list?.list_pending_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                        <Stat>
+                          <StatLabel color={textColor}>Missed</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.list?.list_missed_count[1][0] !== undefined ? countData.list?.list_missed_count[1][0] : 0} | 1:${countData.list?.list_missed_count[1][1] !== undefined ? countData.list?.list_missed_count[1][1] : 0} | 2:${countData.list?.list_missed_count[1][2] !== undefined ? countData.list?.list_missed_count[1][2] : 0} | 3:${countData.list?.list_missed_count[1][3] !== undefined ? countData.list?.list_missed_count[1][3] : 0}`} aria-label="Total list missed tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                      </StatGroup>
+                    </CardBody>
+                  </Card>
+
+                  <Card >
+                    <CardHeader p="4">
+                      <Heading
+                        textAlign="start"
+                        fontWeight="bold"
+                        fontSize={{ base: "sm", md: "lg" }}
+                        color={textColor}>Amazon Product Details
+                      </Heading>
+                      <Box mt="3" textAlign={"center"}>
+                        <StatGroup>
+                          <Stat>
+                            <StatLabel color={textColor}>Total</StatLabel>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"}
+                                hasArrow
+
+                                placement='right-end'
+                                label={countData.product?.product_total_count[1]}
+                                aria-label="Total product count tooltip"
+                              >
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.product?.product_total_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <StatLabel color={textColor}>Extracted Data</StatLabel>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_success_count[1]} aria-label="Total Extracted Data tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.product?.product_success_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                        </StatGroup>
+                      </Box>
+                    </CardHeader>
+                    <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
+                    <CardBody p="3" textAlign={"center"}>
+                      <StatGroup>
+                        <Stat>
+                          <StatLabel color={textColor}>Processed</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_processed_count[1]} aria-label="Total processed tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.product?.product_processed_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                        <Stat>
+                          <StatLabel color={textColor}>Pending</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_pending_count[1]} aria-label="Total pending tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.product?.product_pending_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                        <Stat>
+                          <StatLabel color={textColor}>Missed</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.product?.product_missed_count[1][0] !== undefined ? countData.product?.product_missed_count[1][0] : 0} | 1:${countData.product?.product_missed_count[1][1] !== undefined ? countData.product?.product_missed_count[1][1] : 0} | 2:${countData.product?.product_missed_count[1][2] !== undefined ? countData.product?.product_missed_count[1][2] : 0} | 3:${countData.product?.product_missed_count[1][3] !== undefined ? countData.product?.product_missed_count[1][3] : 0}`} aria-label="Total missed tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.product?.product_missed_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                      </StatGroup>
+                    </CardBody>
+                  </Card>
+
+                  {/* Render Seller Card */}
+                  <Card >
+                    <CardHeader p="4">
+                      <Heading
+                        textAlign="start"
+                        fontWeight="bold"
+                        fontSize={{ base: "md", md: "lg" }}
+                        color={textColor}>Amazon Seller Details
+                      </Heading>
+                      <Box mt="3" textAlign={"center"}>
+                        <StatGroup >
+                          <Stat>
+                            <StatLabel color={textColor}>Total</StatLabel>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_total_count[1]} aria-label="Total seller count tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.seller?.seller_total_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <StatLabel color={textColor}>Extracted Data</StatLabel>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_success_count[1]} aria-label="Total seller Extracted Data tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.seller?.seller_success_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                        </StatGroup>
+                      </Box>
+                    </CardHeader>
+                    <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
+                    <CardBody p="3" textAlign={"center"}>
+                      <StatGroup>
+                        <Stat>
+                          <StatLabel color={textColor}>Processed</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_processed_count[1]} aria-label="Total seller processed tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.seller?.seller_processed_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                        <Stat>
+                          <StatLabel color={textColor}>Pending</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_pending_count[1]} aria-label="Total seller pending tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.seller?.seller_pending_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                        <Stat>
+                          <StatLabel color={textColor}>Missed</StatLabel>
+                          <StatNumber
+                            fontSize={{ base: "md", md: "lg" }}
+                          >
+                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.seller?.seller_missed_count[1][0] !== undefined ? countData.seller?.seller_missed_count[1][0] : 0} | 1:${countData.seller?.seller_missed_count[1][1] !== undefined ? countData.seller?.seller_missed_count[1][1] : 0} | 2:${countData.seller?.seller_missed_count[1][2] !== undefined ? countData.seller?.seller_missed_count[1][2] : 0} | 3:${countData.seller?.seller_missed_count[1][3] !== undefined ? countData.seller?.seller_missed_count[1][3] : 0}`} aria-label="Total seller missed tooltip">
+                              <span>
+                                {tableloading ? get_skeleton('stats') : countData.seller?.seller_missed_count[0]}
+                              </span>
+                            </Tooltip>
+                          </StatNumber>
+                        </Stat>
+                      </StatGroup>
+                    </CardBody>
+                  </Card>
+                </SimpleGrid>
+        </Card>
+      </Stack>
+    </Flex>
+
+    <Flex mt={2} direction="row" align="flex-start" flexWrap="wrap" width={"100%"}>
           {taskId ? (<Box 
             flex="1"
             flexWrap="wrap"
@@ -933,8 +986,9 @@ const renderTable = (
             </Tabs>
           </Box>): null}
       </Flex>
-    </Box>
-  );
+    </Stack>
+    
+  )
 };
 
 

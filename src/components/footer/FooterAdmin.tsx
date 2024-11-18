@@ -37,16 +37,16 @@ export default function Footer() {
         {' '}
         &copy; {new Date().getFullYear()}
         <Text as="span" fontWeight="500" ms="4px">
-          Horizon UI. All Rights Reserved. Made with love by
-          <Link
+          InfoAnalytica. All Rights Reserved.
+          {/* <Link
             mx="3px"
             color={textColor}
-            href="https://www.simmmple.com"
+            href="https://www.infoanalytica.com/"
             target="_blank"
             fontWeight="700"
           >
-            Simmmple!
-          </Link>
+            InfoAnalytica!
+          </Link> */}
         </Text>
       </Text>
       <List display="flex">
@@ -59,9 +59,9 @@ export default function Footer() {
           <Link
             fontWeight="500"
             color={textColor}
-            href="mailto:hello@simmmple.com"
+            href="http://cdpstaging.plugtools.in/"
           >
-            Support
+            CDP Staging
           </Link>
         </ListItem>
         <ListItem
@@ -73,32 +73,18 @@ export default function Footer() {
           <Link
             fontWeight="500"
             color={textColor}
-            href="https://www.simmmple.com/licenses"
+            href="http://api.cdpstaging.plugtools.in:3000/home"
           >
-            License
-          </Link>
-        </ListItem>
-        <ListItem
-          me={{
-            base: '20px',
-            md: '44px',
-          }}
-        >
-          <Link
-            fontWeight="500"
-            color={textColor}
-            href="https://simmmple.com/terms-of-service"
-          >
-            Terms of Use
+            AWS Monitoring
           </Link>
         </ListItem>
         <ListItem>
           <Link
             fontWeight="500"
             color={textColor}
-            href="https://www.blog.simmmple.com/"
+            href="https://43.204.201.109/loginEmployee/?next=/"
           >
-            Blog
+            S1
           </Link>
         </ListItem>
       </List>
