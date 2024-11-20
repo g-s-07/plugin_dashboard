@@ -20,12 +20,12 @@ import {
   Tr,
   Th,
   Td,
-  Tabs,
-  TabList,
-  Tab,
+  // Tabs,
+  // TabList,
+  // Tab,
   TabIndicator,
-  TabPanels,
-  TabPanel,
+  // TabPanels,
+  // TabPanel,
   Tooltip,
   Skeleton,
   Button,
@@ -41,10 +41,8 @@ import {
   Stat,
   StatNumber,
   Tfoot,
-  Container,
-  Accordion,
-  AccordionItem
 } from '@chakra-ui/react';
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { IoMdDownload } from "react-icons/io";
 import Select from 'react-select';
 import axios, { AxiosError } from 'axios';
@@ -131,8 +129,6 @@ const Default: React.FC = () => {
   const [amazonSellerData, setAmazonsSellerData] = useState([]);
   const [activeTab, setActiveTab] = useState(0);
   const textColor = useColorModeValue('navy.700', 'white');
-
-
 
   const seller_data = amazonSellerData
   const toast = useToast();
@@ -388,6 +384,7 @@ const Default: React.FC = () => {
 
 
   (
+    
     <Box
       maxHeight="500px"
       maxWidth="full"
@@ -398,13 +395,13 @@ const Default: React.FC = () => {
       rounded="lg"
       position="relative"
     >
-      <Table variant="striped" colorScheme="gray">
-        <Thead position="sticky" top="0" bg="gray.100" zIndex="1">
+      <Table>
+        <Thead position="sticky" top="0" zIndex="1" bg={"#2D3748"}>
           {dropdownloading ? get_skeleton('dropdown') :
             <Tr>
               {config.headers.map((header, index) => (
                 <Th key={index} width="200px">
-                  <HStack justifyContent={"center"} align="center">
+                  <HStack justifyContent={"center"} align="center" bg={"#2D3748"}>
                     <span>{header}</span>
                     {header === "Category" && activeTab !== 2 && (
                       <Select
@@ -415,9 +412,17 @@ const Default: React.FC = () => {
                           setSelectedCategory(selectedOptions.map((option: any) => option.value))
                         }
                         placeholder="Select Categories"
-                        // className="w-[100px]"
                         styles={{
-                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                          control: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: "black",
+                          }),
+                          option: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor,
+                          }),
                         }}
                         menuPortalTarget={document.body}
                       />
@@ -433,7 +438,16 @@ const Default: React.FC = () => {
                         placeholder="Select Sub-Categories"
                         className="w-[100px]"
                         styles={{
-                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                          control: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor, 
+                          }),
+                          option: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor,
+                          }),
                         }}
                         menuPortalTarget={document.body}
                       />
@@ -449,7 +463,16 @@ const Default: React.FC = () => {
                         placeholder="Select City"
                         className="w-[100px]"
                         styles={{
-                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                          control: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748", 
+                            color: textColor,
+                          }),
+                          option: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor, 
+                          }),
                         }}
                         menuPortalTarget={document.body}
                       />
@@ -465,7 +488,16 @@ const Default: React.FC = () => {
                         placeholder="Select State"
                         className="w-[100px]"
                         styles={{
-                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                          control: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748", 
+                            color: textColor,
+                          }),
+                          option: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor, 
+                          }),
                         }}
                         menuPortalTarget={document.body}
                       />
@@ -481,7 +513,16 @@ const Default: React.FC = () => {
                         placeholder="Select Country"
                         className="w-[200px]"
                         styles={{
-                          menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
+                          control: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor, 
+                          }),
+                          option: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor, 
+                          }),
                         }}
                         menuPortalTarget={document.body}
                       />
@@ -502,16 +543,16 @@ const Default: React.FC = () => {
           <>
             <Tbody>
               {data?.map((row, index) => (
-                <Tr key={index} border="2px solid" borderColor="gray.200">
+                <Tr key={index}>
                   {config.columns.map((column, index1) => (
-                    <Td key={index1} textAlign="center">
+                    <Td key={index1} textAlign="center" color={textColor} >
                       {column === 'id' ? index + 1 : row[column]}
                     </Td>
                   ))}
                 </Tr>
               ))}
             </Tbody>
-            <Tfoot position="sticky" bottom="0" bg="gray.100" zIndex="1">
+            <Tfoot position="sticky" bottom="0" zIndex="1" bg={"#2D3748"}>
               <Tr>
                 <Td colSpan={config.columns.length} textAlign="end" pl={12} fontWeight={'bold'}>
                   Total Count: {data?.reduce((acc, row) => acc + row.total_counts, 0)}
@@ -534,457 +575,453 @@ const Default: React.FC = () => {
       justifyContent="center"
       width="full"
     >
-  {/* First Stack */}
-    <Flex
-    direction={{ base: "row" }} // Responsive direction
-    gap={4}
-    alignItems="center"
-    justifyContent="center"
-    width="full">
-    <Stack
-      direction="column"
-      spacing={5}
-      alignItems="center"
-      flex="0.5" // Allow responsive width allocation
-    >
-      <FormControl isRequired>
-        <Box position="relative">
-          <Input
-            id="task-id"
-            type="number"
-            value={taskId ?? ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              setTaskId(value === "" ? null : Number(value));
-            }}
-            placeholder=" "
-            color={textColor}
-            _focus={{ borderColor: "blue.400" }}
-            _hover={{ borderColor: "blue.300" }}
-          />
-          <FormLabel
-            position="absolute"
-            top={hasTaskId ? "-6px" : "50%"}
-            px={2}
-            color={hasTaskId ? textColor : "gray.500"}
-            fontWeight={hasTaskId ? "bold" : "normal"}
-            fontSize={hasTaskId ? "sm" : "md"}
-            transform={
-              hasTaskId
-                ? "translateY(-100%) translateX(-15%)"
-                : "translateY(-50%)"
-            }
-            transition="all 0.2s ease-in-out"
-          >
-            Task ID
-          </FormLabel>
-        </Box>
-      </FormControl>
-      <Button
-        colorScheme="blue"
-        onClick={() => [fetchApiData(taskId), fetchdropDownData(taskId)]}
-      >
-        Fetch Counts
-      </Button>
-    </Stack>
-    <Stack
-        direction="column"
-        flex="2" // Allow responsive width allocation
-        width="full"
+      <Flex
+        direction={{ base: "row" }} // Responsive direction
+        gap={4}
         alignItems="center"
-        spacing={6} // Add spacing between the elements
-      >
-        <Card
-          width="full"
-          bg="#ffffff1a"
-          brightness={0.2}
-          mt={4}
-          borderRadius="2px"
-          height="auto"
-          overflowY="hidden"
-          rounded={"xl"}
-          p={4}
+        justifyContent="center"
+        width="full">
+        <Stack
+          direction="column"
+          spacing={5}
+          alignItems="center"
+          flex="0.5" // Allow responsive width allocation
         >
-              <SimpleGrid
-                columns={{
-                  base: 1, 
-                  sm: 2,   
-                  lg: 3,   
-                  xl: 4, 
+          <FormControl isRequired>
+            <Box position="relative">
+              <Input
+                id="task-id"
+                type="number"
+                value={taskId ?? ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTaskId(value === "" ? null : Number(value));
                 }}
-                w={"100%"}
-                spacing={4}
-              >
-                  <Card >
-                    <CardHeader p="4">
-                      <Heading
-                        textAlign="start"
-                        fontWeight="bold"
-                        fontSize={{ base: "md", md: "lg" }}
-                        color={textColor}>Amazon Product List
-                      </Heading>
-                      <Box mt="3" textAlign={"center"}>
-                        <StatGroup>
-                          <Stat>
-                            <StatLabel color={textColor}>Total</StatLabel>
-                            <StatNumber
-                              fontSize={{ base: "md", md: "lg" }}
-                            >
-                              <Tooltip
-                                fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_total_count[1]} aria-label="Total list count tooltip">
-                                <span>
-                                  {tableloading ? get_skeleton('stats') : countData.list?.list_total_count[0]}
-                                </span>
-                              </Tooltip>
-                            </StatNumber>
-                          </Stat>
-                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                          <Stat>
-                            <StatLabel color={textColor}>Extracted Data</StatLabel>
-                            <StatNumber
-                              fontSize={{ base: "md", md: "lg" }}
-                            >
-                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_success_count[1]} aria-label="Total list Extracted Data tooltip">
-                                <span>
-                                  {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
-                                </span>
-                              </Tooltip>
-                            </StatNumber>
-                          </Stat>
-                        </StatGroup>
-                      </Box>
-                    </CardHeader>
-                    <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                    <CardBody p="3" textAlign={"center"}>
-                      <StatGroup>
-                        <Stat>
-                          <StatLabel color={textColor}>Processed</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_processed_count[1]} aria-label="Total list processed tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.list?.list_processed_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                        <Stat>
-                          <StatLabel color={textColor}>Pending</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_pending_count[1]} aria-label="Total list pending tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.list?.list_pending_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                        <Stat>
-                          <StatLabel color={textColor}>Missed</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.list?.list_missed_count[1][0] !== undefined ? countData.list?.list_missed_count[1][0] : 0} | 1:${countData.list?.list_missed_count[1][1] !== undefined ? countData.list?.list_missed_count[1][1] : 0} | 2:${countData.list?.list_missed_count[1][2] !== undefined ? countData.list?.list_missed_count[1][2] : 0} | 3:${countData.list?.list_missed_count[1][3] !== undefined ? countData.list?.list_missed_count[1][3] : 0}`} aria-label="Total list missed tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                      </StatGroup>
-                    </CardBody>
-                  </Card>
-
-                  <Card >
-                    <CardHeader p="4">
-                      <Heading
-                        textAlign="start"
-                        fontWeight="bold"
-                        fontSize={{ base: "sm", md: "lg" }}
-                        color={textColor}>Amazon Product Details
-                      </Heading>
-                      <Box mt="3" textAlign={"center"}>
-                        <StatGroup>
-                          <Stat>
-                            <StatLabel color={textColor}>Total</StatLabel>
-                            <StatNumber
-                              fontSize={{ base: "md", md: "lg" }}
-                            >
-                              <Tooltip fontSize={"18px"}
-                                hasArrow
-
-                                placement='right-end'
-                                label={countData.product?.product_total_count[1]}
-                                aria-label="Total product count tooltip"
-                              >
-                                <span>
-                                  {tableloading ? get_skeleton('stats') : countData.product?.product_total_count[0]}
-                                </span>
-                              </Tooltip>
-                            </StatNumber>
-                          </Stat>
-                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                          <Stat>
-                            <StatLabel color={textColor}>Extracted Data</StatLabel>
-                            <StatNumber
-                              fontSize={{ base: "md", md: "lg" }}
-                            >
-                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_success_count[1]} aria-label="Total Extracted Data tooltip">
-                                <span>
-                                  {tableloading ? get_skeleton('stats') : countData.product?.product_success_count[0]}
-                                </span>
-                              </Tooltip>
-                            </StatNumber>
-                          </Stat>
-                        </StatGroup>
-                      </Box>
-                    </CardHeader>
-                    <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                    <CardBody p="3" textAlign={"center"}>
-                      <StatGroup>
-                        <Stat>
-                          <StatLabel color={textColor}>Processed</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_processed_count[1]} aria-label="Total processed tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.product?.product_processed_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                        <Stat>
-                          <StatLabel color={textColor}>Pending</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_pending_count[1]} aria-label="Total pending tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.product?.product_pending_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                        <Stat>
-                          <StatLabel color={textColor}>Missed</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.product?.product_missed_count[1][0] !== undefined ? countData.product?.product_missed_count[1][0] : 0} | 1:${countData.product?.product_missed_count[1][1] !== undefined ? countData.product?.product_missed_count[1][1] : 0} | 2:${countData.product?.product_missed_count[1][2] !== undefined ? countData.product?.product_missed_count[1][2] : 0} | 3:${countData.product?.product_missed_count[1][3] !== undefined ? countData.product?.product_missed_count[1][3] : 0}`} aria-label="Total missed tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.product?.product_missed_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                      </StatGroup>
-                    </CardBody>
-                  </Card>
-
-                  {/* Render Seller Card */}
-                  <Card >
-                    <CardHeader p="4">
-                      <Heading
-                        textAlign="start"
-                        fontWeight="bold"
-                        fontSize={{ base: "md", md: "lg" }}
-                        color={textColor}>Amazon Seller Details
-                      </Heading>
-                      <Box mt="3" textAlign={"center"}>
-                        <StatGroup >
-                          <Stat>
-                            <StatLabel color={textColor}>Total</StatLabel>
-                            <StatNumber
-                              fontSize={{ base: "md", md: "lg" }}
-                            >
-                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_total_count[1]} aria-label="Total seller count tooltip">
-                                <span>
-                                  {tableloading ? get_skeleton('stats') : countData.seller?.seller_total_count[0]}
-                                </span>
-                              </Tooltip>
-                            </StatNumber>
-                          </Stat>
-                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                          <Stat>
-                            <StatLabel color={textColor}>Extracted Data</StatLabel>
-                            <StatNumber
-                              fontSize={{ base: "md", md: "lg" }}
-                            >
-                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_success_count[1]} aria-label="Total seller Extracted Data tooltip">
-                                <span>
-                                  {tableloading ? get_skeleton('stats') : countData.seller?.seller_success_count[0]}
-                                </span>
-                              </Tooltip>
-                            </StatNumber>
-                          </Stat>
-                        </StatGroup>
-                      </Box>
-                    </CardHeader>
-                    <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
-                    <CardBody p="3" textAlign={"center"}>
-                      <StatGroup>
-                        <Stat>
-                          <StatLabel color={textColor}>Processed</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_processed_count[1]} aria-label="Total seller processed tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.seller?.seller_processed_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                        <Stat>
-                          <StatLabel color={textColor}>Pending</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_pending_count[1]} aria-label="Total seller pending tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.seller?.seller_pending_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                        <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
-                        <Stat>
-                          <StatLabel color={textColor}>Missed</StatLabel>
-                          <StatNumber
-                            fontSize={{ base: "md", md: "lg" }}
-                          >
-                            <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.seller?.seller_missed_count[1][0] !== undefined ? countData.seller?.seller_missed_count[1][0] : 0} | 1:${countData.seller?.seller_missed_count[1][1] !== undefined ? countData.seller?.seller_missed_count[1][1] : 0} | 2:${countData.seller?.seller_missed_count[1][2] !== undefined ? countData.seller?.seller_missed_count[1][2] : 0} | 3:${countData.seller?.seller_missed_count[1][3] !== undefined ? countData.seller?.seller_missed_count[1][3] : 0}`} aria-label="Total seller missed tooltip">
-                              <span>
-                                {tableloading ? get_skeleton('stats') : countData.seller?.seller_missed_count[0]}
-                              </span>
-                            </Tooltip>
-                          </StatNumber>
-                        </Stat>
-                      </StatGroup>
-                    </CardBody>
-                  </Card>
-                </SimpleGrid>
-        </Card>
-      </Stack>
-    </Flex>
-
-    <Flex mt={2} direction="row" align="flex-start" flexWrap="wrap" width={"100%"}>
-          {taskId ? (<Box 
-            flex="1"
-            flexWrap="wrap"
-            >
-            <Tabs position='relative' variant='unstyled' flexWrap="wrap" onChange={handleTabChange} isLazy>
-            <TabList flexWrap="wrap">
-                <Tab _selected={{ fontWeight: 'bold' }}>
-                  Amazon Product Lists {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
-                </Tab>
-                <Tab _selected={{ fontWeight: 'bold' }}>
-                  Amazon Product Details {activeTab === 1 && <Text as="span" fontSize="sm"></Text>}
-                </Tab>
-                <Tab _selected={{ fontWeight: 'bold' }}>
-                  Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
-                </Tab>
-                <Spacer className='gap-2'/>
-                {
-                  (
-                    activeTab==2 
-                    &&
-                    <Box 
-                      display={'flex'} 
-                      bg={'green.500'}
-                      rounded={'full'}
-                      width={'60px'}
-                      fontWeight={'bold'} 
-                      alignItems={'center'}
-                      >
-                      
-                      <Icon
-                          h="30px"
-                          w="30px"
-                          mx={"auto"}
-                          justifyContent={"center"}
-                          as={IoMdDownload}
-                          cursor={'pointer'}
-                          color={'white'}
-                          onClick={()=> downloadData(taskId)}
-                          >
-                      </Icon>
-                    </Box>
-                  )
-                  ||
-                  (
-                    activeTab==1 
-                    &&
-                    <Select
-                      options={convertToOptions(dropdownDataDatapoints)}
-                      isMulti
-                      value={selectedDatapoints.map((cat) => ({ value: cat, label: cat }))}
-                      onChange={(selectedOptions: any) =>
-                        setSelectedDatapoints(selectedOptions.map((option: any) => option.value))
-                      }
-                      placeholder="Select Datapoints"
-                      className="w-[100px]"
-                      styles={{
-                        menuPortal: (base: any) => ({ ...base, zIndex: 50 }),
-                      }}
-                      menuPortalTarget={document.body}
-                    />
-                  )
+                placeholder=" "
+                color={textColor}
+                _focus={{ borderColor: "blue.400" }}
+                _hover={{ borderColor: "blue.300" }}
+              />
+              <FormLabel
+                position="absolute"
+                top={hasTaskId ? "-6px" : "50%"}
+                px={2}
+                color={hasTaskId ? textColor : "gray.500"}
+                fontWeight={hasTaskId ? "bold" : "normal"}
+                fontSize={hasTaskId ? "sm" : "md"}
+                transform={
+                  hasTaskId
+                    ? "translateY(-100%) translateX(-15%)"
+                    : "translateY(-50%)"
                 }
-            </TabList>
-            <TabIndicator mt='-1.5px' height='2px' bg='blue.500' borderRadius='1px' />
-            {/* {tableloading ? get_skeleton('table') :  */}
-              <TabPanels>
-                <TabPanel>
-                  {renderTable(amazonListData, {
-                      columns: ["id","mapped_category", "sub_category", "total_counts"],
-                      headers: ["id","Category", "Sub-Category", "Count"]},
-                      dropdownDataCategory,
-                      dropdownDataSubCategory,
-                      null,
-                      null,
-                      null,
-                      activeTab
-                  )}
-                </TabPanel>
-                <TabPanel>
-                  {renderTable(amazonProductData, {
-                      columns: ["id","mapped_category", "sub_category", "total_counts"],
-                      headers: ["id","Category", "Sub-Category", "Count"]},
-                      dropdownDataCategory,
-                      dropdownDataSubCategory,
-                      dropdownDataDatapoints,
-                      null,
-                      null,
-                      activeTab
+                transition="all 0.2s ease-in-out"
+              >
+                Task ID
+              </FormLabel>
+            </Box>
+          </FormControl>
+          <Button
+            bg="#01B574"
+            onClick={() => [fetchApiData(taskId), fetchdropDownData(taskId)]}
+          >
+            Fetch Counts
+          </Button>
+        </Stack>
+        <Stack
+          direction="column"
+          flex="2.5" // Allow responsive width allocation
+          width="full"
+          alignItems="center"
+        >
+          <Card
+            width="full"
+            bg="#ffffff1a"
+            brightness={0.2}
+            mt={4}
+            borderRadius="2px"
+            height="auto"
+            overflowY="hidden"
+            rounded={"xl"}
+            p={4}
+          >
+                <SimpleGrid display="flex" flexDirection={"row"} gap={3} columns={{ base: 1, md: 2 }}>
+                    <Card w="full" bg="#111C44">
+                      <CardHeader p="4">
+                        <Heading
+                          textAlign="start"
+                          fontWeight="bold"
+                          fontSize={{ base: "md", md: "lg" }}
+                          color={textColor}>Amazon Product List
+                        </Heading>
+                        <Box mt="3" textAlign={"center"}>
+                          <StatGroup>
+                            <Stat>
+                              <Text color={textColor}>Total</Text>
+                              <StatNumber
+                                fontSize={{ base: "md", md: "lg" }}
+                              >
+                                <Tooltip
+                                  fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_total_count[1]} aria-label="Total list count tooltip">
+                                  <span>
+                                    {tableloading ? get_skeleton('stats') : countData.list?.list_total_count[0]}
+                                  </span>
+                                </Tooltip>
+                              </StatNumber>
+                            </Stat>
+                            <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                            <Stat>
+                              <Text color={textColor}>Extracted Data</Text>
+                              <StatNumber
+                                fontSize={{ base: "md", md: "lg" }}
+                              >
+                                <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_success_count[1]} aria-label="Total list Extracted Data tooltip">
+                                  <span>
+                                    {tableloading ? get_skeleton('stats') : countData.list?.list_success_count[0]}
+                                  </span>
+                                </Tooltip>
+                              </StatNumber>
+                            </Stat>
+                          </StatGroup>
+                        </Box>
+                      </CardHeader>
+                      <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
+                      <CardBody p="3" textAlign={"center"}>
+                        <StatGroup>
+                          <Stat>
+                            <Text color={textColor}>Processed</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_processed_count[1]} aria-label="Total list processed tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.list?.list_processed_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <Text color={textColor}>Pending</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.list?.list_pending_count[1]} aria-label="Total list pending tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.list?.list_pending_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <Text color={textColor}>Missed</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.list?.list_missed_count[1][0] !== undefined ? countData.list?.list_missed_count[1][0] : 0} | 1:${countData.list?.list_missed_count[1][1] !== undefined ? countData.list?.list_missed_count[1][1] : 0} | 2:${countData.list?.list_missed_count[1][2] !== undefined ? countData.list?.list_missed_count[1][2] : 0} | 3:${countData.list?.list_missed_count[1][3] !== undefined ? countData.list?.list_missed_count[1][3] : 0}`} aria-label="Total list missed tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.list?.list_missed_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                        </StatGroup>
+                      </CardBody>
+                    </Card>
+
+                    <Card w="full" bg="#111C44">
+                      <CardHeader p="4">
+                        <Heading
+                          textAlign="start"
+                          fontWeight="bold"
+                          fontSize={{ base: "sm", md: "lg" }}
+                          color={textColor}>Amazon Product Details
+                        </Heading>
+                        <Box mt="3" textAlign={"center"}>
+                          <StatGroup>
+                            <Stat>
+                              <Text color={textColor}>Total</Text>
+                              <StatNumber
+                                fontSize={{ base: "md", md: "lg" }}
+                              >
+                                <Tooltip fontSize={"18px"}
+                                  hasArrow
+
+                                  placement='right-end'
+                                  label={countData.product?.product_total_count[1]}
+                                  aria-label="Total product count tooltip"
+                                >
+                                  <span>
+                                    {tableloading ? get_skeleton('stats') : countData.product?.product_total_count[0]}
+                                  </span>
+                                </Tooltip>
+                              </StatNumber>
+                            </Stat>
+                            <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                            <Stat>
+                              <Text color={textColor}>Extracted Data</Text>
+                              <StatNumber
+                                fontSize={{ base: "md", md: "lg" }}
+                              >
+                                <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_success_count[1]} aria-label="Total Extracted Data tooltip">
+                                  <span>
+                                    {tableloading ? get_skeleton('stats') : countData.product?.product_success_count[0]}
+                                  </span>
+                                </Tooltip>
+                              </StatNumber>
+                            </Stat>
+                          </StatGroup>
+                        </Box>
+                      </CardHeader>
+                      <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
+                      <CardBody p="3" textAlign={"center"}>
+                        <StatGroup>
+                          <Stat>
+                            <Text color={textColor}>Processed</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_processed_count[1]} aria-label="Total processed tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.product?.product_processed_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <Text color={textColor}>Pending</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.product?.product_pending_count[1]} aria-label="Total pending tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.product?.product_pending_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <Text color={textColor}>Missed</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.product?.product_missed_count[1][0] !== undefined ? countData.product?.product_missed_count[1][0] : 0} | 1:${countData.product?.product_missed_count[1][1] !== undefined ? countData.product?.product_missed_count[1][1] : 0} | 2:${countData.product?.product_missed_count[1][2] !== undefined ? countData.product?.product_missed_count[1][2] : 0} | 3:${countData.product?.product_missed_count[1][3] !== undefined ? countData.product?.product_missed_count[1][3] : 0}`} aria-label="Total missed tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.product?.product_missed_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                        </StatGroup>
+                      </CardBody>
+                    </Card>
+
+                    <Card w="full" bg="#111C44">
+                      <CardHeader p="4">
+                        <Heading
+                          textAlign="start"
+                          fontWeight="bold"
+                          fontSize={{ base: "md", md: "lg" }}
+                          color={textColor}>Amazon Seller Details
+                        </Heading>
+                        <Box mt="3" textAlign={"center"}>
+                          <StatGroup >
+                            <Stat>
+                              <Text color={textColor}>Total</Text>
+                              <StatNumber
+                                fontSize={{ base: "md", md: "lg" }}
+                              >
+                                <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_total_count[1]} aria-label="Total seller count tooltip">
+                                  <span>
+                                    {tableloading ? get_skeleton('stats') : countData.seller?.seller_total_count[0]}
+                                  </span>
+                                </Tooltip>
+                              </StatNumber>
+                            </Stat>
+                            <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                            <Stat>
+                              <Text color={textColor}>Extracted Data</Text>
+                              <StatNumber
+                                fontSize={{ base: "md", md: "lg" }}
+                              >
+                                <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_success_count[1]} aria-label="Total seller Extracted Data tooltip">
+                                  <span>
+                                    {tableloading ? get_skeleton('stats') : countData.seller?.seller_success_count[0]}
+                                  </span>
+                                </Tooltip>
+                              </StatNumber>
+                            </Stat>
+                          </StatGroup>
+                        </Box>
+                      </CardHeader>
+                      <Divider color={dividerColor} borderWidth="1px" width="90%" mx="auto" />
+                      <CardBody p="3" textAlign={"center"}>
+                        <StatGroup>
+                          <Stat>
+                            <Text color={textColor}>Processed</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_processed_count[1]} aria-label="Total seller processed tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.seller?.seller_processed_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <Text color={textColor}>Pending</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={countData.seller?.seller_pending_count[1]} aria-label="Total seller pending tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.seller?.seller_pending_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                          <Divider borderColor="gray.400" borderWidth="1px" height="45px" orientation="vertical" mx={2} />
+                          <Stat>
+                            <Text color={textColor}>Missed</Text>
+                            <StatNumber
+                              fontSize={{ base: "md", md: "lg" }}
+                            >
+                              <Tooltip fontSize={"18px"} hasArrow placement='right-end' label={`Attempt - 0:${countData.seller?.seller_missed_count[1][0] !== undefined ? countData.seller?.seller_missed_count[1][0] : 0} | 1:${countData.seller?.seller_missed_count[1][1] !== undefined ? countData.seller?.seller_missed_count[1][1] : 0} | 2:${countData.seller?.seller_missed_count[1][2] !== undefined ? countData.seller?.seller_missed_count[1][2] : 0} | 3:${countData.seller?.seller_missed_count[1][3] !== undefined ? countData.seller?.seller_missed_count[1][3] : 0}`} aria-label="Total seller missed tooltip">
+                                <span>
+                                  {tableloading ? get_skeleton('stats') : countData.seller?.seller_missed_count[0]}
+                                </span>
+                              </Tooltip>
+                            </StatNumber>
+                          </Stat>
+                        </StatGroup>
+                      </CardBody>
+                    </Card>
+                </SimpleGrid>
+          </Card>
+        </Stack>
+      </Flex>
+
+      <Flex mt={2} direction="row" align="flex-start" flexWrap="wrap" width={"100%"}>
+            {taskId ? (<Box 
+              flex="1"
+              flexWrap="wrap"
+              >
+              <Tabs variant="solid-rounded" position='relative' flexWrap="wrap" onChange={handleTabChange} isLazy>
+              <TabList flexWrap="wrap">
+                  <Tab>
+                    Amazon Product Lists {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
+                  </Tab>
+                  <Tab>
+                    Amazon Product Details {activeTab === 1 && <Text as="span" fontSize="sm"></Text>}
+                  </Tab>
+                  <Tab>
+                    Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
+                  </Tab>
+                  <Spacer className='gap-2'/>
+                  {
+                    (
+                      activeTab==2 
+                      &&
+                      <Box 
+                        display={'flex'} 
+                        bg={'green.500'}
+                        rounded={'full'}
+                        width={'60px'}
+                        fontWeight={'bold'} 
+                        alignItems={'center'}
+                        >
+                        
+                        <Icon
+                            h="30px"
+                            w="30px"
+                            mx={"auto"}
+                            justifyContent={"center"}
+                            as={IoMdDownload}
+                            cursor={'pointer'}
+                            color={'white'}
+                            onClick={()=> downloadData(taskId)}
+                            >
+                        </Icon>
+                      </Box>
+                    )
+                    ||
+                    (
+                      activeTab==1 
+                      &&
+                      <Select
+                        options={convertToOptions(dropdownDataDatapoints)}
+                        isMulti
+                        value={selectedDatapoints.map((cat) => ({ value: cat, label: cat }))}
+                        onChange={(selectedOptions: any) =>
+                          setSelectedDatapoints(selectedOptions.map((option: any) => option.value))
+                        }
+                        placeholder="Select Datapoints"
+                        className="w-[100px]"
+                        styles={{
+                          control: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748", 
+                            color: textColor,
+                          }),
+                          option: (base:any) => ({
+                            ...base,
+                            backgroundColor: "#2D3748",
+                            color: textColor, 
+                          }),
+                        }}
+                        menuPortalTarget={document.body}
+                      />
                     )
                   }
-                </TabPanel>
-                <TabPanel>
-                  {renderTable(amazonSellerData, {
-                    columns: ["id","city", "state", "country", "total_counts"],
-                    headers: ["id","City", "State", "Country", "Count"]},
-                    null,
-                    null,
-                    dropdownDataCountry,
-                    dropdownDataState,
-                    dropdownDataCity,
-                    activeTab
-                  )
-                  }
-                </TabPanel>
-              </TabPanels>
-              {/* } */}
-            </Tabs>
-          </Box>): null}
+              </TabList>
+              {/* <TabIndicator mt='-1.5px' height='2px' bg='blue.500' borderRadius='1px' /> */}
+                <TabPanels>
+                  <TabPanel>
+                    {renderTable(amazonListData, {
+                        columns: ["id","mapped_category", "sub_category", "total_counts"],
+                        headers: ["id","Category", "Sub-Category", "Count"]},
+                        dropdownDataCategory,
+                        dropdownDataSubCategory,
+                        null,
+                        null,
+                        null,
+                        activeTab
+                    )}
+                  </TabPanel>
+                  <TabPanel>
+                    {renderTable(amazonProductData, {
+                        columns: ["id","mapped_category", "sub_category", "total_counts"],
+                        headers: ["id","Category", "Sub-Category", "Count"]},
+                        dropdownDataCategory,
+                        dropdownDataSubCategory,
+                        dropdownDataDatapoints,
+                        null,
+                        null,
+                        activeTab
+                      )
+                    }
+                  </TabPanel>
+                  <TabPanel>
+                    {renderTable(amazonSellerData, {
+                      columns: ["id","city", "state", "country", "total_counts"],
+                      headers: ["id","City", "State", "Country", "Count"]},
+                      null,
+                      null,
+                      dropdownDataCountry,
+                      dropdownDataState,
+                      dropdownDataCity,
+                      activeTab
+                    )
+                    }
+                  </TabPanel>
+                </TabPanels>
+                {/* } */}
+              </Tabs>
+            </Box>): null}
       </Flex>
     </Stack>
     

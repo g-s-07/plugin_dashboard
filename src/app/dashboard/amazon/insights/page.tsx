@@ -1,33 +1,36 @@
 "use client"
-import { Box, Button, Skeleton, Stack } from "@chakra-ui/react";
+import { useState } from "react";
+import { 
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box, Button, Skeleton, Stack, Tab, TabList, TabPanel, TabPanels, Tabs,
+  Text 
+} from "@chakra-ui/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { TaskContext } from "contexts/TaskId";
 import { useContext } from "react";
-import { AmazonProductData } from "types/amazon";
+import { AmazonData } from "types/amazon";
 import { getAllAmazonProductDetails } from "utils/api/amazon";
+import { AccordianCards } from "components/card/GeneralCard";
 
 
 export default function AmazonInsights() {
-    const {taskid} = useContext(TaskContext);
-    console.log(taskid.task_id);
+    const [activeTab, setActiveTab] = useState(0);
     const {
-        mutate: fetchProductDetails,
-        data: amazonProductList,
+        data: amazonList,
         error,
-        isPending,
-        isSuccess,
-      } = useMutation({
-        mutationFn: () => getAllAmazonProductDetails(taskid.task_id),
+        isLoading,
+      } = useQuery({
+        queryKey: ['dataAmazon'],
+        queryFn: () => getAllAmazonProductDetails(1002),
       });
 
-    // Trigger the mutation
-    const handleFetch = () => {
-      fetchProductDetails();
-    };
-
     
-      if (isPending) {
+      if (isLoading) {
         return (
           <Stack>
             <Skeleton height="20px" />
@@ -41,16 +44,60 @@ export default function AmazonInsights() {
         return <h1>Error! {error.message}</h1>;
       }
 
+      console.log('i am amazon list',typeof(amazonList));
+      console.log('i am amazonList',amazonList);
+      console.log(typeof(amazonList?.data));
+      console.log('i am amazon',amazonList?.data);
+
     return (
-        <Box>
-             <Button colorScheme="blue" onClick={() => handleFetch()} >
-                Fetch Counts
-              </Button>{isSuccess && amazonProductList?.data && (
-                <div>
-                    <h2>Product Details:</h2>
-                    <pre>{JSON.stringify(amazonProductList.data, null, 2)}</pre>
-                </div>
-            )}
-        </Box>
+      <Tabs variant='soft-rounded'>
+        <TabList>
+          <Tab>
+            Amazon Product Lists {activeTab === 0 && <Text as="span" fontSize="sm"></Text>}
+          </Tab>
+          <Tab>
+            Amazon Product Details {activeTab === 1 && <Text as="span" fontSize="sm"></Text>}
+          </Tab>
+          <Tab>
+            Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Stack maxW={'9xl'} mx={'auto'} alignItems={'center'}>
+              <AccordianCards
+                title="Amazon Product Lists"
+                items={amazonList?.data[0]} 
+                expanded
+              />
+              <AccordianCards 
+                title="Amazon Product Lists"
+                expanded
+              />
+            </Stack>
+          </TabPanel>
+          <TabPanel>
+            <AccordianCards
+              title="Amazon Product Details" 
+              items={amazonList?.data[1]}
+              expanded
+            />
+            <AccordianCards
+              title="Amazon Product Details" 
+              expanded/>
+          </TabPanel>
+          <TabPanel>
+            <AccordianCards
+              title="Amazon Seller Details" 
+              items={amazonList?.data[2]}
+              expanded
+            />
+            <AccordianCards
+              title="Amazon Seller Details"
+              expanded
+            />
+          </TabPanel>
+        </TabPanels>
+    </Tabs>
     );
 }

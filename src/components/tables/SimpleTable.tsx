@@ -18,7 +18,9 @@ export function showTable(data: any[]) {
       <TableCaption color={"black.900"}>Column Details</TableCaption>
       <Thead>
         <Tr>
-          {Object.keys(data[0] || {}).map((key) => (
+          {
+            data?.length > 0 &&
+          Object.keys(data[0] || {}).map((key) => (
             <Th key={key} color={"black.900"}>
               {key}
             </Th>
@@ -26,7 +28,7 @@ export function showTable(data: any[]) {
         </Tr>
       </Thead>
       <Tbody>
-        {data.map((row, rowIndex) => (
+        {data?.map((row, rowIndex) => (
           <Tr key={rowIndex}>
             {Object.entries(row).map(([key, value], colIndex) => (
               <Td key={colIndex}>

@@ -1,24 +1,31 @@
 "use client";
+
+import { Fragment, useState } from "react";
 import { 
     Accordion,
     AccordionItem,
-    Box,
     Card,
-    Flex,
     SimpleGrid, 
     Skeleton, 
-    SkeletonCircle, 
-    Stack, 
-    Text
+    Stack,
+    useToast,
 } from "@chakra-ui/react";
 import { AxiosError } from "axios";
 import { PlaywrightTables } from 'types/playwright';
 import { getAllPlaywrightTableCounts } from "utils/api/playwright";
 import { useQuery } from '@tanstack/react-query';
 import GeneralCard from 'components/card/GeneralCard';
+import { RxUpdate } from "react-icons/rx";
+
 
 
 export default function Playwright() {
+    const toast = useToast();
+    const [toastShown, setToastShown] = useState({
+        success: false,
+        error: false,
+    })
+
     const {
         data: playrightList,
         error,
@@ -34,6 +41,30 @@ export default function Playwright() {
 
 
     const data = playrightList?.data;
+    if(!toastShown.success && data){
+        toast({
+            title: "Success",
+            description: "Data fetched successfully",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+        })
+        setToastShown((prev) => ({ ...prev, success: true }));
+    }
+
+    if (!toastShown.error && error) {
+        toast({
+            title: "Error",
+            description: error?.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+        })
+        setToastShown((prev) => ({ ...prev, error: true }));
+    }
+
+
+    const description = "List of all tables of Playwright Scripts along with their row count and column details"
 
     if (isLoading) {
         return (
@@ -54,28 +85,29 @@ export default function Playwright() {
                             borderColor={'transparent'}
                         >
                             <AccordionItem>
-                        <SimpleGrid
-                            mt={4}
-                            columns={{
-                                sm: 4,
-                                md: 4,
-                                lg: 4,
-                                xl: 4,
-                            }}
-                            gap={4}
-                        >
-                            {Array(8)
-                            .fill(0)
-                            .map((_, index) => (
-                                <>
-                                    <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                    <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                    <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                    <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                </>
-                            ))}
-                        </SimpleGrid>
-                        </AccordionItem>
+                                <SimpleGrid
+                                    mt={4}
+                                    columns={{
+                                        sm: 1,
+                                        md: 2,
+                                        lg: 3,
+                                        xl: 4,
+                                    }}
+                                    gap={4}
+                                    p={4}
+                                >
+                                    {Array(8)
+                                    .fill(0)
+                                    .map((_, index) => (
+                                        <Fragment key={index}>
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                        </Fragment>
+                                    ))}
+                                </SimpleGrid>
+                            </AccordionItem>
                         </Accordion>
                     </Stack>
                 </Card>
@@ -83,17 +115,20 @@ export default function Playwright() {
         );
     }
 
-    if (error) {
-        return <h1>Error! {error.message}</h1>;
+    if(error){
+        return null
     }
+    
 
     return (
   
         <Stack maxW={'9xl'} mx={'auto'} alignItems={'center'}>
             <GeneralCard
                 info={data}
+                description={description}
                 height="80vh"
                 overflowY="scroll"
+                icon={<RxUpdate/>}
             /> 
         </Stack>
     );

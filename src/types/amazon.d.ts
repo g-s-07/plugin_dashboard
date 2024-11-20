@@ -1,4 +1,4 @@
-export type AmazonProductData = {
+export type AmazonData = {
     error_count: number,
     total_count: number,
     sold_by_found: number,
