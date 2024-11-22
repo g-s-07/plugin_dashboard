@@ -17,30 +17,32 @@ import { useQuery } from '@tanstack/react-query';
 import GeneralCard from 'components/card/GeneralCard';
 import { RxUpdate } from "react-icons/rx";
 
-export default function Playwright() {
+
+
+export default function Plugins() {
     const toast = useToast();
+
     const {
         data: playrightList,
         error,
         isLoading,
         isFetching,
-        isSuccess,
+        isSuccess
     }: {
         data: { data: TablesDetails };
         error: AxiosError;
         isLoading: boolean;
-        isSuccess: boolean;
         isFetching: boolean;
+        isSuccess: boolean;
     } = useQuery({
-        queryKey: ['dataPlaywright'],
-        queryFn: () => getAllTableCounts('playwright'),
+        queryKey: ['dataPlugins'],
+        queryFn: () => getAllTableCounts('plugins'),
     });
 
+
     const data = playrightList?.data;
-
-    const description = "List of all tables of Playwright Scripts along with their row count and column details";
-
-    // Success Toast
+    const description = "List of all tables of Plugins along with their row count and column details"
+    
     useEffect(() => {
         if (isSuccess) {
             toast.closeAll();
@@ -54,7 +56,6 @@ export default function Playwright() {
         }
     }, [isSuccess, toast]);
 
-    // Error Toast
     useEffect(() => {
         if (error) {
             toast.closeAll();
@@ -67,7 +68,9 @@ export default function Playwright() {
             });
         }
     }, [error, toast]);
-    
+
+
+
     if (isLoading || isFetching) {
         return (
             <Stack maxW={'9xl'} mx={'auto'} alignItems={'center'}>
@@ -99,15 +102,15 @@ export default function Playwright() {
                                     p={4}
                                 >
                                     {Array(8)
-                                        .fill(0)
-                                        .map((_, index) => (
-                                            <Fragment key={index}>
-                                                <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                                <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                                <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                                <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                            </Fragment>
-                                        ))}
+                                    .fill(0)
+                                    .map((_, index) => (
+                                        <Fragment key={index}>
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
+                                        </Fragment>
+                                    ))}
                                 </SimpleGrid>
                             </AccordionItem>
                         </Accordion>
@@ -117,19 +120,21 @@ export default function Playwright() {
         );
     }
 
-    if (error) {
-        return null;
+    if(error){
+        return null
     }
+    
 
     return (
+  
         <Stack maxW={'9xl'} mx={'auto'} alignItems={'center'}>
             <GeneralCard
                 info={data}
                 description={description}
                 height="77vh"
                 overflowY="scroll"
-                icon={<RxUpdate />}
-                type="playwright"
+                icon={<RxUpdate/>}
+                type="plugins"
             /> 
         </Stack>
     );

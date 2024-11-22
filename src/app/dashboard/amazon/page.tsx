@@ -386,7 +386,7 @@ const Default: React.FC = () => {
   (
     
     <Box
-      maxHeight="500px"
+      maxHeight="406px"
       maxWidth="full"
       overflowY="auto"
       overflowX="auto"

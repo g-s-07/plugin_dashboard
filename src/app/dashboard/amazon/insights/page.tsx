@@ -1,19 +1,10 @@
 "use client"
 import { useState } from "react";
 import { 
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box, Button, Skeleton, Stack, Tab, TabList, TabPanel, TabPanels, Tabs,
+  Skeleton, Stack, Tab, TabList, TabPanel, TabPanels, Tabs,
   Text 
 } from "@chakra-ui/react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { TaskContext } from "contexts/TaskId";
-import { useContext } from "react";
-import { AmazonData } from "types/amazon";
+import { useQuery } from "@tanstack/react-query";
 import { getAllAmazonProductDetails } from "utils/api/amazon";
 import { AccordianCards } from "components/card/GeneralCard";
 

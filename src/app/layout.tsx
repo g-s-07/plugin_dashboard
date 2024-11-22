@@ -1,18 +1,20 @@
 import { Box } from '@chakra-ui/react';
 import React, { ReactNode } from 'react';
 import AppWrappers from './AppWrappers';
+import RootHead from './head';
 
 export const metadata = {
-  title: 'InfoAnalytica | Plugins Dashboard',
+  title: 'Plugins Dashboard',
   description: '',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body id={'root'}>
-        <AppWrappers>{children}</AppWrappers>
-      </body>
+      <RootHead title={metadata.title}/>
+        <body id={'root'}>
+          <AppWrappers>{children}</AppWrappers>
+        </body>
     </html>
   );
 }

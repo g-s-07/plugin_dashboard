@@ -14,6 +14,7 @@ import Navbar from 'components/navbar/NavbarAdmin';
 import Sidebar from 'components/sidebar/Sidebar';
 import { SidebarContext } from 'contexts/SidebarContext';
 import { PropsWithChildren, useEffect, useState } from 'react';
+import { PiPlugChargingFill } from "react-icons/pi";
 // import routes from 'routes';
 import { IRoute } from 'types/navigation';
 import {
@@ -23,9 +24,13 @@ import {
   isWindowAvailable,
 } from 'utils/navigation';
 import { useMemo } from 'react';
-import { IoIosJournal } from 'react-icons/io';
+import { SiPlaywright } from "react-icons/si";
 import {TbScript} from 'react-icons/tb';
-import { MdHome } from 'react-icons/md';
+import { AiFillAmazonSquare } from "react-icons/ai";
+import { BsClipboard2DataFill } from "react-icons/bs";
+
+
+
  
 interface DashboardLayoutProps extends PropsWithChildren {
   [x: string]: any;
@@ -33,26 +38,33 @@ interface DashboardLayoutProps extends PropsWithChildren {
  
 const dashboardRoutes: IRoute[] = [
   {
-    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
+    icon: <Icon as={AiFillAmazonSquare} width="20px" height="20px" color="inherit" />,
     name: 'Amazon Dashboard',
     layout: '/dashboard',
     path: '/amazon',
     isPage: true,
-    // children: [
-    //   {
-    //     name: 'Insights',
-    //     layout: '/dashboard/amazon',
-    //     path: '/insights',
-    //     icon: <Icon as={TbScript} width="20px" height="20px" color="inherit" />,
-    //     isPage: true,
-    //   },
-    // ]
+    children: [
+      {
+        name: 'Insights',
+        layout: '/dashboard/amazon',
+        path: '/insights',
+        icon: <Icon as={BsClipboard2DataFill} width="20px" height="20px" color="inherit" />,
+        isPage: true,
+      },
+    ]
   },
   {
-    icon: <Icon as={TbScript} width="20px" height="20px" color="inherit" />,
+    icon: <Icon as={SiPlaywright} width="20px" height="20px" color="inherit" />,
     name: 'Playwright Dashboard',
     layout: '/dashboard',
     path: '/playwright',
+    isPage: true,
+  },
+  {
+    icon: <Icon as={PiPlugChargingFill} width="20px" height="20px" color="inherit" />,
+    name: 'Plugins Dashboard',
+    layout: '/dashboard',
+    path: '/plugin',
     isPage: true,
   }
 ]
@@ -60,14 +72,12 @@ const dashboardRoutes: IRoute[] = [
 // Custom Chakra theme
 export default function DashboardLayout(props: DashboardLayoutProps) {
   const { children, ...rest } = props;
-  // states and functions
   const [fixed] = useState(false);
   const [brandText, setBrandText] = useState<string>('');
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const pathname = usePathname();
  
  
-  // functions for changing the states from components
   const { onOpen } = useDisclosure();
  
   useEffect(() => {
@@ -83,12 +93,12 @@ export default function DashboardLayout(props: DashboardLayoutProps) {
   }, [pathname]);
 
 
-  useEffect(() => {
-    if (isWindowAvailable()) {
-      // set scroll to top
-      window.scrollTo(0, 0);
-    }
-  });
+  // useEffect(() => {
+  //   if (isWindowAvailable()) {
+  //     // set scroll to top
+  //     window.scrollTo(0, 0);
+  //   }
+  // });
  
   const bg = useColorModeValue('secondaryGray.300', 'navy.900');
  
@@ -135,7 +145,7 @@ export default function DashboardLayout(props: DashboardLayoutProps) {
             mx="auto"
             p={{ base: '20px', md: '30px' }}
             pe="20px"
-            minH="100vh"
+            minH="94vh"
             pt="50px"
           >
             <Box pt={{ base: '100px', md: '80px', xl: '80px' }}>{children}</Box>

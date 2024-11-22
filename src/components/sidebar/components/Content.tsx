@@ -21,7 +21,7 @@ function SidebarContent(props: SidebarContentProps) {
         h={'full'}
         overflow={'scroll'}
         direction="column"
-        mt="8px"
+        mt="2px"
         mb="auto"
       >
         <Box ps="20px" pe={{ lg: '16px', '2xl': '16px' }}>
