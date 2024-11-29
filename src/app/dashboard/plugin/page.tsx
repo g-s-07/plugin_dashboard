@@ -1,11 +1,10 @@
 "use client";
 
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { 
-    Accordion,
-    AccordionItem,
+    Box,
     Card,
-    SimpleGrid, 
+    Flex,
     Skeleton, 
     Stack,
     useToast,
@@ -37,91 +36,100 @@ export default function Plugins() {
     } = useQuery({
         queryKey: ['dataPlugins'],
         queryFn: () => getAllTableCounts('plugins'),
+        refetchOnWindowFocus: false,
     });
 
 
     const data = playrightList?.data;
-    const description = "List of all tables of Plugins along with their row count and column details"
-    
-    useEffect(() => {
-        if (isSuccess) {
-            toast.closeAll();
-            toast({
-                title: "Success",
-                description: "Data fetched successfully",
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            });
-        }
-    }, [isSuccess, toast]);
+    const title = "List of all Plugins tables along with their row count and column details"
 
-    useEffect(() => {
-        if (error) {
-            toast.closeAll();
-            toast({
-                title: "Error",
-                description: error?.message,
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-            });
-        }
-    }, [error, toast]);
-
+    if (error) {
+        toast.closeAll();
+        toast({
+            title: "Error",
+            description: error?.message,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+        });
+        return null
+    }
 
 
     if (isLoading || isFetching) {
         return (
-            <Stack maxW={'9xl'} mx={'auto'} alignItems={'center'}>
-                <Card
-                    width={'full'}
-                    bg={'#ffffff1a'}
-                    brightness={0.2}
-                    mt={4}
-                    borderRadius={'20px'}
-                    height="80vh"
-                    overflowY="scroll"
-                >
-                    <Stack>
-                        <Accordion
-                            width={'full'}
-                            allowToggle
-                            borderColor={'transparent'}
-                        >
-                            <AccordionItem>
-                                <SimpleGrid
-                                    mt={4}
-                                    columns={{
-                                        sm: 1,
-                                        md: 2,
-                                        lg: 3,
-                                        xl: 4,
-                                    }}
-                                    gap={4}
-                                    p={4}
-                                >
-                                    {Array(8)
-                                    .fill(0)
-                                    .map((_, index) => (
-                                        <Fragment key={index}>
-                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                            <Skeleton height='90px' mb={2} rounded={"lg"} />
-                                        </Fragment>
-                                    ))}
-                                </SimpleGrid>
-                            </AccordionItem>
-                        </Accordion>
-                    </Stack>
-                </Card>
+            <>
+                <Stack width={"full"} spacing={4}>
+                    <Flex justifyContent={'end'}>
+                        <Skeleton borderRadius={"2xl"}>
+                            <Flex align="center" gap={2}>
+                                <Box width="15px" height="15px" borderRadius="full" />
+                                <Box width="150px" height="15px" />
+                                <Box width="15px" height="15px" borderRadius="full" />
+                                <Box width="200px" height="15px" />
+                                <Box width="15px" height="15px" borderRadius="full" />
+                                <Box width="150px" height="15px" />
+                                <Box width="15px" height="15px" borderRadius="full" />
+                                <Box width="100px" height="15px" />
+                            </Flex>
+                        </Skeleton>
+                    </Flex>
+    
+                    <Flex
+                        justify={'space-between'}
+                        align={'center'}
+                        p={4}
+                        border={'1px solid'}
+                        borderColor={'white.400'}
+                        borderRadius={'10px'}
+                    >
+                        <Skeleton borderRadius={"2xl"}>
+                            <Box width={['10px', '70px', '300px', '600px']} height="30px"/>
+                        </Skeleton>
+                        <Flex direction={'row'} gap={2} align={"center"}>
+                            {[...Array(4)].map((_, index) => (
+                                <Fragment key={index}>
+                                    <Skeleton borderRadius={"2xl"} key={index}>
+                                        <Box width="40px" height="25px" />
+                                    </Skeleton>
+                                    {index<3 && <Box fontWeight={"extrabold"} fontSize={"25"}>+</Box>}
+                                </Fragment>
+                            ))}
+                            <Box fontWeight={"extrabold"} fontSize={"25"}>=</Box>
+                            <Skeleton borderRadius={"2xl"}>
+                                <Box width="50px" height="25px" />
+                            </Skeleton>
+                        </Flex>
+                    </Flex>
+    
+                    
+                    {[...Array(4)].map((_, index) => (
+                        <Skeleton borderRadius={'30px'} height={"28"} key={index}>
+                                <Card
+                                    key={index}
+                                    width={'full'}
+                                    bg={'#ffffff1a'}
+                                    brightness={0.2}
+                                    mt={index > 0 ? 4:0}
+                                    height="200px"   
+                                />
+                        </Skeleton>
+                    ))}
             </Stack>
+            </>
         );
     }
+    
 
-    if(error){
-        return null
+    if(isSuccess){
+        toast.closeAll();
+        toast({
+            title: "Success",
+            description: "Data fetched successfully",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+        });
     }
     
 
@@ -129,10 +137,9 @@ export default function Plugins() {
   
         <Stack maxW={'9xl'} mx={'auto'} alignItems={'center'}>
             <GeneralCard
+                title={title}
                 info={data}
-                description={description}
-                height="77vh"
-                overflowY="scroll"
+                // description={description_all}
                 icon={<RxUpdate/>}
                 type="plugins"
             /> 
