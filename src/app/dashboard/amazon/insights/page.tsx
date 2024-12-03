@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllAmazonProductDetails } from "utils/api/amazon";
 import { AccordianCards } from "components/card/GeneralCard";
 import { Chart } from "react-google-charts";
+import JsonTreeDisplay from "components/jsonTree/jsonTree";
 
 
 export default function AmazonInsights() {
@@ -46,40 +47,46 @@ export default function AmazonInsights() {
 
       console.log(amazonList?.data[1]);
 
-      
 
-      const options = {
-        wordtree: {
-          format: "implicit",
-          // word: "cats",
-        },
-      };
-
-      const p: any =[amazonList?.data[1]]  
-
-      // console.log(typeof p);
-
-      // const data = [
-      //   ["Phrases"],
-      //   ["cats are better than dogs"],
-      //   ["cats eat kibble"],
-      // ];
-
-      const data: any = [["Phrases"]];
-      p?.forEach((item: any) => {
-        if (item?.error_count !== undefined) {
-          data.push([`TotalCount ErrorCount  ${item.error_count}`]);
-          // data.push([`TotalCount ErrorCount  ${item.error_count}`]);
-          data.push([`TotalCount ProductCount ${item.total_count}`]);
-          data.push([`TotalCount ProductCount ${item.total_count}`]);
-          data.push([`TotalCount ProductCount BestSeller ${item.total_count}`]);
-          data.push([`TotalCount ProductCount BestSeller RankFound${item.best_seller_rank_found}`]);
-          data.push([`TotalCount ProductCount BestSeller SellerLink ${item.seller_link_found}`]);
-          data.push([`TotalCount ProductCount BestSeller SellerLink ${item.seller_link_found}`]);
-        }
-      });
-
-      console.log(data);
+    const jsonData = 
+      {'amazonchoice': {'found': 1614, 'notfound': 11139, 'total': 12753},
+ 'bestsellerrank': {'found': 10432, 'notfound': 2321, 'total': 12753},
+ 'brandlink': {'found': 12373, 'notfound': 380, 'total': 12753},
+ 'brandname': {'found': 12370, 'notfound': 383, 'total': 12753},
+ 'breadcrumbs': {'found': 12753, 'notfound': 0, 'total': 12753},
+ 'productcount': {'found': 12753, 'notfound': 33, 'total': 12786},
+ 'sellerlink': {'found': 6148, 'notfound': 6605, 'total': 12753},
+ 'shipsfrom': {'amazon': 4985, 'found': 5588, 'notfound': 2180, 'total': 7768},
+ 'sold by': {'amazon': {'bestseller': {'found': 4256,
+                                       'notfound': 776,
+                                       'total': 5032},
+                        'brandlink': {'found': 4911,
+                                      'notfound': 121,
+                                      'total': 5032},
+                        'sellerlink': {'found': 474,
+                                       'notfound': 4558,
+                                       'total': 5032}},
+             'found': {'bestseller': {'found': 4977,
+                                      'notfound': 697,
+                                      'total': 5674},
+                       'brandlink': {'found': 5593,
+                                     'notfound': 81,
+                                     'total': 5674},
+                       'sellerlink': {'found': 5674,
+                                      'notfound': 0,
+                                      'total': 5674}},
+             'notfound': {'bestseller': {'found': 1199,
+                                         'notfound': 848,
+                                         'total': 2047},
+                          'brandlink': {'found': 1869,
+                                        'notfound': 178,
+                                        'total': 2047},
+                          'sellerlink': {'found': 0,
+                                         'notfound': 2047,
+                                         'total': 2047}}},
+ 'storefrontname': {'found': 12753, 'notfound': 0, 'total': 12753},
+ 'total': {'count': 12786}}
+    
 
     return (
       <Tabs variant='soft-rounded'>
@@ -117,41 +124,71 @@ export default function AmazonInsights() {
                         </Box>
                         </AccordionButton>
                         <AccordionPanel>
-                        <Box height="500px"  overflow="hidden">
-                          <Chart
-                            height="100%"
-                            width="100%"
-                            chartType="WordTree"
-                            data={data}
-                            options={options}
-                          />
-                      </Box>
-                      </AccordionPanel>
+                        <JsonTreeDisplay data={amazonList?.data[0]} />
+                        </AccordionPanel>
                       </AccordionItem>
                   </Accordion>
                 </Stack>
               </Card>  
           </TabPanel>
           <TabPanel>
-            <AccordianCards
-              title="Amazon Product Details" 
-              items={amazonList?.data[1]}
-              expanded
-            />
-            <AccordianCards
-              title="Amazon Product Details" 
-              expanded/>
+          <Card
+                  width={'full'}
+                  bg={'#ffffff1a'}
+                  brightness={0.2}
+                  mt={4}
+                  borderRadius={'20px'}
+                >
+                <Stack>
+                  <Accordion
+                    width={'full'}
+                    borderColor={'transparent'}
+                    allowMultiple
+                    defaultIndex={[0]}
+                  >
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">
+                          <AccordionIcon />
+                        </Box>
+                        </AccordionButton>
+                        <AccordionPanel>
+                          <JsonTreeDisplay data={amazonList?.data[1]} />
+                        </AccordionPanel>
+                      </AccordionItem>
+                  </Accordion>
+                </Stack>
+              </Card>  
           </TabPanel>
           <TabPanel>
-            <AccordianCards
-              title="Amazon Seller Details" 
-              items={amazonList?.data[2]}
-              expanded
-            />
-            <AccordianCards
-              title="Amazon Seller Details"
-              expanded
-            />
+          <Card
+                  width={'full'}
+                  bg={'#ffffff1a'}
+                  brightness={0.2}
+                  mt={4}
+                  borderRadius={'20px'}
+                >
+                <Stack>
+                  <Accordion
+                    width={'full'}
+                    borderColor={'transparent'}
+                    allowMultiple
+                    defaultIndex={[0]}
+                  >
+                    <AccordionItem>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">
+                          <AccordionIcon />
+                        </Box>
+                        </AccordionButton>
+                        <AccordionPanel
+                        >
+                          <JsonTreeDisplay data={amazonList?.data[2]} />
+                        </AccordionPanel>
+                      </AccordionItem>
+                  </Accordion>
+                </Stack>
+              </Card>  
           </TabPanel>
         </TabPanels>
     </Tabs>

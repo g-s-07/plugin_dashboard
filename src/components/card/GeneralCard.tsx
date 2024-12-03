@@ -38,6 +38,7 @@ export default function GeneralCard(props: {
   color?: string
 }) {
   const { info, type , title} = props;
+  console.log('i am info',info);
   const colors = [
     useColorModeValue('red.400', 'red.500'),
     useColorModeValue('gray.300', 'gray.600'),
@@ -55,8 +56,6 @@ export default function GeneralCard(props: {
   const [localInfo, setLocalInfo] = useState(props.info);
   
   const handleRefresh = async (table_name: string, index: number) => {
-    console.log(table_name);
-    console.log(index);
     try {
       const response = await axios.get(
         `${BACKEND_DOMAIN}/tables/row-count/?source=${type}&table_name=${table_name}`,
@@ -69,14 +68,20 @@ export default function GeneralCard(props: {
       );
 
       if (response.status === 200) {
-        console.log(response.data.data);
-        const updatedInfo = [...info];
-        updatedInfo[index] = {
-          ...updatedInfo[index],
-          row_count: response.data.data?.table_row_count,
-        };
+        const updatedRowCount = response.data.data?.table_row_count;
+        const updatedInfo = localInfo.map((item:any)=>{
+          if(item.table_name === table_name){
+            return {
+              ...item,
+              row_count: updatedRowCount
+            };
+          }
+          return item
+        })
 
         setLocalInfo(updatedInfo);
+
+
         toast.closeAll();
         toast({
           title: "Success",
@@ -107,7 +112,7 @@ export default function GeneralCard(props: {
   
   localInfo?.forEach((item:any) => {
     const difference = getDifference(currentDate, item.last_present_time);
-    console.log(difference);
+    // console.log(difference);
   
     if (difference <= 1440) {
       under24h.push(item);

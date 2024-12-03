@@ -43,15 +43,15 @@ const dashboardRoutes: IRoute[] = [
     layout: '/dashboard',
     path: '/amazon',
     isPage: true,
-    // children: [
-    //   {
-    //     name: 'Insights',
-    //     layout: '/dashboard/amazon',
-    //     path: '/insights',
-    //     icon: <Icon as={BsClipboard2DataFill} width="20px" height="20px" color="inherit" />,
-    //     isPage: true,
-    //   },
-    // ]
+    children: [
+      {
+        name: 'Insights',
+        layout: '/dashboard/amazon',
+        path: '/insights',
+        icon: <Icon as={BsClipboard2DataFill} width="20px" height="20px" color="inherit" />,
+        isPage: true,
+      },
+    ]
   },
   {
     icon: <Icon as={SiPlaywright} width="20px" height="20px" color="inherit" />,
