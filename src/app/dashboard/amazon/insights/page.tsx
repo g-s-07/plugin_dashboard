@@ -20,7 +20,8 @@ import {
   Input,
   FormLabel,
   Button,
-  useColorModeValue
+  useColorModeValue,
+  Flex,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllAmazonProductDetails } from "utils/api/amazon";
@@ -32,10 +33,15 @@ import JsonTreeDisplay from "components/jsonTree/jsonTree";
 export default function AmazonInsights() {
     const [activeTab, setActiveTab] = useState(0);
     const [taskId, setTaskId] = useState<number | null>(null);
-    const [apiKey, setApiKey] = useState<Boolean>(false);
-    const hasTaskId = taskId !== null && taskId.toString() !== '';
     const textColor = useColorModeValue('navy.700', 'white');
     const toast = useToast();
+    const colors = [
+      useColorModeValue('red.400', 'red.500'),
+      useColorModeValue('gray.300', 'gray.600'),
+      useColorModeValue('yellow.300', 'yellow.500'),
+      useColorModeValue('green.300', 'green.500'),
+      useColorModeValue('purple.300', 'purple.600'),
+    ]
 
 
     const {
@@ -53,48 +59,60 @@ export default function AmazonInsights() {
   
     if (isLoading) {
       return (
-        <Stack direction="row" spacing={4} align="center">
-          {Array.from({ length:  3}).map((_, index) => (
-            <Skeleton key={index} isLoaded={!isLoading} height="40px" width="150px">
-              <Box
-                bg="gray.100"
-                height="40px"
-                width="150px"
-                borderRadius="lg"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-              >
-                Tab {index + 1}
-              </Box>
-            </Skeleton>
-          ))}
-          <Spacer />
-          <Skeleton height="40px" width="150px">
-              <Box
-                    bg="gray.100"
-                    height="40px"
-                    width="150px"
-                    borderRadius="lg"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    >
-              </Box>
-            </Skeleton>
-            {[...Array(1)].map((_, index) => (
-                        <Skeleton borderRadius={'30px'} height={"28"} key={index}>
-                                <Card
-                                    key={index}
-                                    width={'full'}
-                                    bg={'#ffffff1a'}
-                                    brightness={0.2}
-                                    mt={index > 0 ? 4:0}
-                                    height="200px"   
-                                />
-                        </Skeleton>
-                    ))}
-    </Stack>
+        <Stack 
+        direction={{ base: "column", md: "row" }} 
+        spacing={4} 
+        align="center" 
+        wrap="wrap"
+        width="full"
+      >
+      <Flex 
+        direction="row" 
+        wrap="wrap" 
+        gap={4} 
+        justify="space-between" 
+        width="full"
+      >
+      <Flex gap={4}>
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton 
+            borderRadius="2xl" 
+            key={index} 
+            width={{ base: "full", sm: "250px" }} 
+            height="40px"
+          >
+            <Flex align="center" gap={1}>
+              <Box width="full" height="30px" borderRadius="full" />
+            </Flex>
+          </Skeleton>
+        ))}
+      </Flex>
+
+        <Skeleton 
+          height="40px" 
+          width={{ base: "full", sm: "250px" }} 
+          alignSelf="flex-end"
+        >
+          <Flex justifyContent={"end"}>
+            <Box bg="gray.100" borderRadius="3xl" width="full" height="full" />
+          </Flex>
+        </Skeleton>
+      </Flex>
+        <Skeleton 
+          borderRadius="30px" 
+          height="150px" 
+          width={{ base: "full", md: "full" }}
+          mt={{ base: 4, md: 0 }}
+        >
+          <Card
+            width="full"
+            bg="#ffffff1a"
+            height="200px"
+          />
+        </Skeleton>
+      </Stack>
+      
+
       );
     }
   
@@ -126,7 +144,6 @@ export default function AmazonInsights() {
       try {
         console.log(task_id);
         if (!task_id) throw new Error("Task ID not found");
-        setApiKey(true)
         refetch();
       } catch (error) {
         console.log(error);
@@ -238,9 +255,7 @@ export default function AmazonInsights() {
   <Button
     bg="#01B574"
     onClick={() => fetchInsightsData(taskId)}
-  >
-    Fetch
-  </Button>
+  >Fetch</Button>
 </Stack>
 
         </TabList>
@@ -266,6 +281,15 @@ export default function AmazonInsights() {
                         <Box flex="1" textAlign="left">
                           <AccordionIcon />
                         </Box>
+                        <Flex justifyContent={'end'} align="center" gap={2}>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
+                           
+                        </Flex>
                         </AccordionButton>
                         <AccordionPanel>
                         <JsonTreeDisplay json={amazonList?.data[0]} />
@@ -296,6 +320,15 @@ export default function AmazonInsights() {
                         <Box flex="1" textAlign="left">
                           <AccordionIcon />
                         </Box>
+                        <Flex justifyContent={'end'} align="center" gap={2}>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
+                           
+                        </Flex>
                         </AccordionButton>
                         <AccordionPanel>
                           <JsonTreeDisplay json={amazonList?.data[1]} />
@@ -325,6 +358,15 @@ export default function AmazonInsights() {
                         <Box flex="1" textAlign="left">
                           <AccordionIcon />
                         </Box>
+                        <Flex justifyContent={'end'} align="center" gap={2}>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
+                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                            <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
+                           
+                        </Flex>
                         </AccordionButton>
                         <AccordionPanel
                         >

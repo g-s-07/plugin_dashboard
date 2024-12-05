@@ -18,7 +18,7 @@ function processJsonWithColors(json: any, level = 0): any {
     Object.entries(json).map(([key, value]) => {
       console.log(key);
       const transformedValue =
-        key.includes("[next step]") 
+        key.includes("[Next Step]") 
           ? `${value}&nbsp;&nbsp; ==> NEXT PROCESS`
           : processJsonWithColors(value, level + 1);
 
