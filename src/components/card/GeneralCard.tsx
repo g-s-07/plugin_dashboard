@@ -14,8 +14,8 @@ import {
   AccordionPanel,
   useToast,
   Button,
-  Spacer,
 } from '@chakra-ui/react';
+import { saveAs } from 'file-saver';
 import { MdDownload } from "react-icons/md";
 import axios from 'axios';
 // Custom components
@@ -134,23 +134,18 @@ export default function GeneralCard(props: {
         isClosable: false,
       });
       const response = await axios.get(
-        `${BACKEND_DOMAIN}/download-data/?source=${type}&table_name=${table_name}`,
+        `${BACKEND_DOMAIN}/download-data/?table_name=${table_name}`,
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
             Authorization: token,
           },
+          responseType: 'blob',
         }
       );
 
       if (response.status === 200) {
-        const blob = new Blob([response.data], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${table_name}.csv`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+        const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, `${table_name}.csv`);
         toast.close(`download-${table_name}-${index}`);
         toast.closeAll();
         toast({
@@ -423,6 +418,7 @@ export function AccordianCards(props: {
                                   transition="all 0.3s ease-in-out"
                                   _hover={{
                                     textShadow: "0 0 15px rgba(0, 255, 255, 0.7)",
+                                    fontSize: "lg",
                                   }}
                                 >
                                   <Tooltip
@@ -447,15 +443,21 @@ export function AccordianCards(props: {
                                   </Tooltip>
                                 </Text>
                                 <Box position="relative" pb={2}>
-                                    <Box as="span">
-                                      <Button
-                                        key={index}
-                                        size={"sm"}
-                                        onClick={() => downloadData(item.table_name, index)}
+                                  <Tooltip
+                                    hasArrow
+                                    aria-label="Download"
+                                    label="Download Sample Data"
+                                    placement="right"
+                                    fontSize="xl"
+                                  >
+                                    <Button
+                                      key={index}
+                                      size="sm"
+                                      onClick={() => downloadData(item.table_name, index)}
                                       >
-                                        <MdDownload />
-                                      </Button>
-                                    </Box>
+                                      <MdDownload />
+                                    </Button>
+                                  </Tooltip>
                                 </Box>
                               </Flex>
                               <Tooltip

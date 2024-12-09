@@ -1,15 +1,11 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { 
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
   useToast,
   Box,
   Card,
@@ -25,9 +21,9 @@ import {
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllAmazonProductDetails } from "utils/api/amazon";
-import { AccordianCards } from "components/card/GeneralCard";
-import { Chart } from "react-google-charts";
 import JsonTreeDisplay from "components/jsonTree/jsonTree";
+import axios from "axios";
+import { BACKEND_DOMAIN, token } from "../../../../../urls";
 
 
 export default function AmazonInsights() {
@@ -128,7 +124,7 @@ export default function AmazonInsights() {
       return null
     }
 
-    if(isSuccess){
+    if(amazonList?.data.length > 0 && isSuccess){
       toast.closeAll();
       toast({
           title: "Success",
@@ -142,7 +138,6 @@ export default function AmazonInsights() {
 
     const fetchInsightsData = async (task_id: number | null) => {
       try {
-        console.log(task_id);
         if (!task_id) throw new Error("Task ID not found");
         refetch();
       } catch (error) {
@@ -150,55 +145,44 @@ export default function AmazonInsights() {
       }
     };
 
+    const handleRefresh = async(task_id: number | null) => {
+      try {
+        if (!task_id) throw new Error("Please Enter Task ID");
+        toast({
+          id: `Refreshing Data for task_id - ${task_id}`,
+          title: "Loading",
+          description: `Refreshing data for task_id - ${task_id}...`,
+          status: "loading",
+          duration: null, 
+          isClosable: false,
+        });
+        const response = await axios.get(`${BACKEND_DOMAIN}/refresh-task/?task_id=${task_id}`, 
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: token,
+            },
+          }
+        )
 
-    const jsonData = {
-      'productcount': {'total': 12786, 'found[Next Step]': "12753 => NextProcess", 'notfound[Drop]': 33, },
-//         'amazonchoice': {'found': 1614, 'notfound': 11139, 'total': 12753},
-//  'bestsellerrank': {'found': 10432, 'notfound': 2321, 'total': 12753},
-//  'brandlink': {'found': 12373, 'notfound': 380, 'total': 12753},
-//  'brandname': {'found': 12370, 'notfound': 383, 'total': 12753},
-//  'breadcrumbs': {'found': 12753, 'notfound': 0, 'total': 12753},
-//  'sellerlink': {'found': 6148, 'notfound': 6605, 'total': 12753},
-//  'shipsfrom': {'amazon': 4985, 'found': 5588, 'notfound': 2180, 'total': 7768},
-'sold by': {Total:12753,'amazon':{ 'total': 5032,"amazon_Bif":{'bestseller': {'found': 4256,
-                                     'notfound': 776,
-                                     'total': 5032},
-                      'brandlink': {'found': 4911,
-                                    'notfound': 121,
-                                    'total': 5032},
-                      'sellerlink': {'found': 474,
-                        'sample1':{'found': 474,
-                        "Found_Bifucation":{"Total":400,"Key1":{"Key1_Bifucation1":300,"Key1_Bifucation2":100,"Key1_Bifucation3":100,"Key1_Bifucation4":100,"Key1_Bifucation5":100,"Key1_Bifucation6":100},"Key2":74},
-                       "notfound": 4558,
-                        "notfound_Bifucation":{"Key1":4000,"Key2":558},
-                 },
-                                     'notfound': 4558,
-                                     },
-                                     
-                                    }},
-           'found': {'bestseller': {'found': 4977,
-                                    'notfound': 697,
-                                    'total': 5674},
-                     'brandlink': {'found': 5593,
-                                   'notfound': 81,
-                                   'total': 5674},
-                     'sellerlink': {'found': 5674,
-                                    'notfound': 0,
-                                    'total': 5674}},
-           'notfound': {'bestseller': {'found': 1199,
-                                       'notfound': 848,
-                                       'total': 2047},
-                        'brandlink': {'found': 1869,
-                                      'notfound': 178,
-                                      'total': 2047},
-                        'sellerlink': {'found': 0,
-                                       'notfound': 2047,
-                                       'total': 2047}}},
-'storefrontname': {'found': 12753, 'notfound': 0, 'total': 12753},
-'total': {'count': 12786}}
+        
+        if (response.status==200) {
+          console.log("i am response");
+          toast.close(`Refreshing Data for-${task_id}`);
+          fetchInsightsData(task_id);
+        } 
+      }catch (error) {
+        toast.closeAll();
+        toast({
+            title: "Error",
+            description: `Error: ${error}`,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+        });        
+      }
+    }
 
-
-    
 
     return (
       <>
@@ -215,170 +199,188 @@ export default function AmazonInsights() {
           </Tab>
           <Spacer/>
           <Stack
-  direction="row"
-  spacing={3}
-  alignItems="center"
-  flex="0.5"
->
-  <FormControl isRequired>
-    <Box position="relative">
-      <Input
-        id="task-id"
-        type="number"
-        value={taskId ?? ""}
-        placeholder=" "
-        onChange={(e) => {
-          const value = e.target.value;
-          setTaskId(value === "" ? null : Number(value));
-        }}
-        color={textColor}
-        _focus={{ borderColor: "blue.400" }}
-        _hover={{ borderColor: "blue.300" }}
-      />
-      <FormLabel
-        htmlFor="task-id"
-        position="absolute"
-        top={taskId ? "-6px" : "50%"}
-        left={2}
-        px={1}
-        color={taskId ? textColor : "gray.500"}
-        fontWeight={taskId ? "bold" : "normal"}
-        fontSize={taskId ? "sm" : "md"}
-        transform={taskId ? "translateX(calc(-130%)) translateY(80%)": "translateY(-50%)"}
-        transition="all 0.2s ease-in-out"
-        pointerEvents="none"
-      >
-        Task ID
-      </FormLabel>
-    </Box>
-  </FormControl>
-  <Button
-    bg="#01B574"
-    onClick={() => fetchInsightsData(taskId)}
-  >Fetch</Button>
-</Stack>
+          direction="row"
+          spacing={3}
+          alignItems="center"
+          flex="0.5"
+        >
+          <FormControl isRequired>
+            <Box position="relative">
+              <Input
+                id="task-id"
+                type="number"
+                value={taskId ?? ""}
+                placeholder=" "
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTaskId(value === "" ? null : Number(value));
+                }}
+                color={textColor}
+                _focus={{ borderColor: "blue.400" }}
+                _hover={{ borderColor: "blue.300" }}
+              />
+              <FormLabel
+                htmlFor="task-id"
+                position="absolute"
+                top={taskId ? "-6px" : "50%"}
+                left={2}
+                px={1}
+                color={taskId ? textColor : "gray.500"}
+                fontWeight={taskId ? "bold" : "normal"}
+                fontSize={taskId ? "sm" : "md"}
+                transform={taskId ? "translateX(calc(-130%)) translateY(80%)": "translateY(-50%)"}
+                transition="all 0.2s ease-in-out"
+                pointerEvents="none"
+              >
+                Task ID
+              </FormLabel>
+            </Box>
+          </FormControl>
+          <Button
+            bg="#01B574"
+            onClick={() => fetchInsightsData(taskId)}
+          >Fetch</Button>
+        </Stack>
 
-        </TabList>
+                </TabList>
 
-        <TabPanels>
-          <TabPanel>
-               <Card
-                  width={'full'}
-                  bg={'#ffffff1a'}
-                  brightness={0.2}
-                  mt={4}
-                  borderRadius={'20px'}
-                >
-                <Stack>
-                  <Accordion
-                    width={'full'}
-                    borderColor={'transparent'}
-                    allowMultiple
-                    defaultIndex={[0]}
-                  >
-                    <AccordionItem>
-                      <AccordionButton>
-                        <Box flex="1" textAlign="left">
-                          <AccordionIcon />
-                        </Box>
-                        <Flex justifyContent={'end'} align="center" gap={2}>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
-                           
-                        </Flex>
-                        </AccordionButton>
-                        <AccordionPanel>
-                        <JsonTreeDisplay json={amazonList?.data[0]} />
-                        {/* <JsonTreeDisplay json={jsonData} /> */}
-                        </AccordionPanel>
-                      </AccordionItem>
-                  </Accordion>
-                </Stack>
-              </Card>  
-            </TabPanel>
-              <TabPanel>
-                <Card
-                  width={'full'}
-                  bg={'#ffffff1a'}
-                  brightness={0.2}
-                  mt={4}
-                  borderRadius={'20px'}
-                >
-                <Stack>
-                  <Accordion
-                    width={'full'}
-                    borderColor={'transparent'}
-                    allowMultiple
-                    defaultIndex={[0]}
-                  >
-                    <AccordionItem>
-                      <AccordionButton>
-                        <Box flex="1" textAlign="left">
-                          <AccordionIcon />
-                        </Box>
-                        <Flex justifyContent={'end'} align="center" gap={2}>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
-                           
-                        </Flex>
-                        </AccordionButton>
-                        <AccordionPanel>
-                          <JsonTreeDisplay json={amazonList?.data[1]} />
-                        </AccordionPanel>
-                      </AccordionItem>
-                  </Accordion>
-                </Stack>
-                </Card>  
-            </TabPanel>
-          <TabPanel>
-          <Card
-                  width={'full'}
-                  bg={'#ffffff1a'}
-                  brightness={0.2}
-                  mt={4}
-                  borderRadius={'20px'}
-                >
-                <Stack>
-                  <Accordion
-                    width={'full'}
-                    borderColor={'transparent'}
-                    allowMultiple
-                    defaultIndex={[0]}
-                  >
-                    <AccordionItem>
-                      <AccordionButton>
-                        <Box flex="1" textAlign="left">
-                          <AccordionIcon />
-                        </Box>
-                        <Flex justifyContent={'end'} align="center" gap={2}>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
-                            <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
-                            <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
-                           
-                        </Flex>
-                        </AccordionButton>
-                        <AccordionPanel
+                <TabPanels>
+                  <TabPanel>
+                      <Card
+                          width={'full'}
+                          bg={'#ffffff1a'}
+                          brightness={0.2}
+                          mt={4}
+                          borderRadius={'20px'}
                         >
-                          <JsonTreeDisplay json={amazonList?.data[2]} />
-                        </AccordionPanel>
-                      </AccordionItem>
-                  </Accordion>
-                </Stack>
-              </Card>  
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+                        <Stack>
+                          <Accordion
+                            width={'full'}
+                            borderColor={'transparent'}
+                            allowMultiple
+                            defaultIndex={[0]}
+                          >
+                            <AccordionItem>
+                              <AccordionButton>
+                                <Box flex="1" textAlign="left">
+                                  <AccordionIcon />
+                                </Box>
+                                <Flex justifyContent={'end'} align="center" gap={2}>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
+                                  
+                                </Flex>
+                                </AccordionButton>
+                                <AccordionPanel>
+                                  {
+                                    amazonList?.data.length == 0 && taskId!=null
+                                    ? 
+                                    <Box 
+                                      display={'flex'} 
+                                      flexDirection={'column'} 
+                                      justifyContent={'center'} 
+                                      alignItems={'center'} 
+                                      gap={2}
+                                    >
+                                      <Text fontSize={'md'} fontWeight={'bold'}>Please Refresh Data!</Text>
+                                      <Button 
+                                        onClick={() => handleRefresh(taskId)}
+                                        bg={'#01B574'}
+                                      > Refresh
+                                      </Button>
+                                    </Box>
+                                    :
+                                    <JsonTreeDisplay json={amazonList?.data[0]} />    
+                                  }
+                                </AccordionPanel>
+                              </AccordionItem>
+                          </Accordion>
+                        </Stack>
+                      </Card>  
+                    </TabPanel>
+                      <TabPanel>
+                        <Card
+                          width={'full'}
+                          bg={'#ffffff1a'}
+                          brightness={0.2}
+                          mt={4}
+                          borderRadius={'20px'}
+                        >
+                        <Stack>
+                          <Accordion
+                            width={'full'}
+                            borderColor={'transparent'}
+                            allowMultiple
+                            defaultIndex={[0]}
+                          >
+                            <AccordionItem>
+                              <AccordionButton>
+                                <Box flex="1" textAlign="left">
+                                  <AccordionIcon />
+                                </Box>
+                                <Flex justifyContent={'end'} align="center" gap={2}>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
+                                  
+                                </Flex>
+                                </AccordionButton>
+                                <AccordionPanel>
+                                  <JsonTreeDisplay json={amazonList?.data[1]} />
+                                </AccordionPanel>
+                              </AccordionItem>
+                          </Accordion>
+                        </Stack>
+                        </Card>  
+                    </TabPanel>
+                  <TabPanel>
+                  <Card
+                          width={'full'}
+                          bg={'#ffffff1a'}
+                          brightness={0.2}
+                          mt={4}
+                          borderRadius={'20px'}
+                        >
+                        <Stack>
+                          <Accordion
+                            width={'full'}
+                            borderColor={'transparent'}
+                            allowMultiple
+                            defaultIndex={[0]}
+                          >
+                            <AccordionItem>
+                              <AccordionButton>
+                                <Box flex="1" textAlign="left">
+                                  <AccordionIcon />
+                                </Box>
+                                <Flex justifyContent={'end'} align="center" gap={2}>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Amz</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
+                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                    <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
+                                  
+                                </Flex>
+                                </AccordionButton>
+                                <AccordionPanel
+                                >
+                                  <JsonTreeDisplay json={amazonList?.data[2]} />
+                                </AccordionPanel>
+                              </AccordionItem>
+                          </Accordion>
+                        </Stack>
+                      </Card>  
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
      
       </>
     );
