@@ -18,6 +18,7 @@ import {
   Button,
   useColorModeValue,
   Flex,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllAmazonProductDetails } from "utils/api/amazon";
@@ -270,7 +271,27 @@ export default function AmazonInsights() {
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
                                     <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
-                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                    
+                                    <Tooltip
+                                    hasArrow
+                                    aria-label="A updated time tooltip"
+                                    label={
+                                      amazonList?.data[3].modified_date
+                                      ? `Last Modified: ${new Date(
+                                          new Date(
+                                            `${amazonList?.data[3].modified_date}`
+                                          ).toLocaleString("en-US", {
+                                            timeZone: "Asia/Kolkata",
+                                          })
+                                        ).toString()}`
+                                      : "null"
+                                      }
+                                      placement="right"
+                                      fontSize="xl"
+                                      pt={2}
+                                    >
+                                      <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                    </Tooltip>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
                                   
                                 </Flex>
