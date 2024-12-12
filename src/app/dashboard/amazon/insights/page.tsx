@@ -19,6 +19,7 @@ import {
   useColorModeValue,
   Flex,
   Tooltip,
+  Switch,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { getAllAmazonProductDetails } from "utils/api/amazon";
@@ -30,6 +31,7 @@ import { BACKEND_DOMAIN, token } from "../../../../../urls";
 export default function AmazonInsights() {
     const [activeTab, setActiveTab] = useState(0);
     const [taskId, setTaskId] = useState<number | null>(null);
+    const [isChecked, setIsChecked] = useState<boolean>(false);
     const textColor = useColorModeValue('navy.700', 'white');
     const toast = useToast();
     const colors = [
@@ -48,8 +50,8 @@ export default function AmazonInsights() {
       isSuccess,
       refetch
     } = useQuery({
-      queryKey: ['dataAmazon', taskId],
-      queryFn: () => getAllAmazonProductDetails(taskId),
+      queryKey: ['dataAmazon', taskId, isChecked],
+      queryFn: () => getAllAmazonProductDetails(taskId, isChecked),
       enabled: false
     });
 
@@ -112,6 +114,7 @@ export default function AmazonInsights() {
 
       );
     }
+
   
     if (error) {
       toast.closeAll();
@@ -125,7 +128,7 @@ export default function AmazonInsights() {
       return null
     }
 
-    if(amazonList?.data.length > 0 && isSuccess){
+    if (amazonList?.data?.length > 0 && isSuccess) {
       toast.closeAll();
       toast({
           title: "Success",
@@ -133,11 +136,21 @@ export default function AmazonInsights() {
           status: "success",
           duration: 5000,
           isClosable: true,
-       });
-       
-    }
+      });
+  } else if (amazonList?.error) {
+      console.log("Error:", amazonList.error);
+      toast.closeAll();
+      toast({
+          title: "Error",
+          description: amazonList.error || "Failed to fetch insights",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+      });
+  }
+  
 
-    const fetchInsightsData = async (task_id: number | null) => {
+    const fetchInsightsData = async (task_id: number | null, refresh: boolean) => {
       try {
         if (!task_id) throw new Error("Task ID not found");
         refetch();
@@ -146,43 +159,43 @@ export default function AmazonInsights() {
       }
     };
 
-    const handleRefresh = async(task_id: number | null) => {
-      try {
-        if (!task_id) throw new Error("Please Enter Task ID");
-        toast({
-          id: `Refreshing Data for task_id - ${task_id}`,
-          title: "Loading",
-          description: `Refreshing data for task_id - ${task_id}...`,
-          status: "loading",
-          duration: null, 
-          isClosable: false,
-        });
-        const response = await axios.get(`${BACKEND_DOMAIN}/refresh-task/?task_id=${task_id}`, 
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: token,
-            },
-          }
-        )
+    // const handleRefresh = async(task_id: number | null) => {
+    //   try {
+    //     if (!task_id) throw new Error("Please Enter Task ID");
+    //     toast({
+    //       id: `Refreshing Data for task_id - ${task_id}`,
+    //       title: "Loading",
+    //       description: `Refreshing data for task_id - ${task_id}...`,
+    //       status: "loading",
+    //       duration: null, 
+    //       isClosable: false,
+    //     });
+    //     const response = await axios.get(`${BACKEND_DOMAIN}/refresh-task/?task_id=${task_id}`, 
+    //       {
+    //         headers: {
+    //           "Content-Type": "application/x-www-form-urlencoded",
+    //           Authorization: token,
+    //         },
+    //       }
+    //     )
 
         
-        if (response.status==200) {
-          console.log("i am response");
-          toast.close(`Refreshing Data for-${task_id}`);
-          fetchInsightsData(task_id);
-        } 
-      }catch (error) {
-        toast.closeAll();
-        toast({
-            title: "Error",
-            description: `Error: ${error}`,
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-        });        
-      }
-    }
+    //     if (response.status==200) {
+    //       console.log("i am response");
+    //       toast.close(`Refreshing Data for-${task_id}`);
+    //       fetchInsightsData(task_id,isChecked);
+    //     } 
+    //   }catch (error) {
+    //     toast.closeAll();
+    //     toast({
+    //         title: "Error",
+    //         description: `Error: ${error}`,
+    //         status: "error",
+    //         duration: 3000,
+    //         isClosable: true,
+    //     });        
+    //   }
+    // }
 
 
     return (
@@ -205,41 +218,51 @@ export default function AmazonInsights() {
           alignItems="center"
           flex="0.5"
         >
-          <FormControl isRequired>
-            <Box position="relative">
-              <Input
-                id="task-id"
-                type="number"
-                value={taskId ?? ""}
-                placeholder=" "
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setTaskId(value === "" ? null : Number(value));
-                }}
-                color={textColor}
-                _focus={{ borderColor: "blue.400" }}
-                _hover={{ borderColor: "blue.300" }}
+         <FormControl isRequired>
+            <Flex alignItems="center" gap={4}> 
+              <Box position="relative" flex="1">
+                <Input
+                  id="task-id"
+                  type="number"
+                  value={taskId ?? ""}
+                  placeholder=" "
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setTaskId(value === "" ? null : Number(value));
+                  }}
+                  color={textColor}
+                  width={"90"}
+                  _focus={{ borderColor: "blue.400" }}
+                  _hover={{ borderColor: "blue.300" }}
+                />
+                <FormLabel
+                  htmlFor="task-id"
+                  position="absolute"
+                  top={taskId ? "-6px" : "50%"}
+                  left={2}
+                  px={1}
+                  color={taskId ? textColor : "gray.500"}
+                  fontWeight={taskId ? "bold" : "normal"}
+                  fontSize={taskId ? "sm" : "md"}
+                  transform={taskId ? "translateX(calc(-130%)) translateY(80%)" : "translateY(-50%)"}
+                  transition="all 0.2s ease-in-out"
+                  pointerEvents="none"
+                >
+                  Task ID
+                </FormLabel>
+              </Box>
+              <Switch 
+                id="refresh-alerts" 
+                size="lg"
+                isChecked={isChecked}
+                onChange={(e) => setIsChecked(e.target.checked)}   
               />
-              <FormLabel
-                htmlFor="task-id"
-                position="absolute"
-                top={taskId ? "-6px" : "50%"}
-                left={2}
-                px={1}
-                color={taskId ? textColor : "gray.500"}
-                fontWeight={taskId ? "bold" : "normal"}
-                fontSize={taskId ? "sm" : "md"}
-                transform={taskId ? "translateX(calc(-130%)) translateY(80%)": "translateY(-50%)"}
-                transition="all 0.2s ease-in-out"
-                pointerEvents="none"
-              >
-                Task ID
-              </FormLabel>
-            </Box>
+            </Flex>
           </FormControl>
+
           <Button
             bg="#01B574"
-            onClick={() => fetchInsightsData(taskId)}
+            onClick={() => fetchInsightsData(taskId, isChecked)}
           >Fetch</Button>
         </Stack>
 
@@ -271,52 +294,36 @@ export default function AmazonInsights() {
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
                                     <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
-                                    
                                     <Tooltip
-                                    hasArrow
-                                    aria-label="A updated time tooltip"
-                                    label={
-                                      amazonList?.data[3].modified_date
-                                      ? `Last Modified: ${new Date(
-                                          new Date(
-                                            `${amazonList?.data[3].modified_date}`
-                                          ).toLocaleString("en-US", {
-                                            timeZone: "Asia/Kolkata",
-                                          })
-                                        ).toString()}`
-                                      : "null"
+                                      hasArrow
+                                      aria-label="A updated time tooltip"
+                                      label={
+                                        amazonList?.data && Array.isArray(amazonList.data) && amazonList.data[3]?.modified_date
+                                          ? `Summary Last Generated at: ${new Date(
+                                              new Date(`${amazonList.data[3].modified_date}`).toLocaleString(
+                                                "en-US",
+                                                {
+                                                  timeZone: "Asia/Kolkata",
+                                                }
+                                              )
+                                            ).toString()}`
+                                          : amazonList?.error
+                                          ? amazonList.error // Show the error message from the backend
+                                          : "No data available"
                                       }
                                       placement="right"
                                       fontSize="xl"
                                       pt={2}
                                     >
-                                      <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                      <Text color={colors[0]} fontSize="md" fontWeight="bold">
+                                        Ext
+                                      </Text>
                                     </Tooltip>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
-                                  
                                 </Flex>
                                 </AccordionButton>
                                 <AccordionPanel>
-                                  {
-                                    amazonList?.data.length == 0 && taskId!=null
-                                    ? 
-                                    <Box 
-                                      display={'flex'} 
-                                      flexDirection={'column'} 
-                                      justifyContent={'center'} 
-                                      alignItems={'center'} 
-                                      gap={2}
-                                    >
-                                      <Text fontSize={'md'} fontWeight={'bold'}>Please Refresh Data!</Text>
-                                      <Button 
-                                        onClick={() => handleRefresh(taskId)}
-                                        bg={'#01B574'}
-                                      > Refresh
-                                      </Button>
-                                    </Box>
-                                    :
-                                    <JsonTreeDisplay json={amazonList?.data[0]} />    
-                                  }
+                                    <JsonTreeDisplay json={amazonList?.data[0]} />
                                 </AccordionPanel>
                               </AccordionItem>
                           </Accordion>
@@ -348,7 +355,31 @@ export default function AmazonInsights() {
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
                                     <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
-                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                    <Tooltip
+                                      hasArrow
+                                      aria-label="A updated time tooltip"
+                                      label={
+                                        amazonList?.data && Array.isArray(amazonList.data) && amazonList.data[3]?.modified_date
+                                          ? `Summary Last Generated at: ${new Date(
+                                              new Date(`${amazonList.data[3].modified_date}`).toLocaleString(
+                                                "en-US",
+                                                {
+                                                  timeZone: "Asia/Kolkata",
+                                                }
+                                              )
+                                            ).toString()}`
+                                          : amazonList?.error
+                                          ? amazonList.error // Show the error message from the backend
+                                          : "No data available"
+                                      }
+                                      placement="right"
+                                      fontSize="xl"
+                                      pt={2}
+                                    >
+                                      <Text color={colors[0]} fontSize="md" fontWeight="bold">
+                                        Ext
+                                      </Text>
+                                    </Tooltip>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
                                   
                                 </Flex>
@@ -386,7 +417,31 @@ export default function AmazonInsights() {
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Amazon,</Text>
                                     <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ip</Text>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Input,</Text>
-                                    <Text color={colors[0]} fontSize={'md'} fontWeight={'bold'}>Ext</Text>
+                                    <Tooltip
+                                      hasArrow
+                                      aria-label="A updated time tooltip"
+                                      label={
+                                        amazonList?.data && Array.isArray(amazonList.data) && amazonList.data[3]?.modified_date
+                                          ? `Summary Last Generated at: ${new Date(
+                                              new Date(`${amazonList.data[3].modified_date}`).toLocaleString(
+                                                "en-US",
+                                                {
+                                                  timeZone: "Asia/Kolkata",
+                                                }
+                                              )
+                                            ).toString()}`
+                                          : amazonList?.error
+                                          ? amazonList.error // Show the error message from the backend
+                                          : "No data available"
+                                      }
+                                      placement="right"
+                                      fontSize="xl"
+                                      pt={2}
+                                    >
+                                      <Text color={colors[0]} fontSize="md" fontWeight="bold">
+                                        Ext
+                                      </Text>
+                                    </Tooltip>
                                     <Text fontSize={'md'} fontWeight={'bold'}>= Extracted</Text>
                                   
                                 </Flex>
