@@ -8,3 +8,11 @@ export type TablesDetails = {
 export type TableCountByName = {
     row_count: number
 }
+
+export type ThirdPartyDetails = {
+    source_name: string,
+    total_records_count: number,
+    created_at: any,
+    modified_at: any
+    columns_list: any[]
+}

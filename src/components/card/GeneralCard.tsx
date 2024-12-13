@@ -177,7 +177,7 @@ export default function GeneralCard(props: {
   const greater7d:any = [];
   
   localInfo?.forEach((item:any) => {
-    const difference = getDifference(currentDate, item.last_present_time);
+    const difference = getDifference(currentDate, item.last_present_time || item.modified_date);
   
     if (difference <= 1440) {
       under24h.push(item);
@@ -193,8 +193,8 @@ export default function GeneralCard(props: {
   
   const calculateCounts = () => {
     const counts = [0, 0, 0, 0]; 
-    localInfo?.forEach((item: { last_present_time: any }) => {
-      const diff = getDifference(getCurrentDateTime(), item.last_present_time);
+    localInfo?.forEach((item: { last_present_time: any, modified_date: any }) => {
+      const diff = getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date);
   
       if (diff <= 1440) {
         counts[0] += 1;
@@ -374,6 +374,10 @@ export function AccordianCards(props: {
                       row_count: number;
                       columns_list: any[];
                       last_present_time: any;
+                      source_name: string;
+                      total_records_count: number,
+                      created_at: any,
+                      modified_date: any
                     },
                     index: number
                   ) => (
@@ -425,10 +429,10 @@ export function AccordianCards(props: {
                                     hasArrow
                                     aria-label="last modified"
                                     label={
-                                      item.last_present_time
+                                      item.last_present_time || item.modified_date
                                         ? `Last Modified: ${new Date(
                                             new Date(
-                                              `${item.last_present_time}`
+                                              `${item.last_present_time || item.modified_date}`
                                             ).toLocaleString("en-US", {
                                               timeZone: "Asia/Kolkata",
                                             })
@@ -439,7 +443,7 @@ export function AccordianCards(props: {
                                     fontSize="xl"
                                     pt={2}
                                   >
-                                    {item.table_name}
+                                    {item.table_name || item.source_name}
                                   </Tooltip>
                                 </Text>
                                 <Box position="relative" pb={2}>
@@ -493,7 +497,7 @@ export function AccordianCards(props: {
                                   fontWeight="bold"
                                   textAlign="center"
                                 >
-                                  {getDifference(getCurrentDateTime(), item.last_present_time) <= 60 ? (
+                                  {getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 60 ? (
                                     <Flex
                                       direction={"row"}
                                       align="center"
@@ -501,19 +505,19 @@ export function AccordianCards(props: {
                                       gap={1}
                                     >
                                       <FaHourglassStart color={"#FF80AB"} />
-                                      <Text color={colors[3]}>{item.row_count}</Text>
+                                      <Text color={colors[3]}>{item.row_count || item.total_records_count}</Text>
                                     </Flex>
-                                  ) : getDifference(getCurrentDateTime(), item.last_present_time) > 60 &&
-                                    getDifference(getCurrentDateTime(), item.last_present_time) <= 1440 ? (
-                                    <Text color={colors[3]}>{item.row_count}</Text>
-                                  ) : getDifference(getCurrentDateTime(), item.last_present_time) > 1440 &&
-                                    getDifference(getCurrentDateTime(), item.last_present_time) <= 4320 ? (
-                                    <Text color={colors[2]}>{item.row_count}</Text>
-                                  ) : getDifference(getCurrentDateTime(), item.last_present_time) > 4320 &&
-                                    getDifference(getCurrentDateTime(), item.last_present_time) <= 10080 ? (
-                                    <Text color={colors[0]}>{item.row_count}</Text>
+                                  ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date ) > 60 &&
+                                    getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 1440 ? (
+                                    <Text color={colors[3]}>{item.row_count || item.total_records_count}</Text>
+                                  ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) > 1440 &&
+                                    getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 4320 ? (
+                                    <Text color={colors[2]}>{item.row_count || item.total_records_count}</Text>
+                                  ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) > 4320 &&
+                                    getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 10080 ? (
+                                    <Text color={colors[0]}>{item.row_count || item.total_records_count}</Text>
                                   ) : (
-                                    <Text color={colors[4]}>{item.row_count}</Text>
+                                    <Text color={colors[4]}>{item.row_count || item.total_records_count}</Text>
                                   )}
                                 </Box>
                               </Flex>

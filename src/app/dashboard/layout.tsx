@@ -25,7 +25,7 @@ import {
 } from 'utils/navigation';
 import { useMemo } from 'react';
 import { SiPlaywright } from "react-icons/si";
-import {TbScript} from 'react-icons/tb';
+import { IoEarth } from "react-icons/io5";
 import { AiFillAmazonSquare } from "react-icons/ai";
 import { BsClipboard2DataFill } from "react-icons/bs";
 
@@ -66,7 +66,14 @@ const dashboardRoutes: IRoute[] = [
     layout: '/dashboard',
     path: '/plugin',
     isPage: true,
-  }
+  },
+  // {
+  //   icon: <Icon as={IoEarth} width="20px" height="20px" color="inherit" />,
+  //   name: 'Third Party Dashboard',
+  //   layout: '/dashboard',
+  //   path: '/thirdparty',
+  //   isPage: true,
+  // }
 ]
  
 // Custom Chakra theme

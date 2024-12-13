@@ -138,11 +138,11 @@ export default function AmazonInsights() {
           isClosable: true,
       });
   } else if (amazonList?.error) {
-      console.log("Error:", amazonList.error);
+      // console.log("Error:", amazonList?.error);
       toast.closeAll();
       toast({
           title: "Error",
-          description: amazonList.error || "Failed to fetch insights",
+          description: amazonList?.error || "Failed to fetch insights",
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -154,8 +154,15 @@ export default function AmazonInsights() {
       try {
         if (!task_id) throw new Error("Task ID not found");
         refetch();
-      } catch (error) {
-        console.log(error);
+      } catch (error:any) {
+        toast.closeAll();
+        toast({
+          title: "Error",
+          description: error?.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       }
     };
 
@@ -212,7 +219,7 @@ export default function AmazonInsights() {
             Amazon Seller Details {activeTab === 2 && <Text as="span" fontSize="sm"></Text>}
           </Tab>
           <Spacer/>
-          <Stack
+          {/* <Stack
           direction="row"
           spacing={3}
           alignItems="center"
@@ -264,7 +271,70 @@ export default function AmazonInsights() {
             bg="#01B574"
             onClick={() => fetchInsightsData(taskId, isChecked)}
           >Fetch</Button>
-        </Stack>
+        </Stack> */}
+
+              <Stack
+                direction={{ base: "column", md: "row" }} // Stack direction changes based on screen size
+                spacing={{ base: 2, md: 3 }} // Adjust spacing for smaller screens
+                alignItems="center"
+                flex={{ base: "1", md: "0.5" }} // Adjust flex size
+                width="100%" // Ensure it spans the available width
+              >
+                <FormControl isRequired>
+                  <Flex 
+                    alignItems="center" 
+                    gap={{ base: 2, md: 4 }} // Adjust gap based on screen size
+                    direction={{ base: "column", md: "row" }} // Change direction on smaller screens
+                  >
+                    <Box position="relative" flex="1" width="100%">
+                      <Input
+                        id="task-id"
+                        type="number"
+                        value={taskId ?? ""}
+                        placeholder=" "
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setTaskId(value === "" ? null : Number(value));
+                        }}
+                        color={textColor}
+                        width="100%" // Full width for better responsiveness
+                        _focus={{ borderColor: "blue.400" }}
+                        _hover={{ borderColor: "blue.300" }}
+                      />
+                      <FormLabel
+                        htmlFor="task-id"
+                        position="absolute"
+                        top={taskId ? "-6px" : "50%"}
+                        left={2}
+                        px={1}
+                        color={taskId ? textColor : "gray.500"}
+                        fontWeight={taskId ? "bold" : "normal"}
+                        fontSize={taskId ? "sm" : "md"}
+                        transform={taskId ? "translateX(calc(-130%)) translateY(80%)" : "translateY(-50%)"}
+                        transition="all 0.2s ease-in-out"
+                        pointerEvents="none"
+                      >
+                        Task ID
+                      </FormLabel>
+                    </Box>
+                    <Switch
+                      id="refresh-alerts"
+                      size="lg"
+                      isChecked={isChecked}
+                      onChange={(e) => setIsChecked(e.target.checked)}
+                    />
+                  </Flex>
+                </FormControl>
+
+                <Button
+                  bg="#01B574"
+                  width={{ base: "100%", md: "auto" }} // Full width on smaller screens
+                  onClick={() => fetchInsightsData(taskId, isChecked)}
+                >
+                  Fetch
+                </Button>
+              </Stack>
+
 
                 </TabList>
 
