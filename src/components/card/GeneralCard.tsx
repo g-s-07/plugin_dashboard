@@ -505,19 +505,19 @@ export function AccordianCards(props: {
                                       gap={1}
                                     >
                                       <FaHourglassStart color={"#FF80AB"} />
-                                      <Text color={colors[3]}>{item.row_count || item.total_records_count}</Text>
+                                      <Text color={colors[3]}>{item.row_count || item.total_records_count || 0}</Text>
                                     </Flex>
                                   ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date ) > 60 &&
                                     getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 1440 ? (
-                                    <Text color={colors[3]}>{item.row_count || item.total_records_count}</Text>
+                                    <Text color={colors[3]}>{item.row_count || item.total_records_count || 0}</Text>
                                   ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) > 1440 &&
                                     getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 4320 ? (
-                                    <Text color={colors[2]}>{item.row_count || item.total_records_count}</Text>
+                                    <Text color={colors[2]}>{item.row_count || item.total_records_count || 0}</Text>
                                   ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) > 4320 &&
                                     getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 10080 ? (
-                                    <Text color={colors[0]}>{item.row_count || item.total_records_count}</Text>
+                                    <Text color={colors[0]}>{item.row_count || item.total_records_count || 0}</Text>
                                   ) : (
-                                    <Text color={colors[4]}>{item.row_count || item.total_records_count}</Text>
+                                    <Text color={colors[4]}>{item.row_count || item.total_records_count || 0}</Text>
                                   )}
                                 </Box>
                               </Flex>

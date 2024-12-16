@@ -269,6 +269,7 @@ export default function Admin() {
       >
         <option value="playwright">Playwright</option>
         <option value="plugins">Plugins</option>
+        <option value="plugins-linkedin">Plugins-Linkedin</option>
       </Select>
       <FormErrorMessage marginBottom={4}>
         {form.errors.script_type}

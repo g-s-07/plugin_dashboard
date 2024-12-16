@@ -25,6 +25,7 @@ import {
 } from 'utils/navigation';
 import { useMemo } from 'react';
 import { SiPlaywright } from "react-icons/si";
+import { FaLinkedin } from "react-icons/fa";
 import { IoEarth } from "react-icons/io5";
 import { AiFillAmazonSquare } from "react-icons/ai";
 import { BsClipboard2DataFill } from "react-icons/bs";
@@ -72,6 +73,13 @@ const dashboardRoutes: IRoute[] = [
   //   name: 'Third Party Dashboard',
   //   layout: '/dashboard',
   //   path: '/thirdparty',
+  //   isPage: true,
+  // },
+  // {
+  //   icon: <Icon as={FaLinkedin} width="20px" height="20px" color="inherit" />,
+  //   name: 'Linkedin Dashboard',
+  //   layout: '/dashboard',
+  //   path: '/linkedin',
   //   isPage: true,
   // }
 ]
