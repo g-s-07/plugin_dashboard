@@ -225,58 +225,34 @@ export default function Admin() {
                     </FormControl>
                   )}
                 </Field>
-                {/* <Field name="Script Type">
-                  {({ field, form }: { field: any; form: any }) => (
-                    <FormControl
-                      isInvalid={form.errors.script_type && form.touched.script_type}
-                    >
-                      <FormLabel
-                        ms="4px"
-                        fontSize="sm"
-                        fontWeight="500"
-                        color={textColor}
-                        display="flex"
-                      >
-                        Script Type<Text color={brandStars}>*</Text>
-                      </FormLabel>
-                      <Select placeholder='Select script type' mb={'20px'} isRequired={true}>
-                        <option value='playwright'>Playwright</option>
-                        <option value='plugins'>Plugins</option>
-                      </Select>
-                      <FormErrorMessage marginBottom={4}>
-                        {form.errors.script_type}
-                      </FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field> */}
                 <Field name="script_type">
-  {({ field, form }: { field: any; form: any }) => (
-    <FormControl isInvalid={form.errors.script_type && form.touched.script_type}>
-      <FormLabel
-        ms="4px"
-        fontSize="sm"
-        fontWeight="500"
-        color={textColor}
-        display="flex"
-      >
-        Script Type<Text color={brandStars}>*</Text>
-      </FormLabel>
-      <Select
-        {...field}
-        placeholder="Select script type"
-        mb="20px"
-        isRequired={true}
-      >
-        <option value="playwright">Playwright</option>
-        <option value="plugins">Plugins</option>
-        <option value="plugins-linkedin">Plugins-Linkedin</option>
-      </Select>
-      <FormErrorMessage marginBottom={4}>
-        {form.errors.script_type}
-      </FormErrorMessage>
-    </FormControl>
-  )}
-</Field>
+                {({ field, form }: { field: any; form: any }) => (
+                  <FormControl isInvalid={form.errors.script_type && form.touched.script_type}>
+                    <FormLabel
+                      ms="4px"
+                      fontSize="sm"
+                      fontWeight="500"
+                      color={textColor}
+                      display="flex"
+                    >
+                      Script Type<Text color={brandStars}>*</Text>
+                    </FormLabel>
+                    <Select
+                      {...field}
+                      placeholder="Select script type"
+                      mb="20px"
+                      isRequired={true}
+                    >
+                      <option value="playwright">Playwright</option>
+                      <option value="plugins">Plugins</option>
+                      <option value="plugins-linkedin">Plugins-Linkedin</option>
+                    </Select>
+                    <FormErrorMessage marginBottom={4}>
+                      {form.errors.script_type}
+                    </FormErrorMessage>
+                  </FormControl>
+                )}
+              </Field>
 
                 <Field name="Requested By">
                   {({ field, form }: { field: any; form: any }) => (

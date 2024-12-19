@@ -14,6 +14,7 @@ import {
   AccordionPanel,
   useToast,
   Button,
+  Spacer,
 } from '@chakra-ui/react';
 import { saveAs } from 'file-saver';
 import { MdDownload } from "react-icons/md";
@@ -27,6 +28,7 @@ import { useState } from 'react';
 import { BACKEND_DOMAIN, token } from '../../../urls';
 import {getDifference, getCurrentDateTime} from 'utils/dateDifference';
 import { queryClient } from '../../app/AppWrappers';
+import { convertToCSV } from 'utils/converttocsv';
 
 
 
@@ -123,7 +125,7 @@ export default function GeneralCard(props: {
   }
 
 
-  const handledownload = async (table_name: string, index: number) => {
+  const handledownload = async (table_name: string, index: number, kind:string) => {
     try {
       toast({
         id: `download-${table_name}-${index}`,
@@ -134,7 +136,7 @@ export default function GeneralCard(props: {
         isClosable: false,
       });
       const response = await axios.get(
-        `${BACKEND_DOMAIN}/download-data/?table_name=${table_name}`,
+        kind=="all" ? `${BACKEND_DOMAIN}/download-data/?table_name=${table_name}&type=${type}` : `${BACKEND_DOMAIN}/download-insights-data/?table_name=${table_name}&type=${type}`,
         {
           headers: {
             Authorization: token,
@@ -157,6 +159,20 @@ export default function GeneralCard(props: {
         });
       }
     } catch (error: any) {
+      if (error.response?.data instanceof Blob){
+        const text = await error.response.data.text();
+        const errorData = JSON.parse(text);
+
+        toast.closeAll();
+        toast({
+          title: "Error",
+          description: errorData?.error || "An unknown error occurred",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return
+      }
       toast.closeAll();
       toast({
         title: 'Error',
@@ -210,6 +226,24 @@ export default function GeneralCard(props: {
   };
   
   const counts = calculateCounts();
+
+  const downloadCommonDatapoint = () => {
+    try {
+      const datapoints = ["company_source","company_name","website","domain","full_address","address_1","address_2","city","state","zipcode","country","company_phone","company_hq_phone_1","company_hq_phone_2","company_hq_phone_3","company_email","industry","sub_industry","revenue","revenue_range","employee","employee_range","sic_code","naics_code","shopping_cart_name","facebook_link","linkedin_link","twiiter_link","instagram_link","page_link","remarks","upload_responsible","created_date","data_transfer_flag","upload_file_name","table_name","source_id","source_name","db_responsible","merge_third_party_all_source_2023_id"]
+      const csvData = convertToCSV(datapoints);
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      saveAs(blob, `commonDatapoints.csv`);
+    } catch (error:any) {
+      toast.closeAll()
+      toast({
+        title: 'Error',
+        description: error,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+  }
   
 
   return (
@@ -217,7 +251,26 @@ export default function GeneralCard(props: {
       <Stack
         width={'full'}
       >
-        <Flex justifyContent={'end'} align="center" gap={2}>
+        <Flex justifyContent="space-between" align="center" gap={2}>
+          {type==="thirdparty" 
+            ? 
+            <Tooltip
+            hasArrow
+            aria-label="Download"
+            label="Download Common Datapoints"
+            placement="right"
+            fontSize="xl"
+          >
+            <Button
+              size="sm"
+              onClick={() => downloadCommonDatapoint()}
+              >
+              <MdDownload />
+            </Button>
+          </Tooltip>
+            : 
+            <Spacer/>}
+          <Flex justifyContent={'end'} align="center" gap={2}>
               <Box bg={colors[3]} width="15px" height="15px" borderRadius="full" />
               <Text fontSize={'md'} fontWeight={'bold'}>&lt;= 24 hours</Text>
               <Box bg={colors[2]} width="15px" height="15px" borderRadius="full" />
@@ -226,7 +279,9 @@ export default function GeneralCard(props: {
               <Text fontSize={'md'} fontWeight={'bold'}>&gt;72 hours and &lt;=7 days</Text>
               <Box bg={colors[4]} width="15px" height="15px" borderRadius="full" />
               <Text fontSize={'md'} fontWeight={'bold'}>&gt;7 days</Text>
+          </Flex>
         </Flex>
+
 
         <Flex
           justify={'space-between'}
@@ -259,6 +314,7 @@ export default function GeneralCard(props: {
       colors={colors}
       dataCount = {counts[0]}
       dataColor = {colors[3]}
+      type={type}
       // fontSize={fontSize}
       cardRefresh={handleRefresh}
       downloadData={handledownload}
@@ -270,6 +326,7 @@ export default function GeneralCard(props: {
       colors={colors}
       dataCount = {counts[1]}
       dataColor = {colors[2]}
+      type={type}
       // fontSize={fontSize}
       cardRefresh={handleRefresh}
       downloadData={handledownload}
@@ -281,6 +338,7 @@ export default function GeneralCard(props: {
       colors={colors}
       dataColor = {colors[0]}
       dataCount = {counts[2]}
+      type={type}
       // fontSize={fontSize}
       cardRefresh={handleRefresh}
       downloadData={handledownload}
@@ -292,6 +350,7 @@ export default function GeneralCard(props: {
       colors={colors}
       dataColor = {colors[4]}
       dataCount = {counts[3]}
+      type={type}
       // fontSize={fontSize}
       cardRefresh={handleRefresh}
       downloadData={handledownload}
@@ -315,12 +374,13 @@ export function AccordianCards(props: {
   icon?: JSX.Element;
   type?: string;
   cardRefresh?:(table_name: string, index: number) => Promise<void>;
-  downloadData?:(table_name: string, index: number) => Promise<void>;
+  downloadData?:(table_name: string, index: number, kind: string) => Promise<void>;
   dataCount?:number,
   dataColor?: any
 }) {
-  const { title, items, fontSize, expanded, description, colors, dataCount, dataColor, cardRefresh , downloadData} = props;
+  const { title, items, fontSize, expanded, description, colors, dataCount, dataColor, cardRefresh , downloadData, type} = props;
   const textColor = useColorModeValue('navy.700', 'white');
+
 
   return (
     <Card
@@ -417,13 +477,17 @@ export function AccordianCards(props: {
                                   mb="5px"
                                   fontWeight="bold"
                                   textAlign="center"
-                                  onClick={() => cardRefresh(item.table_name, index)}
-                                  cursor="pointer"
-                                  transition="all 0.3s ease-in-out"
-                                  _hover={{
-                                    textShadow: "0 0 15px rgba(0, 255, 255, 0.7)",
-                                    fontSize: "lg",
-                                  }}
+                                  onClick={type !== "thirdparty" ? () => cardRefresh(item.table_name, index) : null}
+                                  cursor={type !== "thirdparty" ? "pointer" : "default"}
+                                  transition={type !== "thirdparty" ? "all 0.3s ease-in-out" : "none"}
+                                  _hover={
+                                    type !== "thirdparty"
+                                      ? {
+                                          textShadow: "0 0 15px rgba(0, 255, 255, 0.7)",
+                                          fontSize: "lg",
+                                        }
+                                      : {}
+                                  }
                                 >
                                   <Tooltip
                                     hasArrow
@@ -446,23 +510,26 @@ export function AccordianCards(props: {
                                     {item.table_name || item.source_name}
                                   </Tooltip>
                                 </Text>
-                                <Box position="relative" pb={2}>
-                                  <Tooltip
-                                    hasArrow
-                                    aria-label="Download"
-                                    label="Download Sample Data"
-                                    placement="right"
-                                    fontSize="xl"
-                                  >
-                                    <Button
-                                      key={index}
-                                      size="sm"
-                                      onClick={() => downloadData(item.table_name, index)}
-                                      >
-                                      <MdDownload />
-                                    </Button>
-                                  </Tooltip>
-                                </Box>
+                                {
+                                  type!="thirdparty" &&
+                                  <Box position="relative" pb={2}>
+                                    <Tooltip
+                                      hasArrow
+                                      aria-label="Download"
+                                      label="Download Sample Data"
+                                      placement="right"
+                                      fontSize="xl"
+                                    >
+                                      <Button
+                                        key={index}
+                                        size="sm"
+                                        onClick={() => downloadData(item.table_name, index, "all")}
+                                        >
+                                        <MdDownload />
+                                      </Button>
+                                    </Tooltip>
+                                  </Box>
+                                }
                               </Flex>
                               <Tooltip
                                 hasArrow
@@ -505,18 +572,89 @@ export function AccordianCards(props: {
                                       gap={1}
                                     >
                                       <FaHourglassStart color={"#FF80AB"} />
-                                      <Text color={colors[3]}>{item.row_count || item.total_records_count || 0}</Text>
+                                      {/* <Tooltip
+                                        hasArrow
+                                        aria-label="Download"
+                                        label="Download Insights"
+                                        placement="right"
+                                        fontSize="xl"
+                                      >
+                                        <Text color={colors[3]} onClick={()=> downloadData(item.table_name, index, "insights")} cursor={"pointer"}>{item.row_count || item.total_records_count || 0}</Text>
+                                      </Tooltip> */}
+                                      {type === "thirdparty" ? (
+                                        <Text color={colors[3]}>
+                                          {item.row_count || item.total_records_count || 0}
+                                        </Text>
+                                      ) : (
+                                        <Tooltip
+                                          hasArrow
+                                          aria-label="Download"
+                                          label="Download Insights"
+                                          placement="right"
+                                          fontSize="xl"
+                                        >
+                                          <Text
+                                            color={colors[3]}
+                                            onClick={() => downloadData(item.table_name, index, "insights")}
+                                            cursor="pointer"
+                                          >
+                                            {item.row_count || item.total_records_count || 0}
+                                          </Text>
+                                        </Tooltip>
+                                      )}
+
                                     </Flex>
                                   ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date ) > 60 &&
                                     getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 1440 ? (
+
+                                      type!=="thirdparty" ?
+                                      <Tooltip
+                                      hasArrow
+                                      aria-label="Download"
+                                      label="Download Insights"
+                                      placement="right"
+                                      fontSize="xl"
+                                    >
+                                      <Text color={colors[3]} onClick={()=> downloadData(item.table_name, index, "insights")} cursor={"pointer"}>{item.row_count || item.total_records_count || 0}</Text>
+                                    </Tooltip>:
                                     <Text color={colors[3]}>{item.row_count || item.total_records_count || 0}</Text>
                                   ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) > 1440 &&
                                     getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 4320 ? (
+                                      type!=="thirdparty"?
+                                      <Tooltip
+                                      hasArrow
+                                      aria-label="Download"
+                                      label="Download Insights"
+                                      placement="right"
+                                      fontSize="xl"
+                                    >
+                                      <Text color={colors[2]} onClick={()=> downloadData(item.table_name, index, "insights")} cursor={"pointer"}>{item.row_count || item.total_records_count || 0}</Text>
+                                    </Tooltip>:
                                     <Text color={colors[2]}>{item.row_count || item.total_records_count || 0}</Text>
                                   ) : getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) > 4320 &&
                                     getDifference(getCurrentDateTime(), item.last_present_time || item.modified_date) <= 10080 ? (
+                                      type!=="thirdparty"?
+                                      <Tooltip
+                                      hasArrow
+                                      aria-label="Download"
+                                      label="Download Insights"
+                                      placement="right"
+                                      fontSize="xl"
+                                    >
+                                    <Text color={colors[0]} onClick={()=> downloadData(item.table_name, index, "insights")} cursor={"pointer"}>{item.row_count || item.total_records_count || 0}</Text>
+                                    </Tooltip>:
                                     <Text color={colors[0]}>{item.row_count || item.total_records_count || 0}</Text>
                                   ) : (
+                                    type!=="thirdparty"?
+                                    <Tooltip
+                                    hasArrow
+                                    aria-label="Download"
+                                    label="Download Insights"
+                                    placement="right"
+                                    fontSize="xl"
+                                    >
+                                    <Text color={colors[4]} onClick={()=> downloadData(item.table_name, index, "insights")} cursor={"pointer"}>{item.row_count || item.total_records_count || 0}</Text>
+                                    </Tooltip>:
                                     <Text color={colors[4]}>{item.row_count || item.total_records_count || 0}</Text>
                                   )}
                                 </Box>
@@ -543,3 +681,6 @@ export function AccordianCards(props: {
     </Card>
   );
 }
+
+
+

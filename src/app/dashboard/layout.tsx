@@ -68,20 +68,20 @@ const dashboardRoutes: IRoute[] = [
     path: '/plugin',
     isPage: true,
   },
-  // {
-  //   icon: <Icon as={IoEarth} width="20px" height="20px" color="inherit" />,
-  //   name: 'Third Party Dashboard',
-  //   layout: '/dashboard',
-  //   path: '/thirdparty',
-  //   isPage: true,
-  // },
-  // {
-  //   icon: <Icon as={FaLinkedin} width="20px" height="20px" color="inherit" />,
-  //   name: 'Linkedin Dashboard',
-  //   layout: '/dashboard',
-  //   path: '/linkedin',
-  //   isPage: true,
-  // }
+  {
+    icon: <Icon as={IoEarth} width="20px" height="20px" color="inherit" />,
+    name: 'Third Party Dashboard',
+    layout: '/dashboard',
+    path: '/thirdparty',
+    isPage: true,
+  },
+  {
+    icon: <Icon as={FaLinkedin} width="20px" height="20px" color="inherit" />,
+    name: 'Linkedin Dashboard',
+    layout: '/dashboard',
+    path: '/linkedin',
+    isPage: true,
+  }
 ]
  
 // Custom Chakra theme
